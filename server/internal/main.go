@@ -12,9 +12,18 @@ func Set(key string, value string) {
 	defer storeMu.Unlock()
 
 	store[key] = value
+	DelTTL(key)
 }
 
 func Get(key string) string {
+	ttl := GetTTL(key)
+	if ttl == -2 {
+		// key has TTL and it has expired
+		// deletion of the TTL entry is handled by GetTTL
+		Del(key)
+		return ""
+	}
+
 	storeMu.RLock()
 	defer storeMu.RUnlock()
 
@@ -26,13 +35,22 @@ func GetMany(keys []string) []string {
 	storeMu.RLock()
 	defer storeMu.RUnlock()
 
-	for i, k := range keys {
-		out[i] = store[k]
+	for i, key := range keys {
+		ttl := GetTTL(key) // TTL expired
+		if ttl == -2 {
+			// unsafe delete, don't call methods becuase of locking
+			delete(store, key)
+			out[i] = ""
+		} else {
+			out[i] = store[key]
+		}
 	}
 
 	return out
 }
 
+// Not necessary to delete TTL, as if a new key with the same name is added,
+// it is deleted there
 func Del(key string) {
 	storeMu.Lock()
 	defer storeMu.Unlock()

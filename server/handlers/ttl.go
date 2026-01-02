@@ -1,0 +1,35 @@
+package handlers
+
+import (
+	"fmt"
+	"mini-redis/server/internal"
+	"mini-redis/types"
+	"strconv"
+)
+
+func handleTTL(params []types.RESPItem) (string, error) {
+	if len(params) < 1 {
+		return "", fmt.Errorf("TTL requires 1 parameter")
+	}
+
+	// return -2 on non-existent key
+	key := params[0].Content
+	if internal.Get(key) == "" {
+		return "-2", nil
+	}
+
+	// no associated TTL
+	ttl := internal.GetTTL(key)
+	if ttl == -1 {
+		return "-1", nil
+	}
+
+	// ttl expired
+	if ttl == -2 {
+		internal.Del(key)
+		internal.DelTTL(key)
+		return "-2", nil
+	}
+
+	return strconv.Itoa(ttl), nil
+}

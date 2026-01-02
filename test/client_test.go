@@ -4,6 +4,7 @@ import (
 	"mini-redis/client"
 	"mini-redis/types"
 	"testing"
+	"time"
 )
 
 func TestInit(t *testing.T) {
@@ -87,7 +88,7 @@ func TestEmptyGet(t *testing.T) {
 }
 
 func TestExists(t *testing.T) {
-	c := setup(t)
+	c := setupAndFlush(t)
 	defer teardown(c, t)
 
 	s, err := c.Set("test", "TEST")
@@ -107,7 +108,7 @@ func TestExists(t *testing.T) {
 }
 
 func TestExpire(t *testing.T) {
-	c := setup(t)
+	c := setupAndFlush(t)
 	defer teardown(c, t)
 
 	s, err := c.Expire("awidawbnd", 10)
@@ -118,4 +119,29 @@ func TestExpire(t *testing.T) {
 
 	s, err = c.Expire("test", 10)
 	checkExpected(s, err, types.EXPIRE, "1", t)
+}
+
+func TestTTL(t *testing.T) {
+	c := setupAndFlush(t)
+	defer teardown(c, t)
+
+	s, err := c.TTL("test")
+	checkExpected(s, err, types.TTL, "-2", t)
+
+	s, err = c.Set("test", "TEST")
+	checkExpected(s, err, types.SET, "OK", t)
+
+	s, err = c.TTL("test")
+	checkExpected(s, err, types.TTL, "-1", t)
+
+	s, err = c.Expire("test", 2)
+	checkExpected(s, err, types.EXPIRE, "1", t)
+
+	time.Sleep(500 * time.Millisecond)
+	s, err = c.TTL("test")
+	checkExpected(s, err, types.TTL, "1", t)
+
+	time.Sleep(2000 * time.Millisecond)
+	s, err = c.TTL("test")
+	checkExpected(s, err, types.TTL, "-2", t)
 }

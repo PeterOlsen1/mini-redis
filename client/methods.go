@@ -33,7 +33,7 @@ func (c *RedisClient) sendAndReceive(req *RequestBuilder, bufLen int) (string, e
 		return "", err
 	}
 
-	// TODO: only implements basic string / error data type reponses. update to bulk later
+	// TODO: only implements basic string / error data type reponses. do we need more?
 	ret := string(buf[:n])
 	if ret[0] == '+' {
 		ret = strings.TrimPrefix(ret, "+")
@@ -101,7 +101,14 @@ func (c *RedisClient) Exists(keys []string) (string, error) {
 func (c *RedisClient) Expire(key string, seconds int) (string, error) {
 	return c.sendAndReceive(
 		InitRequest(3, "EXPIRE").AddParam(key).AddParam(strconv.Itoa(seconds)),
-		len(key),
+		128,
+	)
+}
+
+func (c *RedisClient) TTL(key string) (string, error) {
+	return c.sendAndReceive(
+		InitRequest(2, "TTL").AddParam(key),
+		128,
 	)
 }
 

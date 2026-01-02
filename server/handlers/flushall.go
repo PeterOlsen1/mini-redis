@@ -7,5 +7,6 @@ import (
 
 func handleFlushAll(_ []types.RESPItem) (string, error) {
 	internal.FlushAll()
+	internal.FlushAllTTL()
 	return "OK", nil
 }

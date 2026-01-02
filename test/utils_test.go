@@ -15,6 +15,19 @@ func setup(t *testing.T) *client.RedisClient {
 	return c
 }
 
+func setupAndFlush(t *testing.T) *client.RedisClient {
+	c, err := client.NewClient(&client.Options{Addr: "localhost:6379"})
+	if err != nil {
+		t.Errorf("client initialization")
+	}
+
+	_, err = c.FlushAll()
+	if err != nil {
+		t.Errorf("initial flush")
+	}
+	return c
+}
+
 func teardown(c *client.RedisClient, t *testing.T) {
 	err := c.Close()
 	if err != nil {

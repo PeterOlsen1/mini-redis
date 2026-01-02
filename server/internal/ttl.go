@@ -19,13 +19,33 @@ func SetTTL(key string, seconds int) {
 	expiration[key] = exp
 }
 
+// Returns -1 on no TTL and -2 on expired
 func GetTTL(key string) int {
 	ttlMu.RLock()
-	defer ttlMu.RUnlock()
-
-	if expiration[key] < time.Now().UnixMilli() {
+	exp, ok := expiration[key]
+	ttlMu.RUnlock()
+	if !ok {
 		return -1
 	}
 
-	return int(expiration[key]-time.Now().UnixMilli()) / 1000
+	ttl := int(exp-time.Now().UnixMilli()) / 1000
+	if ttl <= 0 {
+		DelTTL(key)
+		return -2
+	}
+	return ttl
+}
+
+func DelTTL(key string) {
+	ttlMu.Lock()
+	defer ttlMu.Unlock()
+
+	delete(expiration, key)
+}
+
+func FlushAllTTL() {
+	ttlMu.Lock()
+	defer ttlMu.Unlock()
+
+	expiration = make(map[string]int64)
 }
