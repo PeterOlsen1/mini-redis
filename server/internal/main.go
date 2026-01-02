@@ -1,6 +1,7 @@
 package internal
 
 import (
+	"strconv"
 	"sync"
 )
 
@@ -63,4 +64,18 @@ func FlushAll() {
 	defer storeMu.Unlock()
 
 	store = make(map[string]string)
+}
+
+func Incr(key string) (string, bool) {
+	storeMu.Lock()
+	defer storeMu.Unlock()
+
+	val, err := strconv.Atoi(store[key])
+	if err != nil {
+		return "0", false
+	}
+
+	newStr := strconv.Itoa(val + 1)
+	store[key] = newStr
+	return newStr, true
 }

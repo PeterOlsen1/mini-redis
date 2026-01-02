@@ -112,6 +112,13 @@ func (c *RedisClient) TTL(key string) (string, error) {
 	)
 }
 
+func (c *RedisClient) Incr(key string) (string, error) {
+	return c.sendAndReceive(
+		InitRequest(2, "INCR").AddParam(key),
+		128,
+	)
+}
+
 func (c *RedisClient) FlushAll() (string, error) {
 	return c.sendAndReceive(
 		InitRequest(1, "FLUSHALL"),

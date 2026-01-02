@@ -35,11 +35,21 @@ func teardown(c *client.RedisClient, t *testing.T) {
 	}
 }
 
-func checkExpected(resp string, err error, cmd types.Command, expect string, t *testing.T) {
+func checkExpect(resp string, err error, cmd types.Command, expect string, t *testing.T) {
 	if err != nil {
 		t.Errorf("%s command (%s)", cmd.String(), err)
 	}
 	if resp != expect {
 		t.Errorf("%s not met with %s (%s)", cmd.String(), expect, resp)
+	}
+}
+
+func checkError(resp string, err error, cmd types.Command, errText string, t *testing.T) {
+	if err == nil {
+		t.Errorf("%s command expected error (%s)", cmd.String(), resp)
+	}
+
+	if errText != "" && err.Error() != errText {
+		t.Errorf("%s error not met with %s (%s)", cmd.String(), errText, err.Error())
 	}
 }

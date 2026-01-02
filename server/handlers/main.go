@@ -30,7 +30,7 @@ var commandHandlers = [...]func([]types.RESPItem) (string, error){
 	handleExists,
 	handleExpire,
 	handleTTL,
-	TODO,
+	handleIncr,
 	TODO,
 	TODO,
 	TODO,

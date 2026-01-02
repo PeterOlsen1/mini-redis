@@ -21,10 +21,10 @@ func TestPing(t *testing.T) {
 	defer c.Close()
 
 	s, err := c.Ping("")
-	checkExpected(s, err, types.PING, "PONG", t)
+	checkExpect(s, err, types.PING, "PONG", t)
 
 	s, err = c.Ping("HELLO")
-	checkExpected(s, err, types.PING, "HELLO", t)
+	checkExpect(s, err, types.PING, "HELLO", t)
 }
 
 func TestEcho(t *testing.T) {
@@ -36,7 +36,7 @@ func TestEcho(t *testing.T) {
 	defer c.Close()
 
 	s, err := c.Echo("HELLO")
-	checkExpected(s, err, types.ECHO, "HELLO", t)
+	checkExpect(s, err, types.ECHO, "HELLO", t)
 }
 
 func TestSet(t *testing.T) {
@@ -48,7 +48,7 @@ func TestSet(t *testing.T) {
 	defer c.Close()
 
 	s, err := c.Set("test", "TEST")
-	checkExpected(s, err, types.SET, "OK", t)
+	checkExpect(s, err, types.SET, "OK", t)
 }
 
 func TestGet(t *testing.T) {
@@ -60,7 +60,7 @@ func TestGet(t *testing.T) {
 	defer c.Close()
 
 	s, err := c.Get("test")
-	checkExpected(s, err, types.GET, "TEST", t)
+	checkExpect(s, err, types.GET, "TEST", t)
 }
 
 func TestFlushAll(t *testing.T) {
@@ -72,7 +72,7 @@ func TestFlushAll(t *testing.T) {
 	defer c.Close()
 
 	s, err := c.FlushAll()
-	checkExpected(s, err, types.FLUSHALL, "OK", t)
+	checkExpect(s, err, types.FLUSHALL, "OK", t)
 }
 
 func TestEmptyGet(t *testing.T) {
@@ -84,7 +84,7 @@ func TestEmptyGet(t *testing.T) {
 	defer c.Close()
 
 	s, err := c.Get("test")
-	checkExpected(s, err, types.GET, "", t)
+	checkExpect(s, err, types.GET, "", t)
 }
 
 func TestExists(t *testing.T) {
@@ -92,19 +92,19 @@ func TestExists(t *testing.T) {
 	defer teardown(c, t)
 
 	s, err := c.Set("test", "TEST")
-	checkExpected(s, err, types.SET, "OK", t)
+	checkExpect(s, err, types.SET, "OK", t)
 
 	s, err = c.Set("test2", "TEST")
-	checkExpected(s, err, types.SET, "OK", t)
+	checkExpect(s, err, types.SET, "OK", t)
 
 	keys := make([]string, 0)
 	keys = append(keys, "test")
 	s, err = c.Exists(keys)
-	checkExpected(s, err, types.EXISTS, "1", t)
+	checkExpect(s, err, types.EXISTS, "1", t)
 
 	keys = append(keys, "test2")
 	s, err = c.Exists(keys)
-	checkExpected(s, err, types.EXISTS, "2", t)
+	checkExpect(s, err, types.EXISTS, "2", t)
 }
 
 func TestExpire(t *testing.T) {
@@ -112,13 +112,13 @@ func TestExpire(t *testing.T) {
 	defer teardown(c, t)
 
 	s, err := c.Expire("awidawbnd", 10)
-	checkExpected(s, err, types.EXPIRE, "0", t)
+	checkExpect(s, err, types.EXPIRE, "0", t)
 
 	s, err = c.Set("test", "TEST")
-	checkExpected(s, err, types.SET, "OK", t)
+	checkExpect(s, err, types.SET, "OK", t)
 
 	s, err = c.Expire("test", 10)
-	checkExpected(s, err, types.EXPIRE, "1", t)
+	checkExpect(s, err, types.EXPIRE, "1", t)
 }
 
 func TestTTL(t *testing.T) {
@@ -126,22 +126,45 @@ func TestTTL(t *testing.T) {
 	defer teardown(c, t)
 
 	s, err := c.TTL("test")
-	checkExpected(s, err, types.TTL, "-2", t)
+	checkExpect(s, err, types.TTL, "-2", t)
 
 	s, err = c.Set("test", "TEST")
-	checkExpected(s, err, types.SET, "OK", t)
+	checkExpect(s, err, types.SET, "OK", t)
 
 	s, err = c.TTL("test")
-	checkExpected(s, err, types.TTL, "-1", t)
+	checkExpect(s, err, types.TTL, "-1", t)
 
 	s, err = c.Expire("test", 2)
-	checkExpected(s, err, types.EXPIRE, "1", t)
+	checkExpect(s, err, types.EXPIRE, "1", t)
 
 	time.Sleep(500 * time.Millisecond)
 	s, err = c.TTL("test")
-	checkExpected(s, err, types.TTL, "1", t)
+	checkExpect(s, err, types.TTL, "1", t)
 
 	time.Sleep(2000 * time.Millisecond)
 	s, err = c.TTL("test")
-	checkExpected(s, err, types.TTL, "-2", t)
+	checkExpect(s, err, types.TTL, "-2", t)
+}
+
+func TestIncr(t *testing.T) {
+	c := setupAndFlush(t)
+	defer teardown(c, t)
+
+	s, err := c.Incr("test")
+	checkError(s, err, types.SET, "value is not an integer or out of range", t)
+
+	s, err = c.Set("test", "TEST")
+	checkExpect(s, err, types.SET, "OK", t)
+
+	s, err = c.Incr("test")
+	checkError(s, err, types.SET, "value is not an integer or out of range", t)
+
+	s, err = c.Set("test", "1")
+	checkExpect(s, err, types.SET, "OK", t)
+
+	s, err = c.Incr("test")
+	checkExpect(s, err, types.SET, "2", t)
+
+	s, err = c.Get("test")
+	checkExpect(s, err, types.SET, "2", t)
 }
