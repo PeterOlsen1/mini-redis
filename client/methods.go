@@ -119,6 +119,13 @@ func (c *RedisClient) Incr(key string) (string, error) {
 	)
 }
 
+func (c *RedisClient) Decr(key string) (string, error) {
+	return c.sendAndReceive(
+		InitRequest(2, "DECR").AddParam(key),
+		128,
+	)
+}
+
 func (c *RedisClient) FlushAll() (string, error) {
 	return c.sendAndReceive(
 		InitRequest(1, "FLUSHALL"),

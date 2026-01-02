@@ -31,6 +31,7 @@ var commandHandlers = [...]func([]types.RESPItem) (string, error){
 	handleExpire,
 	handleTTL,
 	handleIncr,
+	handleDecr,
 	TODO,
 	TODO,
 	TODO,
@@ -50,6 +51,7 @@ var commandHandlers = [...]func([]types.RESPItem) (string, error){
 	EXPIRE
 	TTL
 	INCR
+	DECR
 	LPUSH
 	RPUSH
 	LPOP

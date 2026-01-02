@@ -52,14 +52,13 @@ func TestSet(t *testing.T) {
 }
 
 func TestGet(t *testing.T) {
-	c, err := client.NewClient(&client.Options{Addr: "localhost:6379"})
-	if err != nil {
-		t.Errorf("client initialization")
-	}
+	c := setupAndFlush(t)
+	defer teardown(c, t)
 
-	defer c.Close()
+	s, err := c.Set("test", "TEST")
+	checkExpect(s, err, types.SET, "OK", t)
 
-	s, err := c.Get("test")
+	s, err = c.Get("test")
 	checkExpect(s, err, types.GET, "TEST", t)
 }
 
@@ -76,12 +75,8 @@ func TestFlushAll(t *testing.T) {
 }
 
 func TestEmptyGet(t *testing.T) {
-	c, err := client.NewClient(&client.Options{Addr: "localhost:6379"})
-	if err != nil {
-		t.Errorf("client initialization")
-	}
-
-	defer c.Close()
+	c := setupAndFlush(t)
+	defer teardown(c, t)
 
 	s, err := c.Get("test")
 	checkExpect(s, err, types.GET, "", t)
@@ -151,7 +146,7 @@ func TestIncr(t *testing.T) {
 	defer teardown(c, t)
 
 	s, err := c.Incr("test")
-	checkError(s, err, types.SET, "value is not an integer or out of range", t)
+	checkExpect(s, err, types.SET, "1", t)
 
 	s, err = c.Set("test", "TEST")
 	checkExpect(s, err, types.SET, "OK", t)
@@ -167,4 +162,27 @@ func TestIncr(t *testing.T) {
 
 	s, err = c.Get("test")
 	checkExpect(s, err, types.SET, "2", t)
+}
+
+func TestDecr(t *testing.T) {
+	c := setupAndFlush(t)
+	defer teardown(c, t)
+
+	s, err := c.Decr("test")
+	checkExpect(s, err, types.SET, "-1", t)
+
+	s, err = c.Set("test", "TEST")
+	checkExpect(s, err, types.SET, "OK", t)
+
+	s, err = c.Decr("test")
+	checkError(s, err, types.SET, "value is not an integer or out of range", t)
+
+	s, err = c.Set("test", "1")
+	checkExpect(s, err, types.SET, "OK", t)
+
+	s, err = c.Decr("test")
+	checkExpect(s, err, types.SET, "0", t)
+
+	s, err = c.Get("test")
+	checkExpect(s, err, types.SET, "0", t)
 }

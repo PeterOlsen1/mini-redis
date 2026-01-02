@@ -27,6 +27,7 @@ const (
 	EXPIRE
 	TTL
 	INCR
+	DECR
 	LPUSH
 	RPUSH
 	LPOP
@@ -46,6 +47,7 @@ var commandStrings = [...]string{
 	"EXPIRE",
 	"TTL",
 	"INCR",
+	"DECR",
 	"LPUSH",
 	"RPUSH",
 	"LPOP",

@@ -70,12 +70,36 @@ func Incr(key string) (string, bool) {
 	storeMu.Lock()
 	defer storeMu.Unlock()
 
+	if store[key] == "" {
+		store[key] = "1"
+		return "1", true
+	}
+
 	val, err := strconv.Atoi(store[key])
 	if err != nil {
 		return "0", false
 	}
 
 	newStr := strconv.Itoa(val + 1)
+	store[key] = newStr
+	return newStr, true
+}
+
+func Decr(key string) (string, bool) {
+	storeMu.Lock()
+	defer storeMu.Unlock()
+
+	if store[key] == "" {
+		store[key] = "-1"
+		return "-1", true
+	}
+
+	val, err := strconv.Atoi(store[key])
+	if err != nil {
+		return "0", false
+	}
+
+	newStr := strconv.Itoa(val - 1)
 	store[key] = newStr
 	return newStr, true
 }
