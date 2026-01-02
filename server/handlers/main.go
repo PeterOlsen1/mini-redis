@@ -27,7 +27,7 @@ var commandHandlers = [...]func([]types.RESPItem) (string, error){
 	handleSet,
 	handleGet,
 	handleDel,
-	TODO,
+	handleExists,
 	TODO,
 	TODO,
 	TODO,

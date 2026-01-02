@@ -5,13 +5,25 @@ import (
 	"testing"
 )
 
-func TestInit(t *testing.T) {
+func setup(t *testing.T) *client.RedisClient {
 	c, err := client.NewClient(&client.Options{Addr: "localhost:6379"})
 	if err != nil {
 		t.Errorf("client initialization")
 	}
 
-	defer c.Close()
+	return c
+}
+
+func teardown(c *client.RedisClient, t *testing.T) {
+	err := c.Close()
+	if err != nil {
+		t.Errorf("client close")
+	}
+}
+
+func TestInit(t *testing.T) {
+	c := setup(t)
+	teardown(c, t)
 }
 
 func TestPing(t *testing.T) {
@@ -121,4 +133,45 @@ func TestEmptyGet(t *testing.T) {
 	if s != "" {
 		t.Errorf("get not met with \"\" (%s)", s)
 	}
+}
+
+func TestExists(t *testing.T) {
+	c := setup(t)
+	defer teardown(c, t)
+
+	s, err := c.Set("test", "TEST")
+	if err != nil {
+		t.Errorf("set command (%s)", err)
+	}
+	if s != "OK" {
+		t.Errorf("set not met with OK (%s)", s)
+	}
+
+	s, err = c.Set("test2", "TEST")
+	if err != nil {
+		t.Errorf("set command (%s)", err)
+	}
+	if s != "OK" {
+		t.Errorf("set not met with OK (%s)", s)
+	}
+
+	keys := make([]string, 0)
+	keys = append(keys, "test")
+	s, err = c.Exists(keys)
+	if err != nil {
+		t.Errorf("set command (%s)", err)
+	}
+	if s != "1" {
+		t.Errorf("set not met with 1 (%s)", s)
+	}
+
+	keys = append(keys, "test2")
+	s, err = c.Exists(keys)
+	if err != nil {
+		t.Errorf("set command (%s)", err)
+	}
+	if s != "2" {
+		t.Errorf("set not met with 2 (%s)", s)
+	}
+
 }

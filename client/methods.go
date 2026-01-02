@@ -85,6 +85,18 @@ func (c *RedisClient) Del(key string) (string, error) {
 	)
 }
 
+func (c *RedisClient) Exists(keys []string) (string, error) {
+	req := InitRequest(1+len(keys), "EXISTS")
+	for _, key := range keys {
+		req.AddParam(key)
+	}
+
+	return c.sendAndReceive(
+		req,
+		128,
+	)
+}
+
 func (c *RedisClient) FlushAll() (string, error) {
 	return c.sendAndReceive(
 		InitRequest(1, "FLUSHALL"),
