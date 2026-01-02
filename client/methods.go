@@ -4,8 +4,23 @@ import (
 	"fmt"
 )
 
-func (c *RedisClient) sendAndReceive(data string, bufLen int) (string, error) {
-	_, err := c.conn.Write([]byte(data))
+type RequestBuilder struct {
+	req string
+}
+
+func InitRequest(arrLen int, command string) *RequestBuilder {
+	return &RequestBuilder{
+		req: fmt.Sprintf("*%d\r\n$%d\r\n%s\r\n", arrLen, len(command), command),
+	}
+}
+
+func (r *RequestBuilder) AddParam(param string) *RequestBuilder {
+	r.req += fmt.Sprintf("$%d\r\n%s\r\n", len(param), param)
+	return r
+}
+
+func (c *RedisClient) sendAndReceive(req *RequestBuilder, bufLen int) (string, error) {
+	_, err := c.conn.Write([]byte(req.req))
 	if err != nil {
 		return "", err
 	}
@@ -19,10 +34,42 @@ func (c *RedisClient) sendAndReceive(data string, bufLen int) (string, error) {
 	return string(buf[:n]), nil
 }
 
-func (c *RedisClient) Ping() (string, error) {
-	return c.sendAndReceive("*1\r\n$4\r\nPING\r\n", 128)
+// Ping function. Pass in an empty string for no message
+func (c *RedisClient) Ping(msg string) (string, error) {
+	if msg == "" {
+		return c.sendAndReceive(InitRequest(1, "PING"), 128)
+	}
+
+	return c.sendAndReceive(
+		InitRequest(2, "PING").AddParam(msg),
+		len(msg)+32,
+	)
 }
 
 func (c *RedisClient) Echo(msg string) (string, error) {
-	return c.sendAndReceive(fmt.Sprintf("*1\r\n$%d\r\n%s\r\n", len(msg), msg), len(msg)+24)
+	return c.sendAndReceive(
+		InitRequest(2, "ECHO").AddParam(msg),
+		len(msg)+32,
+	)
+}
+
+func (c *RedisClient) Set(key string, value string) (string, error) {
+	return c.sendAndReceive(
+		InitRequest(3, "SET").AddParam(key).AddParam(value),
+		len(key)+len(value)+32,
+	)
+}
+
+func (c *RedisClient) Get(key string) (string, error) {
+	return c.sendAndReceive(
+		InitRequest(2, "GET").AddParam(key),
+		len(key)+32,
+	)
+}
+
+func (c *RedisClient) Del(key string) (string, error) {
+	return c.sendAndReceive(
+		InitRequest(2, "DEL").AddParam(key),
+		len(key)+32,
+	)
 }
