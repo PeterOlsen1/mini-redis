@@ -4,6 +4,29 @@ import (
 	"strings"
 )
 
+// SEE HERE FOR COMMAND IMPLEMENTATIONS
+// https://redis.io/docs/latest/commands/
+
+type Command int
+
+const (
+	NONE Command = iota
+	PING
+	ECHO
+	SET
+	GET
+	DEL
+	EXISTS
+	EXPIRE
+	TTL
+	INCR
+	LPUSH
+	RPUSH
+	LPOP
+	RPOP
+	INFO
+)
+
 var commandStrings = [...]string{
 	"NONE",
 	"PING",

@@ -109,7 +109,6 @@ func parseArray(conn net.Conn) ([]types.RESPItem, error) {
 		array = append(array, types.RESPItem{
 			Len:     len,
 			Content: line,
-			Command: types.ParseCommand(line),
 		})
 	}
 
@@ -120,12 +119,12 @@ func processArray(conn net.Conn, array []types.RESPItem) error {
 	i := 0
 	for i < len(array) {
 		item := array[i]
-		if item.Command.Valid() {
-			cmd := item.Command
+		cmd := types.ParseCommand(item.Content)
+		if cmd != 0 {
 			args := make([]types.RESPItem, 0)
 
 			i += 1
-			for i < len(array) && !array[i].Command.Valid() {
+			for i < len(array) && !types.ParseCommand(array[i].Content).Valid() {
 				args = append(args, array[i])
 				i += 1
 			}
