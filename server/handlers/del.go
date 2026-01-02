@@ -12,6 +12,6 @@ func handleDel(args []types.RESPItem) (string, error) {
 	}
 
 	key := args[0].Content
-	delete(internal.Redis, key)
+	internal.Del(key)
 	return "OK", nil
 }

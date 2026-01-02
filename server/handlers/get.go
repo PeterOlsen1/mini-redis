@@ -12,5 +12,5 @@ func handleGet(args []types.RESPItem) (string, error) {
 	}
 
 	key := args[0].Content
-	return internal.Redis[key], nil
+	return internal.Get(key), nil
 }

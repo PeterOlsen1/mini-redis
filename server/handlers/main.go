@@ -36,6 +36,7 @@ var commandHandlers = [...]func([]types.RESPItem) (string, error){
 	TODO,
 	TODO,
 	TODO,
+	handleFlushAll,
 }
 
 /*

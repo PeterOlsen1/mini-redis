@@ -14,6 +14,6 @@ func handleSet(args []types.RESPItem) (string, error) {
 	key := args[0].Content
 	value := args[1].Content
 
-	internal.Redis[key] = value
+	internal.Set(key, value)
 	return "OK", nil
 }

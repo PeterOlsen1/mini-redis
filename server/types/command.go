@@ -7,6 +7,13 @@ import (
 // SEE HERE FOR COMMAND IMPLEMENTATIONS
 // https://redis.io/docs/latest/commands/
 
+// To register a new command:
+// * Add it to the enum
+// * Add it to commandStrings
+// * Add handler method
+// * Register handler method in server/handlers/main
+// * Create client method
+
 type Command int
 
 const (
@@ -25,6 +32,7 @@ const (
 	LPOP
 	RPOP
 	INFO
+	FLUSHALL
 )
 
 var commandStrings = [...]string{
@@ -43,6 +51,7 @@ var commandStrings = [...]string{
 	"LPOP",
 	"RPOP",
 	"INFO",
+	"FLUSHALL",
 }
 
 func (c Command) String() string {

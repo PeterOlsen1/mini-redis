@@ -135,7 +135,7 @@ func processArray(conn net.Conn, array []types.RESPItem) error {
 					return writeErr
 				}
 			} else {
-				if _, writeErr := conn.Write([]byte(resp)); writeErr != nil {
+				if _, writeErr := conn.Write([]byte("+" + resp + "\r\n")); writeErr != nil {
 					return writeErr
 				}
 			}
