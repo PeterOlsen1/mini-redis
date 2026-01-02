@@ -1,7 +1,7 @@
 package handlers
 
 import (
-	"mini-redis/server/types"
+	"mini-redis/types"
 )
 
 func handleEcho(args []types.RESPItem) (string, error) {

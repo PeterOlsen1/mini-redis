@@ -2,7 +2,7 @@ package handlers
 
 import (
 	"fmt"
-	"mini-redis/server/types"
+	"mini-redis/types"
 )
 
 func handleNone(args []types.RESPItem) (string, error) {

@@ -7,7 +7,7 @@ import (
 	"io"
 	"log"
 	"mini-redis/server/handlers"
-	"mini-redis/server/types"
+	"mini-redis/types"
 	"net"
 	"strconv"
 	"strings"

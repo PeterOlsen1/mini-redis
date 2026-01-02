@@ -2,7 +2,7 @@ package handlers
 
 import (
 	"mini-redis/server/internal"
-	"mini-redis/server/types"
+	"mini-redis/types"
 )
 
 func handleFlushAll(_ []types.RESPItem) (string, error) {

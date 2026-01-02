@@ -3,7 +3,7 @@ package handlers
 import (
 	"fmt"
 	"mini-redis/server/internal"
-	"mini-redis/server/types"
+	"mini-redis/types"
 )
 
 func handleGet(args []types.RESPItem) (string, error) {

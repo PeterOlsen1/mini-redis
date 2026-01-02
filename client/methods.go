@@ -2,6 +2,7 @@ package client
 
 import (
 	"fmt"
+	"strconv"
 	"strings"
 )
 
@@ -94,6 +95,13 @@ func (c *RedisClient) Exists(keys []string) (string, error) {
 	return c.sendAndReceive(
 		req,
 		128,
+	)
+}
+
+func (c *RedisClient) Expire(key string, seconds int) (string, error) {
+	return c.sendAndReceive(
+		InitRequest(3, "EXPIRE").AddParam(key).AddParam(strconv.Itoa(seconds)),
+		len(key),
 	)
 }
 

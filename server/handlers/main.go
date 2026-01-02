@@ -2,7 +2,7 @@ package handlers
 
 import (
 	"fmt"
-	"mini-redis/server/types"
+	"mini-redis/types"
 )
 
 func TODO(items []types.RESPItem) (string, error) {
@@ -28,7 +28,7 @@ var commandHandlers = [...]func([]types.RESPItem) (string, error){
 	handleGet,
 	handleDel,
 	handleExists,
-	TODO,
+	handleExpire,
 	TODO,
 	TODO,
 	TODO,
