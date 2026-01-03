@@ -1,4 +1,4 @@
-package handlers
+package key
 
 import (
 	"fmt"
@@ -6,7 +6,7 @@ import (
 	"mini-redis/types"
 )
 
-func handleDel(args []types.RESPItem) (string, error) {
+func HandleDel(args []types.RESPItem) (string, error) {
 	if len(args) < 1 {
 		return "", fmt.Errorf("del requires 1 argument")
 	}

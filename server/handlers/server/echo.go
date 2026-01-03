@@ -1,10 +1,10 @@
-package handlers
+package server
 
 import (
 	"mini-redis/types"
 )
 
-func handleEcho(args []types.RESPItem) (string, error) {
+func HandleEcho(args []types.RESPItem) (string, error) {
 	if len(args) == 0 {
 		return "ERROR ERROR!!!!!!", nil
 	} else {

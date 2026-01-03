@@ -5,6 +5,6 @@ import (
 	"mini-redis/types"
 )
 
-func handleNone(args []types.RESPItem) (string, error) {
+func HandleNone(args []types.RESPItem) (string, error) {
 	return "", fmt.Errorf("no command provided")
 }

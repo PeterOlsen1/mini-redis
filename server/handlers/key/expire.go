@@ -1,4 +1,4 @@
-package handlers
+package key
 
 import (
 	"fmt"
@@ -7,7 +7,7 @@ import (
 	"strconv"
 )
 
-func handleExpire(params []types.RESPItem) (string, error) {
+func HandleExpire(params []types.RESPItem) (string, error) {
 	if len(params) < 2 {
 		return "", fmt.Errorf("expire requires 2 parameters")
 	}

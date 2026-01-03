@@ -1,4 +1,4 @@
-package handlers
+package key
 
 import (
 	"fmt"
@@ -7,7 +7,7 @@ import (
 	"strconv"
 )
 
-func handleExists(args []types.RESPItem) (string, error) {
+func HandleExists(args []types.RESPItem) (string, error) {
 	if len(args) < 1 {
 		return "", fmt.Errorf("get requires 1 argument")
 	}

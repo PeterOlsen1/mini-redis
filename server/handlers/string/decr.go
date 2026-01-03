@@ -1,4 +1,4 @@
-package handlers
+package string
 
 import (
 	"fmt"
@@ -6,7 +6,7 @@ import (
 	"mini-redis/types"
 )
 
-func handleDecr(args []types.RESPItem) (string, error) {
+func HandleDecr(args []types.RESPItem) (string, error) {
 	if len(args) < 1 {
 		return "", fmt.Errorf("decr requires 1 argument")
 	}

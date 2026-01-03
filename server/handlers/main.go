@@ -2,6 +2,10 @@ package handlers
 
 import (
 	"fmt"
+	"mini-redis/server/handlers/key"
+	"mini-redis/server/handlers/list"
+	"mini-redis/server/handlers/server"
+	str "mini-redis/server/handlers/string"
 	"mini-redis/types"
 )
 
@@ -21,23 +25,23 @@ func HandleCommand(cmd types.Command, args []types.RESPItem) (string, error) {
 }
 
 var commandHandlers = [...]func([]types.RESPItem) (string, error){
-	handleNone,
-	handlePing,
-	handleEcho,
-	handleSet,
-	handleGet,
-	handleDel,
-	handleExists,
-	handleExpire,
-	handleTTL,
-	handleIncr,
-	handleDecr,
-	handleLPush,
-	handleRPush,
+	HandleNone,
+	server.HandlePing,
+	server.HandleEcho,
+	str.HandleSet,
+	str.HandleGet,
+	key.HandleDel,
+	key.HandleExists,
+	key.HandleExpire,
+	key.HandleTTL,
+	str.HandleIncr,
+	str.HandleDecr,
+	list.HandleLPush,
+	list.HandleRPush,
 	TODO,
 	TODO,
 	TODO,
-	handleFlushAll,
+	key.HandleFlushAll,
 }
 
 /*

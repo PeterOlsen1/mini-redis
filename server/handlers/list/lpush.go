@@ -1,4 +1,4 @@
-package handlers
+package list
 
 import (
 	"fmt"
@@ -7,9 +7,9 @@ import (
 	"strconv"
 )
 
-func handleRPush(args []types.RESPItem) (string, error) {
+func HandleLPush(args []types.RESPItem) (string, error) {
 	if len(args) < 2 {
-		return "", fmt.Errorf("RPUSH requires 2 arguments")
+		return "", fmt.Errorf("LPUSH requires 2 arguments")
 	}
 
 	key := args[0].Content
@@ -18,7 +18,7 @@ func handleRPush(args []types.RESPItem) (string, error) {
 		vals[i] = arg.Content
 	}
 
-	ret := internal.RPush(key, vals)
+	ret := internal.LPush(key, vals)
 	if ret == -1 {
 		return "", fmt.Errorf("Operation against a key holding the wrong kind of value")
 	}

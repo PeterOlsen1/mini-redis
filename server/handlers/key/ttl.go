@@ -1,4 +1,4 @@
-package handlers
+package key
 
 import (
 	"fmt"
@@ -7,7 +7,7 @@ import (
 	"strconv"
 )
 
-func handleTTL(params []types.RESPItem) (string, error) {
+func HandleTTL(params []types.RESPItem) (string, error) {
 	if len(params) < 1 {
 		return "", fmt.Errorf("TTL requires 1 parameter")
 	}
