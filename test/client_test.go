@@ -92,13 +92,10 @@ func TestExists(t *testing.T) {
 	s, err = c.Set("test2", "TEST")
 	checkExpect(s, err, types.SET, "OK", t)
 
-	keys := make([]string, 0)
-	keys = append(keys, "test")
-	s, err = c.Exists(keys)
+	s, err = c.Exists("test")
 	checkExpect(s, err, types.EXISTS, "1", t)
 
-	keys = append(keys, "test2")
-	s, err = c.Exists(keys)
+	s, err = c.Exists("test", "test2")
 	checkExpect(s, err, types.EXISTS, "2", t)
 }
 
@@ -146,22 +143,22 @@ func TestIncr(t *testing.T) {
 	defer teardown(c, t)
 
 	s, err := c.Incr("test")
-	checkExpect(s, err, types.SET, "1", t)
+	checkExpect(s, err, types.INCR, "1", t)
 
 	s, err = c.Set("test", "TEST")
 	checkExpect(s, err, types.SET, "OK", t)
 
 	s, err = c.Incr("test")
-	checkError(s, err, types.SET, "value is not an integer or out of range", t)
+	checkError(s, err, types.INCR, "value is not an integer or out of range", t)
 
 	s, err = c.Set("test", "1")
 	checkExpect(s, err, types.SET, "OK", t)
 
 	s, err = c.Incr("test")
-	checkExpect(s, err, types.SET, "2", t)
+	checkExpect(s, err, types.INCR, "2", t)
 
 	s, err = c.Get("test")
-	checkExpect(s, err, types.SET, "2", t)
+	checkExpect(s, err, types.GET, "2", t)
 }
 
 func TestDecr(t *testing.T) {
@@ -169,20 +166,40 @@ func TestDecr(t *testing.T) {
 	defer teardown(c, t)
 
 	s, err := c.Decr("test")
-	checkExpect(s, err, types.SET, "-1", t)
+	checkExpect(s, err, types.DECR, "-1", t)
 
 	s, err = c.Set("test", "TEST")
 	checkExpect(s, err, types.SET, "OK", t)
 
 	s, err = c.Decr("test")
-	checkError(s, err, types.SET, "value is not an integer or out of range", t)
+	checkError(s, err, types.DECR, "value is not an integer or out of range", t)
 
 	s, err = c.Set("test", "1")
 	checkExpect(s, err, types.SET, "OK", t)
 
 	s, err = c.Decr("test")
-	checkExpect(s, err, types.SET, "0", t)
+	checkExpect(s, err, types.DECR, "0", t)
 
 	s, err = c.Get("test")
-	checkExpect(s, err, types.SET, "0", t)
+	checkExpect(s, err, types.GET, "0", t)
+}
+
+func TestLPush(t *testing.T) {
+	c := setupAndFlush(t)
+	defer teardown(c, t)
+
+	s, err := c.Set("test", "TEST")
+	checkExpect(s, err, types.SET, "OK", t)
+
+	s, err = c.LPush("test", "test")
+	checkError(s, err, types.LPUSH, "Operation against a key holding the wrong kind of value", t)
+
+	s, err = c.LPush("test2", "test")
+	checkExpect(s, err, types.LPUSH, "1", t)
+
+	s, err = c.LPush("test2", "test")
+	checkExpect(s, err, types.LPUSH, "2", t)
+
+	s, err = c.Get("test2")
+	checkError(s, err, types.GET, "Operation against a key holding the wrong kind of value", t)
 }

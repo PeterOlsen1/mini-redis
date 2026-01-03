@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"mini-redis/server/internal"
 	"mini-redis/types"
+	"strconv"
 )
 
 func handleLPush(args []types.RESPItem) (string, error) {
@@ -12,10 +13,15 @@ func handleLPush(args []types.RESPItem) (string, error) {
 	}
 
 	key := args[0].Content
-	newVal, ok := internal.Incr(key)
-	if !ok {
-		return "", fmt.Errorf("value is not an integer or out of range")
+	vals := make([]string, len(args)-1)
+	for i, arg := range args[1:] {
+		vals[i] = arg.Content
 	}
 
-	return newVal, nil
+	ret := internal.LPush(key, vals)
+	if ret == -1 {
+		return "", fmt.Errorf("Operation against a key holding the wrong kind of value")
+	}
+
+	return strconv.Itoa(ret), nil
 }
