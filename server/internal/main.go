@@ -1,6 +1,7 @@
 package internal
 
 import (
+	"fmt"
 	"mini-redis/types"
 	"strconv"
 	"sync"
@@ -160,4 +161,58 @@ func RPush(key string, values []string) int {
 	// append RIGHT
 	items = append(items, values...)
 	return len(items)
+}
+
+func LPop(key string, num int) ([]string, error) {
+	storeMu.Lock()
+	defer storeMu.Unlock()
+
+	val := store[key]
+	if val == nil {
+		return nil, nil
+	}
+	if val.Type != types.ARRAY {
+		return nil, fmt.Errorf("Operation against a key holding the wrong kind of value")
+	}
+
+	arr := val.Array()
+	if num <= 0 {
+		return []string{}, nil
+	}
+	if num >= len(arr) {
+		delete(store, key)
+		return arr, nil
+	}
+
+	ret := arr[:num]
+	val.Item = arr[num:]
+
+	return ret, nil
+}
+
+func RPop(key string, num int) ([]string, error) {
+	storeMu.Lock()
+	defer storeMu.Unlock()
+
+	val := store[key]
+	if val == nil {
+		return nil, nil
+	}
+	if val.Type != types.ARRAY {
+		return nil, fmt.Errorf("Operation against a key holding the wrong kind of value")
+	}
+
+	arr := val.Array()
+	if num <= 0 {
+		return []string{}, nil
+	}
+	if num >= len(arr) {
+		delete(store, key)
+		return arr, nil
+	}
+
+	ret := arr[num:]
+	val.Item = arr[:num]
+
+	return ret, nil
 }

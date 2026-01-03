@@ -10,6 +10,13 @@ type StoreItem struct {
 	Item any
 }
 
+func (i *StoreItem) Array() []string {
+	return i.Item.([]string)
+}
+func (i *StoreItem) String() string {
+	return i.Item.(string)
+}
+
 type StoreType int
 
 const (
