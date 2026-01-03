@@ -33,7 +33,7 @@ var commandHandlers = [...]func([]types.RESPItem) (string, error){
 	handleIncr,
 	handleDecr,
 	handleLPush,
-	TODO,
+	handleRPush,
 	TODO,
 	TODO,
 	TODO,

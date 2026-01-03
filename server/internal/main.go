@@ -136,6 +136,28 @@ func LPush(key string, values []string) int {
 		return -1
 	}
 
+	// append LEFT
+	items = append(values, items...)
+	return len(items)
+}
+
+func RPush(key string, values []string) int {
+	storeMu.Lock()
+	defer storeMu.Unlock()
+
+	if store[key] == nil {
+		new := newItem(values, types.ARRAY)
+		store[key] = new
+
+		return len(values)
+	}
+
+	items, ok := store[key].Item.([]string)
+	if !ok {
+		return -1
+	}
+
+	// append RIGHT
 	items = append(items, values...)
 	return len(items)
 }

@@ -10,3 +10,14 @@ func (c *RedisClient) LPush(key string, values ...string) (string, error) {
 		req,
 	)
 }
+
+func (c *RedisClient) RPush(key string, values ...string) (string, error) {
+	req := InitRequest(2+len(values), "RPUSH").AddParam(key)
+	for _, value := range values {
+		req.AddParam(value)
+	}
+
+	return c.sendAndReceive(
+		req,
+	)
+}
