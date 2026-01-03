@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"mini-redis/server/internal"
 	"mini-redis/types"
+	"strconv"
 )
 
 func handleGet(args []types.RESPItem) (string, error) {
@@ -12,5 +13,18 @@ func handleGet(args []types.RESPItem) (string, error) {
 	}
 
 	key := args[0].Content
-	return internal.Get(key), nil
+	val := internal.Get(key)
+	if val == nil {
+		return "", nil
+	}
+
+	if val.Type == types.STRING {
+		return val.Item.(string), nil
+	}
+
+	if val.Type == types.INT {
+		return strconv.Itoa(val.Item.(int)), nil
+	}
+
+	return "", fmt.Errorf("Operation against a key holding the wrong kind of value")
 }

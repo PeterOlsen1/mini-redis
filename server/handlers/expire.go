@@ -18,7 +18,7 @@ func handleExpire(params []types.RESPItem) (string, error) {
 		return "", fmt.Errorf("failed to parse TTL")
 	}
 
-	if internal.Get(key) == "" {
+	if internal.Get(key) == nil {
 		return "0", nil
 	}
 

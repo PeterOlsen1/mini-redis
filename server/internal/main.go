@@ -1,28 +1,36 @@
 package internal
 
 import (
+	"mini-redis/types"
 	"strconv"
 	"sync"
 )
 
-var store = make(map[string]string)
+var store = make(map[string]*types.StoreItem)
 var storeMu sync.RWMutex
 
-func Set(key string, value string) {
+func newItem(value any, storeType types.StoreType) *types.StoreItem {
+	return &types.StoreItem{
+		Item: value,
+		Type: storeType,
+	}
+}
+
+func Set(key string, value any, storeType types.StoreType) {
 	storeMu.Lock()
 	defer storeMu.Unlock()
 
-	store[key] = value
+	store[key] = newItem(value, storeType)
 	DelTTL(key)
 }
 
-func Get(key string) string {
+func Get(key string) *types.StoreItem {
 	ttl := GetTTL(key)
 	if ttl == -2 {
 		// key has TTL and it has expired
 		// deletion of the TTL entry is handled by GetTTL
 		Del(key)
-		return ""
+		return nil
 	}
 
 	storeMu.RLock()
@@ -31,8 +39,8 @@ func Get(key string) string {
 	return store[key]
 }
 
-func GetMany(keys []string) []string {
-	out := make([]string, len(keys))
+func GetMany(keys []string) []any {
+	out := make([]any, len(keys))
 	storeMu.RLock()
 	defer storeMu.RUnlock()
 
@@ -43,7 +51,7 @@ func GetMany(keys []string) []string {
 			delete(store, key)
 			out[i] = ""
 		} else {
-			out[i] = store[key]
+			out[i] = store[key].Item
 		}
 	}
 
@@ -63,43 +71,41 @@ func FlushAll() {
 	storeMu.Lock()
 	defer storeMu.Unlock()
 
-	store = make(map[string]string)
+	store = make(map[string]*types.StoreItem)
 }
 
 func Incr(key string) (string, bool) {
 	storeMu.Lock()
 	defer storeMu.Unlock()
 
-	if store[key] == "" {
-		store[key] = "1"
+	if store[key] == nil {
+		store[key] = newItem(1, types.INT)
 		return "1", true
 	}
 
-	val, err := strconv.Atoi(store[key])
-	if err != nil {
+	if store[key].Type != types.INT {
 		return "0", false
 	}
 
-	newStr := strconv.Itoa(val + 1)
-	store[key] = newStr
-	return newStr, true
+	oldVal := store[key].Item.(int)
+	store[key].Item = oldVal + 1
+	return strconv.Itoa(oldVal + 1), true
 }
 
 func Decr(key string) (string, bool) {
 	storeMu.Lock()
 	defer storeMu.Unlock()
 
-	if store[key] == "" {
-		store[key] = "-1"
+	if store[key] == nil {
+		store[key] = newItem(-1, types.INT)
 		return "-1", true
 	}
 
-	val, err := strconv.Atoi(store[key])
-	if err != nil {
+	if store[key].Type != types.INT {
 		return "0", false
 	}
 
-	newStr := strconv.Itoa(val - 1)
-	store[key] = newStr
-	return newStr, true
+	oldVal := store[key].Item.(int)
+	store[key].Item = oldVal - 1
+	return strconv.Itoa(oldVal - 1), true
 }

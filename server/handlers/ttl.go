@@ -14,7 +14,7 @@ func handleTTL(params []types.RESPItem) (string, error) {
 
 	// return -2 on non-existent key
 	key := params[0].Content
-	if internal.Get(key) == "" {
+	if internal.Get(key) == nil {
 		return "-2", nil
 	}
 
