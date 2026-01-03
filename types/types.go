@@ -13,7 +13,6 @@ type StoreItem struct {
 type StoreType int
 
 const (
-	INT StoreType = iota
-	STRING
+	STRING StoreType = iota
 	ARRAY
 )

@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"mini-redis/server/internal"
 	"mini-redis/types"
-	"strconv"
 )
 
 func handleSet(args []types.RESPItem) (string, error) {
@@ -15,13 +14,6 @@ func handleSet(args []types.RESPItem) (string, error) {
 	key := args[0].Content
 	value := args[1].Content
 
-	// check if int or string
-	num, err := strconv.Atoi(value)
-	if err != nil {
-		internal.Set(key, value, types.STRING)
-	} else {
-		internal.Set(key, num, types.INT)
-	}
-
+	internal.Set(key, value)
 	return "OK", nil
 }

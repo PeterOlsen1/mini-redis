@@ -16,11 +16,11 @@ func newItem(value any, storeType types.StoreType) *types.StoreItem {
 	}
 }
 
-func Set(key string, value any, storeType types.StoreType) {
+func Set(key string, value any) {
 	storeMu.Lock()
 	defer storeMu.Unlock()
 
-	store[key] = newItem(value, storeType)
+	store[key] = newItem(value, types.STRING)
 	DelTTL(key)
 }
 
@@ -79,17 +79,22 @@ func Incr(key string) (string, bool) {
 	defer storeMu.Unlock()
 
 	if store[key] == nil {
-		store[key] = newItem(1, types.INT)
+		store[key] = newItem("1", types.STRING)
 		return "1", true
 	}
 
-	if store[key].Type != types.INT {
+	if store[key].Type != types.STRING {
 		return "0", false
 	}
 
-	oldVal := store[key].Item.(int)
-	store[key].Item = oldVal + 1
-	return strconv.Itoa(oldVal + 1), true
+	oldVal, err := strconv.Atoi(store[key].Item.(string))
+	if err != nil {
+		return "0", false
+	}
+
+	newVal := strconv.Itoa(oldVal + 1)
+	store[key].Item = newVal
+	return newVal, true
 }
 
 func Decr(key string) (string, bool) {
@@ -97,15 +102,20 @@ func Decr(key string) (string, bool) {
 	defer storeMu.Unlock()
 
 	if store[key] == nil {
-		store[key] = newItem(-1, types.INT)
+		store[key] = newItem("-1", types.STRING)
 		return "-1", true
 	}
 
-	if store[key].Type != types.INT {
+	if store[key].Type != types.STRING {
 		return "0", false
 	}
 
-	oldVal := store[key].Item.(int)
-	store[key].Item = oldVal - 1
-	return strconv.Itoa(oldVal - 1), true
+	oldVal, err := strconv.Atoi(store[key].Item.(string))
+	if err != nil {
+		return "0", false
+	}
+
+	newVal := strconv.Itoa(oldVal - 1)
+	store[key].Item = newVal
+	return newVal, true
 }
