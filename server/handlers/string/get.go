@@ -2,11 +2,12 @@ package string
 
 import (
 	"fmt"
+	"mini-redis/resp"
 	"mini-redis/server/internal"
 	"mini-redis/types"
 )
 
-func HandleGet(args []types.RESPItem) (string, error) {
+func HandleGet(args []resp.RESPItem) (string, error) {
 	if len(args) < 1 {
 		return "", fmt.Errorf("get requires 1 argument")
 	}

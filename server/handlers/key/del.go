@@ -2,11 +2,11 @@ package key
 
 import (
 	"fmt"
+	"mini-redis/resp"
 	"mini-redis/server/internal"
-	"mini-redis/types"
 )
 
-func HandleDel(args []types.RESPItem) (string, error) {
+func HandleDel(args []resp.RESPItem) (string, error) {
 	if len(args) < 1 {
 		return "", fmt.Errorf("del requires 1 argument")
 	}

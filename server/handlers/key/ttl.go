@@ -2,12 +2,12 @@ package key
 
 import (
 	"fmt"
+	"mini-redis/resp"
 	"mini-redis/server/internal"
-	"mini-redis/types"
 	"strconv"
 )
 
-func HandleTTL(params []types.RESPItem) (string, error) {
+func HandleTTL(params []resp.RESPItem) (string, error) {
 	if len(params) < 1 {
 		return "", fmt.Errorf("TTL requires 1 parameter")
 	}

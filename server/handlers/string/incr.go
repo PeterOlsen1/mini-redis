@@ -2,11 +2,11 @@ package string
 
 import (
 	"fmt"
+	"mini-redis/resp"
 	"mini-redis/server/internal"
-	"mini-redis/types"
 )
 
-func HandleIncr(args []types.RESPItem) (string, error) {
+func HandleIncr(args []resp.RESPItem) (string, error) {
 	if len(args) < 1 {
 		return "", fmt.Errorf("incr requires 1 argument")
 	}

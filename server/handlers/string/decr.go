@@ -2,11 +2,11 @@ package string
 
 import (
 	"fmt"
+	"mini-redis/resp"
 	"mini-redis/server/internal"
-	"mini-redis/types"
 )
 
-func HandleDecr(args []types.RESPItem) (string, error) {
+func HandleDecr(args []resp.RESPItem) (string, error) {
 	if len(args) < 1 {
 		return "", fmt.Errorf("decr requires 1 argument")
 	}

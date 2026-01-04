@@ -2,13 +2,13 @@ package list
 
 import (
 	"fmt"
+	"mini-redis/resp"
 	"mini-redis/server/internal"
-	"mini-redis/types"
 	"strconv"
 	"strings"
 )
 
-func HandleRPop(args []types.RESPItem) (string, error) {
+func HandleRPop(args []resp.RESPItem) (string, error) {
 	if len(args) < 1 {
 		return "", fmt.Errorf("LPOP requires 1 arguments")
 	}

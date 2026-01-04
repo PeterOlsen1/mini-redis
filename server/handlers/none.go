@@ -2,9 +2,9 @@ package handlers
 
 import (
 	"fmt"
-	"mini-redis/types"
+	"mini-redis/resp"
 )
 
-func HandleNone(args []types.RESPItem) (string, error) {
+func HandleNone(args []resp.RESPItem) (string, error) {
 	return "", fmt.Errorf("no command provided")
 }

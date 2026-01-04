@@ -2,12 +2,12 @@ package key
 
 import (
 	"fmt"
+	"mini-redis/resp"
 	"mini-redis/server/internal"
-	"mini-redis/types"
 	"strconv"
 )
 
-func HandleExists(args []types.RESPItem) (string, error) {
+func HandleExists(args []resp.RESPItem) (string, error) {
 	if len(args) < 1 {
 		return "", fmt.Errorf("get requires 1 argument")
 	}

@@ -2,12 +2,12 @@ package list
 
 import (
 	"fmt"
+	"mini-redis/resp"
 	"mini-redis/server/internal"
-	"mini-redis/types"
 	"strconv"
 )
 
-func HandleRPush(args []types.RESPItem) (string, error) {
+func HandleRPush(args []resp.RESPItem) (string, error) {
 	if len(args) < 2 {
 		return "", fmt.Errorf("RPUSH requires 2 arguments")
 	}

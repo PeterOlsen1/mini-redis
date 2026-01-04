@@ -1,10 +1,8 @@
 package server
 
-import (
-	"mini-redis/types"
-)
+import "mini-redis/resp"
 
-func HandlePing(args []types.RESPItem) (string, error) {
+func HandlePing(args []resp.RESPItem) (string, error) {
 	if len(args) == 0 {
 		return "PONG", nil
 	}

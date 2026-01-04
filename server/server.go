@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"io"
 	"log"
+	"mini-redis/resp"
 	"mini-redis/server/handlers"
 	"mini-redis/types"
 	"net"
@@ -71,7 +72,7 @@ func handleConnection(conn net.Conn) error {
 	}
 }
 
-func parseArray(conn net.Conn) ([]types.RESPItem, error) {
+func parseArray(conn net.Conn) ([]resp.RESPItem, error) {
 	reader := bufio.NewReader(conn)
 	header, err := reader.ReadString('\n')
 	if err != nil {
@@ -85,7 +86,7 @@ func parseArray(conn net.Conn) ([]types.RESPItem, error) {
 		return nil, err
 	}
 
-	array := make([]types.RESPItem, 0, arrayLen)
+	array := make([]resp.RESPItem, 0, arrayLen)
 
 	for range arrayLen {
 		line, err := reader.ReadString('\n')
@@ -106,7 +107,7 @@ func parseArray(conn net.Conn) ([]types.RESPItem, error) {
 		}
 
 		line = strings.TrimSuffix(line, "\r\n")
-		array = append(array, types.RESPItem{
+		array = append(array, resp.RESPItem{
 			Len:     len,
 			Content: line,
 		})
@@ -115,13 +116,13 @@ func parseArray(conn net.Conn) ([]types.RESPItem, error) {
 	return array, nil
 }
 
-func processArray(conn net.Conn, array []types.RESPItem) error {
+func processArray(conn net.Conn, array []resp.RESPItem) error {
 	i := 0
 	for i < len(array) {
 		item := array[i]
 		cmd := types.ParseCommand(item.Content)
 		if cmd != 0 {
-			args := make([]types.RESPItem, 0)
+			args := make([]resp.RESPItem, 0)
 
 			i += 1
 			for i < len(array) && !types.ParseCommand(array[i].Content).Valid() {

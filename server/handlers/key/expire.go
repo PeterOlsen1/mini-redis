@@ -2,12 +2,12 @@ package key
 
 import (
 	"fmt"
+	"mini-redis/resp"
 	"mini-redis/server/internal"
-	"mini-redis/types"
 	"strconv"
 )
 
-func HandleExpire(params []types.RESPItem) (string, error) {
+func HandleExpire(params []resp.RESPItem) (string, error) {
 	if len(params) < 2 {
 		return "", fmt.Errorf("expire requires 2 parameters")
 	}

@@ -2,6 +2,7 @@ package handlers
 
 import (
 	"fmt"
+	"mini-redis/resp"
 	"mini-redis/server/handlers/key"
 	"mini-redis/server/handlers/list"
 	"mini-redis/server/handlers/server"
@@ -9,12 +10,12 @@ import (
 	"mini-redis/types"
 )
 
-func TODO(items []types.RESPItem) (string, error) {
+func TODO(items []resp.RESPItem) (string, error) {
 	fmt.Printf("Command handler not yet implemented!")
 	return "NOT IMPLEMENTED!!!!", nil
 }
 
-func HandleCommand(cmd types.Command, args []types.RESPItem) (string, error) {
+func HandleCommand(cmd types.Command, args []resp.RESPItem) (string, error) {
 	if !cmd.Valid() {
 		return "", fmt.Errorf("invalid command passed to handle command")
 	}
@@ -24,7 +25,7 @@ func HandleCommand(cmd types.Command, args []types.RESPItem) (string, error) {
 	return commandHandlers[cmd](args)
 }
 
-var commandHandlers = [...]func([]types.RESPItem) (string, error){
+var commandHandlers = [...]func([]resp.RESPItem) (string, error){
 	HandleNone,
 	server.HandlePing,
 	server.HandleEcho,
