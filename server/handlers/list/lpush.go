@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"mini-redis/resp"
 	"mini-redis/server/internal"
+	"mini-redis/types/errors"
 	"strconv"
 )
 
@@ -20,7 +21,7 @@ func HandleLPush(args []resp.RESPItem) (string, error) {
 
 	ret := internal.LPush(key, vals)
 	if ret == -1 {
-		return "", fmt.Errorf("Operation against a key holding the wrong kind of value")
+		return "", fmt.Errorf(errors.WRONGTYPE)
 	}
 
 	return strconv.Itoa(ret), nil

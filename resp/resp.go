@@ -52,7 +52,7 @@ func Decode(data []byte) (any, RespType, error) {
 		middleData := strings.TrimSuffix(strData[1:], "\r\n")
 		return middleData, STRING, nil
 	case '-':
-		middleData := strings.TrimSuffix(strData[1:], "\r\n")
+		middleData := strings.TrimPrefix(strings.TrimSuffix(strData[1:], "\r\n"), "ERR ")
 		return middleData, ERR, nil
 	case '_':
 		return nil, NULL, nil

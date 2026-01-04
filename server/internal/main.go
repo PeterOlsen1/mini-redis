@@ -3,6 +3,7 @@ package internal
 import (
 	"fmt"
 	"mini-redis/types"
+	"mini-redis/types/errors"
 	"strconv"
 	"sync"
 )
@@ -172,7 +173,7 @@ func LPop(key string, num int) ([]string, error) {
 		return nil, nil
 	}
 	if val.Type != types.ARRAY {
-		return nil, fmt.Errorf("Operation against a key holding the wrong kind of value")
+		return nil, fmt.Errorf(errors.WRONGTYPE)
 	}
 
 	arr := val.Array()
@@ -199,7 +200,7 @@ func RPop(key string, num int) ([]string, error) {
 		return nil, nil
 	}
 	if val.Type != types.ARRAY {
-		return nil, fmt.Errorf("Operation against a key holding the wrong kind of value")
+		return nil, fmt.Errorf(errors.WRONGTYPE)
 	}
 
 	arr := val.Array()

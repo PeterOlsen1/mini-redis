@@ -5,6 +5,7 @@ import (
 	"mini-redis/resp"
 	"mini-redis/server/internal"
 	"mini-redis/types"
+	"mini-redis/types/errors"
 )
 
 func HandleGet(args []resp.RESPItem) (string, error) {
@@ -22,5 +23,5 @@ func HandleGet(args []resp.RESPItem) (string, error) {
 		return val.Item.(string), nil
 	}
 
-	return "", fmt.Errorf("Operation against a key holding the wrong kind of value")
+	return "", fmt.Errorf(errors.WRONGTYPE)
 }

@@ -28,3 +28,7 @@ func (r *RequestBuilder) AddParam(param string) *RequestBuilder {
 	r.req += fmt.Sprintf("$%d\r\n%s\r\n", len(param), param)
 	return r
 }
+
+func (r *RequestBuilder) ToBytes() []byte {
+	return []byte(r.req)
+}

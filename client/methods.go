@@ -1,37 +1,8 @@
 package client
 
 import (
-	"fmt"
 	"strconv"
-	"strings"
 )
-
-const RESP_BUF_LEN = 256
-
-func (c *RedisClient) sendAndReceive(req *RequestBuilder) (string, error) {
-	_, err := c.conn.Write([]byte(req.req))
-	if err != nil {
-		return "", err
-	}
-
-	buf := make([]byte, RESP_BUF_LEN)
-	n, err := c.conn.Read(buf)
-	if err != nil {
-		return "", err
-	}
-
-	// TODO: only implements basic string / error data type reponses. do we need more?
-	ret := string(buf[:n])
-	if ret[0] == '+' {
-		ret = strings.TrimPrefix(ret, "+")
-		ret = strings.TrimSuffix(ret, "\r\n")
-		return ret, nil
-	}
-
-	ret = strings.TrimPrefix(ret, "-ERR ")
-	ret = strings.TrimSuffix(ret, "\r\n")
-	return "", fmt.Errorf("%s", ret)
-}
 
 // Ping function. Pass in an empty string for no message
 func (c *RedisClient) Ping(msg string) (string, error) {
@@ -91,14 +62,14 @@ func (c *RedisClient) TTL(key string) (string, error) {
 	)
 }
 
-func (c *RedisClient) Incr(key string) (string, error) {
-	return c.sendAndReceive(
+func (c *RedisClient) Incr(key string) (int, error) {
+	return c.sendAndReceiveInt(
 		InitRequest(2, "INCR").AddParam(key),
 	)
 }
 
-func (c *RedisClient) Decr(key string) (string, error) {
-	return c.sendAndReceive(
+func (c *RedisClient) Decr(key string) (int, error) {
+	return c.sendAndReceiveInt(
 		InitRequest(2, "DECR").AddParam(key),
 	)
 }

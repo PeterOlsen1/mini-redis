@@ -33,7 +33,7 @@ func TestRESP_SerializeAndDecode(t *testing.T) {
 			value:     "ERR something failed",
 			valueType: resp.ERR,
 			encoded:   []byte("-ERR something failed\r\n"),
-			decoded:   "ERR something failed",
+			decoded:   "something failed",
 			decType:   resp.ERR,
 		},
 		{

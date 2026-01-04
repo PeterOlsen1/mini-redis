@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"mini-redis/resp"
 	"mini-redis/server/internal"
+	"mini-redis/types/errors"
 )
 
 func HandleIncr(args []resp.RESPItem) (string, error) {
@@ -14,7 +15,7 @@ func HandleIncr(args []resp.RESPItem) (string, error) {
 	key := args[0].Content
 	newVal, ok := internal.Incr(key)
 	if !ok {
-		return "", fmt.Errorf("value is not an integer or out of range")
+		return "", fmt.Errorf(errors.NOT_INTEGER)
 	}
 
 	return newVal, nil

@@ -3,6 +3,7 @@ package miniredis_test
 import (
 	"mini-redis/client"
 	"mini-redis/types"
+	"mini-redis/types/errors"
 	"testing"
 	"time"
 )
@@ -142,20 +143,20 @@ func TestIncr(t *testing.T) {
 	c := setupAndFlush(t)
 	defer teardown(c, t)
 
-	s, err := c.Incr("test")
-	checkExpect(s, err, types.INCR, "1", t)
+	i, err := c.Incr("test")
+	checkExpect(i, err, types.INCR, 1, t)
 
-	s, err = c.Set("test", "TEST")
+	s, err := c.Set("test", "TEST")
 	checkExpect(s, err, types.SET, "OK", t)
 
-	s, err = c.Incr("test")
-	checkError(s, err, types.INCR, "value is not an integer or out of range", t)
+	i, err = c.Incr("test")
+	checkError(i, err, types.INCR, errors.NOT_INTEGER, t)
 
 	s, err = c.Set("test", "1")
 	checkExpect(s, err, types.SET, "OK", t)
 
-	s, err = c.Incr("test")
-	checkExpect(s, err, types.INCR, "2", t)
+	i, err = c.Incr("test")
+	checkExpect(i, err, types.INCR, 2, t)
 
 	s, err = c.Get("test")
 	checkExpect(s, err, types.GET, "2", t)
@@ -165,20 +166,20 @@ func TestDecr(t *testing.T) {
 	c := setupAndFlush(t)
 	defer teardown(c, t)
 
-	s, err := c.Decr("test")
-	checkExpect(s, err, types.DECR, "-1", t)
+	i, err := c.Decr("test")
+	checkExpect(i, err, types.DECR, -1, t)
 
-	s, err = c.Set("test", "TEST")
+	s, err := c.Set("test", "TEST")
 	checkExpect(s, err, types.SET, "OK", t)
 
-	s, err = c.Decr("test")
-	checkError(s, err, types.DECR, "value is not an integer or out of range", t)
+	i, err = c.Decr("test")
+	checkError(i, err, types.DECR, errors.NOT_INTEGER, t)
 
 	s, err = c.Set("test", "1")
 	checkExpect(s, err, types.SET, "OK", t)
 
-	s, err = c.Decr("test")
-	checkExpect(s, err, types.DECR, "0", t)
+	i, err = c.Decr("test")
+	checkExpect(i, err, types.DECR, 0, t)
 
 	s, err = c.Get("test")
 	checkExpect(s, err, types.GET, "0", t)
