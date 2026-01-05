@@ -1,9 +1,7 @@
 package client
 
-import "strconv"
-
 func (c *RedisClient) LPush(key string, values ...string) (int, error) {
-	req := InitRequest(2+len(values), "LPUSH").AddParam(key)
+	req := InitRequest("LPUSH").AddParam(key)
 	for _, value := range values {
 		req.AddParam(value)
 	}
@@ -14,7 +12,7 @@ func (c *RedisClient) LPush(key string, values ...string) (int, error) {
 }
 
 func (c *RedisClient) RPush(key string, values ...string) (int, error) {
-	req := InitRequest(2+len(values), "RPUSH").AddParam(key)
+	req := InitRequest("RPUSH").AddParam(key)
 	for _, value := range values {
 		req.AddParam(value)
 	}
@@ -26,12 +24,18 @@ func (c *RedisClient) RPush(key string, values ...string) (int, error) {
 
 func (c *RedisClient) LPop(key string) ([]string, error) {
 	return c.sendAndReceiveList(
-		InitRequest(2, "LPOP").AddParam(key),
+		InitRequest("LPOP").AddParam(key),
 	)
 }
 
 func (c *RedisClient) LPopMany(key string, num int) ([]string, error) {
 	return c.sendAndReceiveList(
-		InitRequest(3, "LPOP").AddParam(key).AddParam(strconv.Itoa(num)),
+		InitRequest("LPOP").AddParam(key).AddParamInt(num),
+	)
+}
+
+func (c *RedisClient) LRange(key string, start int, end int) ([]string, error) {
+	return c.sendAndReceiveList(
+		InitRequest("LRANGE").AddParam(key).AddParamInt(start).AddParamInt(end),
 	)
 }

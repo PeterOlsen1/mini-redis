@@ -6,6 +6,34 @@ import (
 	"strconv"
 )
 
+func InitRequest(command string) *RequestBuilder {
+	return &RequestBuilder{
+		req: fmt.Sprintf("\r\n$%d\r\n%s\r\n", len(command), command),
+		len: 1,
+	}
+}
+
+func (r *RequestBuilder) AddParam(param string) *RequestBuilder {
+	r.req += fmt.Sprintf("$%d\r\n%s\r\n", len(param), param)
+	r.len += 1
+	return r
+}
+
+func (r *RequestBuilder) AddParamInt(param int) *RequestBuilder {
+	pString := strconv.Itoa(param)
+	r.req += fmt.Sprintf("$%d\r\n%s\r\n", len(pString), pString)
+	r.len += 1
+	return r
+}
+
+func (r *RequestBuilder) ToBytes() []byte {
+	return []byte(r.ToString())
+}
+
+func (r *RequestBuilder) ToString() string {
+	return fmt.Sprintf("*%d%s", r.len, r.req)
+}
+
 const RESP_BUF_LEN = 256
 
 func (c *RedisClient) makeRequest(req *RequestBuilder) (any, resp.RespType, error) {
