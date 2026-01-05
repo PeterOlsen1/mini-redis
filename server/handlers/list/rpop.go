@@ -5,7 +5,6 @@ import (
 	"mini-redis/resp"
 	"mini-redis/server/internal"
 	"strconv"
-	"strings"
 )
 
 func HandleRPop(args []resp.RESPItem) (string, error) {
@@ -36,6 +35,10 @@ func HandleRPop(args []resp.RESPItem) (string, error) {
 		return "", err
 	}
 
-	// make this more complex later
-	return strings.Join(res, ","), nil
+	serialized, err := resp.Serialize(res, resp.ARRAY)
+	if err != nil {
+		return "", err
+	}
+
+	return string(serialized), nil
 }

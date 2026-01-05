@@ -35,12 +35,28 @@ func teardown(c *client.RedisClient, t *testing.T) {
 	}
 }
 
-func checkExpect(resp any, err error, cmd types.Command, expect any, t *testing.T) {
+func checkExpect[T comparable](resp T, err error, cmd types.Command, expect T, t *testing.T) {
 	if err != nil {
 		t.Errorf("%s command (%s)", cmd.String(), err)
 	}
 	if resp != expect {
-		t.Errorf("%s not met with %s (%s)", cmd.String(), expect, resp)
+		t.Errorf("%s not met with %v (%v)", cmd.String(), expect, resp)
+	}
+}
+
+func checkExpectArray[T comparable](resp []T, err error, cmd types.Command, expect []T, t *testing.T) {
+	if err != nil {
+		t.Errorf("%s command (%s)", cmd.String(), err)
+	}
+
+	if len(resp) != len(expect) {
+		t.Errorf("%s slice lengths do not match! %d, %d", cmd.String(), len(resp), len(expect))
+	}
+
+	for i := range len(resp) {
+		if resp[i] != expect[i] {
+			t.Errorf("%s index %d not met with %v (%v)", cmd.String(), i, expect[i], resp[i])
+		}
 	}
 }
 

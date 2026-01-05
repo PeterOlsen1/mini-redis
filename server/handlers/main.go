@@ -39,8 +39,8 @@ var commandHandlers = [...]func([]resp.RESPItem) (string, error){
 	str.HandleDecr,
 	list.HandleLPush,
 	list.HandleRPush,
-	TODO,
-	TODO,
+	list.HandleLPop,
+	list.HandleRPop,
 	TODO,
 	key.HandleFlushAll,
 }
