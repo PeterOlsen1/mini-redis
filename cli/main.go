@@ -30,36 +30,60 @@ func main() {
 
 		input = strings.TrimSpace(input)
 		writeHistory(input)
-		tokens := strings.Split(input, " ")
-
-		if tokens[0] == "history" {
-			if len(tokens) == 1 {
-				showHistory(10)
-				continue
-			}
-
-			historyLen, err := strconv.Atoi(tokens[1])
-			if err != nil || historyLen < 0 {
-				fmt.Println("History length must be a positive integer")
-				continue
-			}
-
-			showHistory(historyLen)
-			continue
-		}
-
-		if input == "exit" {
-			fmt.Println("Exiting...")
+		if handleLineIn(c, input) != nil {
 			break
 		}
-
-		resp, err := handleInput(c, tokens)
-		if err != nil {
-			fmt.Println(err)
-		} else {
-			fmt.Println(resp)
-		}
 	}
+}
+
+func handleLineIn(c *client.RedisClient, input string) error {
+	tokens := strings.Split(input, " ")
+
+	if len(input) >= 2 && input[0] == '!' {
+		if input[1] != '!' {
+			execNumString := strings.TrimPrefix(input, "!")
+			execNum, err := strconv.Atoi(execNumString)
+			if err != nil || execNum < 0 {
+				fmt.Printf("History command must be a positive integer")
+				return nil
+			}
+
+			execHistory(c, execNum+1)
+		} else {
+			execHistory(c, 1)
+		}
+
+		return nil
+	}
+	if tokens[0] == "history" {
+		if len(tokens) == 1 {
+			showHistory(10)
+			return nil
+		}
+
+		historyLen, err := strconv.Atoi(tokens[1])
+		if err != nil || historyLen < 0 {
+			fmt.Println("History length must be a positive integer")
+			return nil
+		}
+
+		showHistory(historyLen)
+		return nil
+	}
+
+	if input == "exit" {
+		fmt.Println("Exiting...")
+		return fmt.Errorf("")
+	}
+
+	resp, err := handleInput(c, tokens)
+	if err != nil {
+		fmt.Println(err)
+	} else {
+		fmt.Println(resp)
+	}
+
+	return nil
 }
 
 func handleInput(c *client.RedisClient, tokens []string) (string, error) {

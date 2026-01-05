@@ -3,12 +3,13 @@ package main
 import (
 	"bufio"
 	"fmt"
+	"mini-redis/client"
 	"os"
 	"path/filepath"
 )
 
 var historyFile *os.File
-var curLines = 0
+var numLines = 0
 
 func countHistoryLines() int {
 	historyFile.Seek(0, 0)
@@ -42,7 +43,7 @@ func openHistoryFile() {
 		os.Exit(1)
 	}
 
-	curLines = countHistoryLines()
+	numLines = countHistoryLines()
 }
 
 func writeHistory(line string) {
@@ -57,7 +58,7 @@ func writeHistory(line string) {
 		os.Exit(-1)
 	}
 
-	curLines += 1
+	numLines += 1
 }
 
 func showHistory(n int) {
@@ -66,7 +67,7 @@ func showHistory(n int) {
 		return
 	}
 
-	n = min(n, curLines)
+	n = min(n, numLines)
 
 	historyFile.Seek(0, 0)
 	scanner := bufio.NewScanner(historyFile)
@@ -87,4 +88,25 @@ func showHistory(n int) {
 	for i, line := range lines {
 		fmt.Printf("%d %s\n", len(lines)-(i+1), line)
 	}
+}
+
+func execHistory(c *client.RedisClient, n int) {
+	historyFile.Seek(0, 0)
+	scanner := bufio.NewScanner(historyFile)
+
+	n = min(n, numLines)
+	line := ""
+	for range numLines - n {
+		scanner.Scan()
+		line = scanner.Text()
+	}
+
+	// skip infinite recursion case
+	if line[0] == '!' {
+		fmt.Println("Cannot repeat history command")
+		return
+	}
+
+	fmt.Println(line)
+	handleLineIn(c, line)
 }
