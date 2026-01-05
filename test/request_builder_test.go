@@ -3,11 +3,12 @@ package miniredis_test
 import (
 	"bytes"
 	"mini-redis/client"
+	"mini-redis/types/commands"
 	"testing"
 )
 
 func TestRequestBuilder(t *testing.T) {
-	req := client.InitRequest("PING")
+	req := client.InitRequest(commands.PING)
 
 	expect := "*1\r\n$4\r\nPING\r\n"
 	if req.String() != expect {

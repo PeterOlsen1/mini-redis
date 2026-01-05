@@ -25,6 +25,7 @@ func HandleCommand(cmd commands.Command, args []resp.RESPItem) ([]byte, error) {
 	return commandHandlers[cmd](args)
 }
 
+// check "command" enum for order of commands
 var commandHandlers = [...]func([]resp.RESPItem) ([]byte, error){
 	HandleNone,
 	server.HandlePing,
@@ -42,26 +43,7 @@ var commandHandlers = [...]func([]resp.RESPItem) ([]byte, error){
 	list.HandleLPop,
 	list.HandleRPop,
 	list.HandleLRange,
+	list.HandleLGet,
 	TODO,
 	key.HandleFlushAll,
 }
-
-/*
-	NONE Command = iota
-	PING
-	ECHO
-	SET
-	GET
-	DEL
-	EXISTS
-	EXPIRE
-	TTL
-	INCR
-	DECR
-	LPUSH
-	RPUSH
-	LPOP
-	RPOP
-	LRANGE
-	INFO
-*/

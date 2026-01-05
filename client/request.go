@@ -3,13 +3,15 @@ package client
 import (
 	"fmt"
 	"mini-redis/resp"
+	"mini-redis/types/commands"
 	"strconv"
 	"strings"
 )
 
-func InitRequest(command string) *RequestBuilder {
+func InitRequest(command commands.Command) *RequestBuilder {
+	cmd := command.String()
 	return &RequestBuilder{
-		req: fmt.Sprintf("\r\n$%d\r\n%s\r\n", len(command), command),
+		req: fmt.Sprintf("\r\n$%d\r\n%s\r\n", len(cmd), cmd),
 		len: 1,
 	}
 }

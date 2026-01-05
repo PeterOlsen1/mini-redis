@@ -267,3 +267,24 @@ func LRange(key string, start int, end int) ([]string, error) {
 
 	return arr[start:][:end+1], nil
 }
+
+func LGet(key string) ([]string, error) {
+	storeMu.RLock()
+	defer storeMu.RUnlock()
+
+	val := store[key]
+	if val == nil {
+		return nil, nil
+	}
+
+	if val.Type != types.ARRAY {
+		return nil, errors.WRONGTYPE
+	}
+
+	arr, ok := val.Item.([]string)
+	if !ok {
+		return nil, errors.WRONGTYPE
+	}
+
+	return arr, nil
+}

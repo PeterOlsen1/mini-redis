@@ -97,7 +97,8 @@ func handleInput(c *client.RedisClient, tokens []string) (string, error) {
 		return "", fmt.Errorf("Invalid command.")
 	}
 
-	req := client.InitRequest(tokens[0])
+	cmd := commands.ParseCommand(tokens[0])
+	req := client.InitRequest(cmd)
 	for i := 1; i < len(tokens); i++ {
 		req.AddParam(tokens[i])
 	}

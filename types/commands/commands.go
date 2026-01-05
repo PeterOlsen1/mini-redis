@@ -33,6 +33,7 @@ const (
 	LPOP
 	RPOP
 	LRANGE
+	LGET
 	INFO
 	FLUSHALL
 )
@@ -54,6 +55,7 @@ var commandStrings = [...]string{
 	"LPOP",
 	"RPOP",
 	"LRANGE",
+	"LGET",
 	"INFO",
 	"FLUSHALL",
 }

@@ -105,3 +105,17 @@ func TestLRange(t *testing.T) {
 	arr, err = c.LRange("test", 2, 2)
 	checkExpectArray(arr, err, commands.LRANGE, expect, t)
 }
+
+func TestLGet(t *testing.T) {
+	c := setupAndFlush(t)
+	defer teardown(c, t)
+
+	for i := range 5 {
+		respInt, err := c.LPush("test", fmt.Sprintf("test-%d", i))
+		checkExpect(respInt, err, commands.LPUSH, i+1, t)
+	}
+
+	expect := []string{"test-4", "test-3", "test-2", "test-1", "test-0"}
+	arr, err := c.LGet("test")
+	checkExpectArray(arr, err, commands.LRANGE, expect, t)
+}
