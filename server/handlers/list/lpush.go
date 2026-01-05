@@ -1,15 +1,15 @@
 package list
 
 import (
-	"fmt"
 	"mini-redis/resp"
 	"mini-redis/server/internal"
+	"mini-redis/types/commands"
 	"mini-redis/types/errors"
 )
 
 func HandleLPush(args []resp.RESPItem) ([]byte, error) {
 	if len(args) < 2 {
-		return nil, fmt.Errorf("LPUSH requires 2 arguments")
+		return nil, errors.ARG_COUNT(commands.LPUSH, 2)
 	}
 
 	key := args[0].Content
@@ -20,7 +20,7 @@ func HandleLPush(args []resp.RESPItem) ([]byte, error) {
 
 	ret := internal.LPush(key, vals)
 	if ret == -1 {
-		return nil, fmt.Errorf(errors.WRONGTYPE)
+		return nil, errors.WRONGTYPE
 	}
 
 	return resp.BYTE_INT(ret), nil

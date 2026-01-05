@@ -181,7 +181,7 @@ func LPop(key string, num int) ([]string, error) {
 		return nil, nil
 	}
 	if val.Type != types.ARRAY {
-		return nil, fmt.Errorf(errors.WRONGTYPE)
+		return nil, errors.WRONGTYPE
 	}
 
 	arr := val.Array()
@@ -208,7 +208,7 @@ func RPop(key string, num int) ([]string, error) {
 		return nil, nil
 	}
 	if val.Type != types.ARRAY {
-		return nil, fmt.Errorf(errors.WRONGTYPE)
+		return nil, errors.WRONGTYPE
 	}
 
 	arr := val.Array()
@@ -237,12 +237,12 @@ func LRange(key string, start int, end int) ([]string, error) {
 	}
 
 	if val.Type != types.ARRAY {
-		return nil, fmt.Errorf(errors.WRONGTYPE)
+		return nil, errors.WRONGTYPE
 	}
 
 	arr, ok := val.Item.([]string)
 	if !ok {
-		return nil, fmt.Errorf(errors.WRONGTYPE)
+		return nil, errors.WRONGTYPE
 	}
 
 	if start > len(arr) {

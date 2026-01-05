@@ -4,12 +4,14 @@ import (
 	"fmt"
 	"mini-redis/resp"
 	"mini-redis/server/internal"
+	"mini-redis/types/commands"
+	"mini-redis/types/errors"
 	"strconv"
 )
 
 func HandleLPop(args []resp.RESPItem) ([]byte, error) {
 	if len(args) < 1 {
-		return nil, fmt.Errorf("LPOP requires 1 arguments")
+		return nil, errors.ARG_COUNT(commands.LPOP, 1)
 	}
 
 	key := args[0].Content

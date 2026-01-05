@@ -1,14 +1,15 @@
 package key
 
 import (
-	"fmt"
 	"mini-redis/resp"
 	"mini-redis/server/internal"
+	"mini-redis/types/commands"
+	"mini-redis/types/errors"
 )
 
 func HandleTTL(params []resp.RESPItem) ([]byte, error) {
 	if len(params) < 1 {
-		return nil, fmt.Errorf("TTL requires 1 parameter")
+		return nil, errors.ARG_COUNT(commands.TTL, 1)
 	}
 
 	// return -2 on non-existent key

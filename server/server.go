@@ -8,7 +8,7 @@ import (
 	"log"
 	"mini-redis/resp"
 	"mini-redis/server/handlers"
-	"mini-redis/types"
+	"mini-redis/types/commands"
 	"net"
 	"strconv"
 	"strings"
@@ -120,12 +120,12 @@ func processArray(conn net.Conn, array []resp.RESPItem) error {
 	i := 0
 	for i < len(array) {
 		item := array[i]
-		cmd := types.ParseCommand(item.Content)
+		cmd := commands.ParseCommand(item.Content)
 		if cmd != 0 {
 			args := make([]resp.RESPItem, 0)
 
 			i += 1
-			for i < len(array) && !types.ParseCommand(array[i].Content).Valid() {
+			for i < len(array) && !commands.ParseCommand(array[i].Content).Valid() {
 				args = append(args, array[i])
 				i += 1
 			}

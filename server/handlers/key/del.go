@@ -1,14 +1,15 @@
 package key
 
 import (
-	"fmt"
 	"mini-redis/resp"
 	"mini-redis/server/internal"
+	"mini-redis/types/commands"
+	"mini-redis/types/errors"
 )
 
 func HandleDel(args []resp.RESPItem) ([]byte, error) {
 	if len(args) < 1 {
-		return nil, fmt.Errorf("del requires 1 argument")
+		return nil, errors.ARG_COUNT(commands.DEL, 1)
 	}
 
 	key := args[0].Content

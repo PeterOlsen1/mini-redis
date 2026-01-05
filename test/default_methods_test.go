@@ -2,7 +2,7 @@ package miniredis_test
 
 import (
 	"mini-redis/client"
-	"mini-redis/types"
+	"mini-redis/types/commands"
 	"mini-redis/types/errors"
 	"testing"
 	"time"
@@ -22,10 +22,10 @@ func TestPing(t *testing.T) {
 	defer c.Close()
 
 	s, err := c.Ping("")
-	checkExpect(s, err, types.PING, "PONG", t)
+	checkExpect(s, err, commands.PING, "PONG", t)
 
 	s, err = c.Ping("HELLO")
-	checkExpect(s, err, types.PING, "HELLO", t)
+	checkExpect(s, err, commands.PING, "HELLO", t)
 }
 
 func TestEcho(t *testing.T) {
@@ -37,7 +37,7 @@ func TestEcho(t *testing.T) {
 	defer c.Close()
 
 	s, err := c.Echo("HELLO")
-	checkExpect(s, err, types.ECHO, "HELLO", t)
+	checkExpect(s, err, commands.ECHO, "HELLO", t)
 }
 
 func TestSet(t *testing.T) {
@@ -49,7 +49,7 @@ func TestSet(t *testing.T) {
 	defer c.Close()
 
 	s, err := c.Set("test", "TEST")
-	checkExpect(s, err, types.SET, "OK", t)
+	checkExpect(s, err, commands.SET, "OK", t)
 }
 
 func TestGet(t *testing.T) {
@@ -57,10 +57,10 @@ func TestGet(t *testing.T) {
 	defer teardown(c, t)
 
 	s, err := c.Set("test", "TEST")
-	checkExpect(s, err, types.SET, "OK", t)
+	checkExpect(s, err, commands.SET, "OK", t)
 
 	s, err = c.Get("test")
-	checkExpect(s, err, types.GET, "TEST", t)
+	checkExpect(s, err, commands.GET, "TEST", t)
 }
 
 func TestFlushAll(t *testing.T) {
@@ -72,7 +72,7 @@ func TestFlushAll(t *testing.T) {
 	defer c.Close()
 
 	s, err := c.FlushAll()
-	checkExpect(s, err, types.FLUSHALL, "OK", t)
+	checkExpect(s, err, commands.FLUSHALL, "OK", t)
 }
 
 func TestEmptyGet(t *testing.T) {
@@ -80,7 +80,7 @@ func TestEmptyGet(t *testing.T) {
 	defer teardown(c, t)
 
 	s, err := c.Get("test")
-	checkExpect(s, err, types.GET, "", t)
+	checkExpect(s, err, commands.GET, "", t)
 }
 
 func TestExists(t *testing.T) {
@@ -88,16 +88,16 @@ func TestExists(t *testing.T) {
 	defer teardown(c, t)
 
 	s, err := c.Set("test", "TEST")
-	checkExpect(s, err, types.SET, "OK", t)
+	checkExpect(s, err, commands.SET, "OK", t)
 
 	s, err = c.Set("test2", "TEST")
-	checkExpect(s, err, types.SET, "OK", t)
+	checkExpect(s, err, commands.SET, "OK", t)
 
 	s, err = c.Exists("test")
-	checkExpect(s, err, types.EXISTS, "1", t)
+	checkExpect(s, err, commands.EXISTS, "1", t)
 
 	s, err = c.Exists("test", "test2")
-	checkExpect(s, err, types.EXISTS, "2", t)
+	checkExpect(s, err, commands.EXISTS, "2", t)
 }
 
 func TestExpire(t *testing.T) {
@@ -105,13 +105,13 @@ func TestExpire(t *testing.T) {
 	defer teardown(c, t)
 
 	s, err := c.Expire("awidawbnd", 10)
-	checkExpect(s, err, types.EXPIRE, "0", t)
+	checkExpect(s, err, commands.EXPIRE, "0", t)
 
 	s, err = c.Set("test", "TEST")
-	checkExpect(s, err, types.SET, "OK", t)
+	checkExpect(s, err, commands.SET, "OK", t)
 
 	s, err = c.Expire("test", 10)
-	checkExpect(s, err, types.EXPIRE, "1", t)
+	checkExpect(s, err, commands.EXPIRE, "1", t)
 }
 
 func TestTTL(t *testing.T) {
@@ -119,24 +119,24 @@ func TestTTL(t *testing.T) {
 	defer teardown(c, t)
 
 	s, err := c.TTL("test")
-	checkExpect(s, err, types.TTL, "-2", t)
+	checkExpect(s, err, commands.TTL, "-2", t)
 
 	s, err = c.Set("test", "TEST")
-	checkExpect(s, err, types.SET, "OK", t)
+	checkExpect(s, err, commands.SET, "OK", t)
 
 	s, err = c.TTL("test")
-	checkExpect(s, err, types.TTL, "-1", t)
+	checkExpect(s, err, commands.TTL, "-1", t)
 
 	s, err = c.Expire("test", 2)
-	checkExpect(s, err, types.EXPIRE, "1", t)
+	checkExpect(s, err, commands.EXPIRE, "1", t)
 
 	time.Sleep(500 * time.Millisecond)
 	s, err = c.TTL("test")
-	checkExpect(s, err, types.TTL, "1", t)
+	checkExpect(s, err, commands.TTL, "1", t)
 
 	time.Sleep(2000 * time.Millisecond)
 	s, err = c.TTL("test")
-	checkExpect(s, err, types.TTL, "-2", t)
+	checkExpect(s, err, commands.TTL, "-2", t)
 }
 
 func TestIncr(t *testing.T) {
@@ -144,22 +144,22 @@ func TestIncr(t *testing.T) {
 	defer teardown(c, t)
 
 	i, err := c.Incr("test")
-	checkExpect(i, err, types.INCR, 1, t)
+	checkExpect(i, err, commands.INCR, 1, t)
 
 	s, err := c.Set("test", "TEST")
-	checkExpect(s, err, types.SET, "OK", t)
+	checkExpect(s, err, commands.SET, "OK", t)
 
 	i, err = c.Incr("test")
-	checkError(i, err, types.INCR, errors.NOT_INTEGER, t)
+	checkError(i, err, commands.INCR, errors.NOT_INTEGER.Error(), t)
 
 	s, err = c.Set("test", "1")
-	checkExpect(s, err, types.SET, "OK", t)
+	checkExpect(s, err, commands.SET, "OK", t)
 
 	i, err = c.Incr("test")
-	checkExpect(i, err, types.INCR, 2, t)
+	checkExpect(i, err, commands.INCR, 2, t)
 
 	s, err = c.Get("test")
-	checkExpect(s, err, types.GET, "2", t)
+	checkExpect(s, err, commands.GET, "2", t)
 }
 
 func TestDecr(t *testing.T) {
@@ -167,20 +167,20 @@ func TestDecr(t *testing.T) {
 	defer teardown(c, t)
 
 	i, err := c.Decr("test")
-	checkExpect(i, err, types.DECR, -1, t)
+	checkExpect(i, err, commands.DECR, -1, t)
 
 	s, err := c.Set("test", "TEST")
-	checkExpect(s, err, types.SET, "OK", t)
+	checkExpect(s, err, commands.SET, "OK", t)
 
 	i, err = c.Decr("test")
-	checkError(i, err, types.DECR, errors.NOT_INTEGER, t)
+	checkError(i, err, commands.DECR, errors.NOT_INTEGER.Error(), t)
 
 	s, err = c.Set("test", "1")
-	checkExpect(s, err, types.SET, "OK", t)
+	checkExpect(s, err, commands.SET, "OK", t)
 
 	i, err = c.Decr("test")
-	checkExpect(i, err, types.DECR, 0, t)
+	checkExpect(i, err, commands.DECR, 0, t)
 
 	s, err = c.Get("test")
-	checkExpect(s, err, types.GET, "0", t)
+	checkExpect(s, err, commands.GET, "0", t)
 }

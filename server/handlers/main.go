@@ -7,7 +7,7 @@ import (
 	"mini-redis/server/handlers/list"
 	"mini-redis/server/handlers/server"
 	str "mini-redis/server/handlers/string"
-	"mini-redis/types"
+	"mini-redis/types/commands"
 )
 
 func TODO(items []resp.RESPItem) ([]byte, error) {
@@ -15,7 +15,7 @@ func TODO(items []resp.RESPItem) ([]byte, error) {
 	return []byte("NOT IMPLEMENTED!!!!"), nil
 }
 
-func HandleCommand(cmd types.Command, args []resp.RESPItem) ([]byte, error) {
+func HandleCommand(cmd commands.Command, args []resp.RESPItem) ([]byte, error) {
 	if !cmd.Valid() {
 		return nil, fmt.Errorf("invalid command passed to handle command")
 	}

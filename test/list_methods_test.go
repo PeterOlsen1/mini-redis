@@ -2,7 +2,7 @@ package miniredis_test
 
 import (
 	"fmt"
-	"mini-redis/types"
+	"mini-redis/types/commands"
 	"mini-redis/types/errors"
 	"testing"
 )
@@ -12,18 +12,18 @@ func TestLPush(t *testing.T) {
 	defer teardown(c, t)
 
 	s, err := c.Set("test", "TEST")
-	checkExpect(s, err, types.SET, "OK", t)
+	checkExpect(s, err, commands.SET, "OK", t)
 
 	respInt, err := c.LPush("test", "test")
-	checkError(respInt, err, types.LPUSH, errors.WRONGTYPE, t)
+	checkError(respInt, err, commands.LPUSH, errors.WRONGTYPE.Error(), t)
 
 	for i := range 3 {
 		respInt, err = c.LPush("test2", "test")
-		checkExpect(respInt, err, types.LPUSH, i+1, t)
+		checkExpect(respInt, err, commands.LPUSH, i+1, t)
 	}
 
 	s, err = c.Get("test2")
-	checkError(s, err, types.GET, errors.WRONGTYPE, t)
+	checkError(s, err, commands.GET, errors.WRONGTYPE.Error(), t)
 }
 
 func TestRPush(t *testing.T) {
@@ -31,18 +31,18 @@ func TestRPush(t *testing.T) {
 	defer teardown(c, t)
 
 	s, err := c.Set("test", "TEST")
-	checkExpect(s, err, types.SET, "OK", t)
+	checkExpect(s, err, commands.SET, "OK", t)
 
 	respInt, err := c.RPush("test", "test")
-	checkError(respInt, err, types.RPUSH, errors.WRONGTYPE, t)
+	checkError(respInt, err, commands.RPUSH, errors.WRONGTYPE.Error(), t)
 
 	for i := range 3 {
 		respInt, err = c.RPush("test2", "test")
-		checkExpect(respInt, err, types.RPUSH, i+1, t)
+		checkExpect(respInt, err, commands.RPUSH, i+1, t)
 	}
 
 	s, err = c.Get("test2")
-	checkError(s, err, types.GET, errors.WRONGTYPE, t)
+	checkError(s, err, commands.GET, errors.WRONGTYPE.Error(), t)
 }
 
 func TestLPopOne(t *testing.T) {
@@ -50,19 +50,19 @@ func TestLPopOne(t *testing.T) {
 	defer teardown(c, t)
 
 	s, err := c.Set("test", "TEST")
-	checkExpect(s, err, types.SET, "OK", t)
+	checkExpect(s, err, commands.SET, "OK", t)
 
 	respArr, err := c.LPop("test")
-	checkError(respArr, err, types.LPOP, errors.WRONGTYPE, t)
+	checkError(respArr, err, commands.LPOP, errors.WRONGTYPE.Error(), t)
 
 	for i := range 5 {
 		respInt, err := c.LPush("test2", fmt.Sprintf("test-%d", i))
-		checkExpect(respInt, err, types.LPUSH, i+1, t)
+		checkExpect(respInt, err, commands.LPUSH, i+1, t)
 	}
 
 	expect := []string{"test-4"}
 	respArr, err = c.LPop("test2")
-	checkExpectArray(respArr, err, types.LPOP, expect, t)
+	checkExpectArray(respArr, err, commands.LPOP, expect, t)
 }
 
 func TestLPopMany(t *testing.T) {
@@ -71,13 +71,13 @@ func TestLPopMany(t *testing.T) {
 
 	for i := range 5 {
 		respInt, err := c.LPush("test2", fmt.Sprintf("test-%d", i))
-		checkExpect(respInt, err, types.LPUSH, i+1, t)
+		checkExpect(respInt, err, commands.LPUSH, i+1, t)
 	}
 
 	expect := []string{"test-4", "test-3", "test-2"}
 	respArr, err := c.LPopMany("test2", 3)
 	fmt.Printf("RESP array: %v\n", respArr)
-	checkExpectArray(respArr, err, types.LPOP, expect, t)
+	checkExpectArray(respArr, err, commands.LPOP, expect, t)
 }
 
 func TestLRange(t *testing.T) {
@@ -86,7 +86,7 @@ func TestLRange(t *testing.T) {
 
 	for i := range 5 {
 		respInt, err := c.LPush("test", fmt.Sprintf("test-%d", i))
-		checkExpect(respInt, err, types.LPUSH, i+1, t)
+		checkExpect(respInt, err, commands.LPUSH, i+1, t)
 	}
 
 	// expect := []string{"test-1", "test-2"}

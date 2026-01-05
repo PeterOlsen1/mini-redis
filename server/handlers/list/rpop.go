@@ -9,7 +9,7 @@ import (
 
 func HandleRPop(args []resp.RESPItem) ([]byte, error) {
 	if len(args) < 1 {
-		return nil, fmt.Errorf("LPOP requires 1 arguments")
+		return nil, fmt.Errorf("ERR wrong number of arguments for 'rpop' command")
 	}
 
 	key := args[0].Content

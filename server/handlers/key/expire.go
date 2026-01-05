@@ -4,12 +4,14 @@ import (
 	"fmt"
 	"mini-redis/resp"
 	"mini-redis/server/internal"
+	"mini-redis/types/commands"
+	"mini-redis/types/errors"
 	"strconv"
 )
 
 func HandleExpire(params []resp.RESPItem) ([]byte, error) {
 	if len(params) < 2 {
-		return nil, fmt.Errorf("expire requires 2 parameters")
+		return nil, errors.ARG_COUNT(commands.EXPIRE, 2)
 	}
 
 	key := params[0].Content
