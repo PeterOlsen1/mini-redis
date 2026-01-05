@@ -138,8 +138,14 @@ func LPush(key string, values []string) int {
 		return -1
 	}
 
+	fmt.Printf("LPUSH before: %v\n", items)
+
 	// append LEFT
 	items = append(values, items...)
+	store[key].Item = items
+
+	fmt.Printf("LPUSH after: %v\n", items)
+
 	return len(items)
 }
 
@@ -161,6 +167,8 @@ func RPush(key string, values []string) int {
 
 	// append RIGHT
 	items = append(items, values...)
+	store[key].Item = items
+
 	return len(items)
 }
 
@@ -216,4 +224,37 @@ func RPop(key string, num int) ([]string, error) {
 	val.Item = arr[:num]
 
 	return ret, nil
+}
+
+func LRange(key string, start int, end int) ([]string, error) {
+	storeMu.RLock()
+	defer storeMu.RUnlock()
+
+	empty := []string{}
+	val := store[key]
+	if val == nil {
+		return empty, nil
+	}
+
+	if val.Type != types.ARRAY {
+		return nil, fmt.Errorf(errors.WRONGTYPE)
+	}
+
+	arr, ok := val.Item.([]string)
+	if !ok {
+		return nil, fmt.Errorf(errors.WRONGTYPE)
+	}
+
+	if start > len(arr) {
+		return empty, nil
+	}
+
+	if start < 0 {
+		start = 0
+	}
+
+	if end > len(arr) {
+		end = len(arr) - 1
+	}
+	return arr[start:][:end], nil
 }
