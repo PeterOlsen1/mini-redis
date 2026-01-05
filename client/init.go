@@ -6,6 +6,11 @@ import (
 
 func NewClient(opt *Options) (*RedisClient, error) {
 	var c RedisClient
+	if opt == nil {
+		opt = &Options{
+			Addr: "localhost:6379",
+		}
+	}
 	if opt.Addr == "" {
 		c.addr = "localhost:6379"
 	} else {

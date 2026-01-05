@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"mini-redis/resp"
 	"strconv"
+	"strings"
 )
 
 func InitRequest(command string) *RequestBuilder {
@@ -57,7 +58,9 @@ func (c *RedisClient) makeRequest(req *RequestBuilder) (any, resp.RespType, erro
 	return result, resType, err
 }
 
-func (c *RedisClient) sendAndReceive(req *RequestBuilder) (string, error) {
+// Lower level function that is exposed to other redis client methods.
+// This is intended to be used if you want to create arbitrary requests
+func (c *RedisClient) SendAndReceive(req *RequestBuilder) (string, error) {
 	result, resType, err := c.makeRequest(req)
 
 	if err != nil {
@@ -85,13 +88,22 @@ func (c *RedisClient) sendAndReceive(req *RequestBuilder) (string, error) {
 		}
 		return "", fmt.Errorf("%s", out)
 	case resp.ARRAY:
-		return "", fmt.Errorf("methdo returned array")
+		out, ok := result.([]string)
+		if !ok {
+			return "", fmt.Errorf("failed to parse return string array")
+		}
+
+		outStrings := make([]string, len(out))
+		for i := range len(out) {
+			outStrings[i] = fmt.Sprintf("%d) \"%s\"", i, out[i])
+		}
+		return strings.Join(outStrings, "\n"), nil
 	}
 
 	return "", fmt.Errorf("unknown RESP type returned")
 }
 
-func (c *RedisClient) sendAndReceiveList(req *RequestBuilder) ([]string, error) {
+func (c *RedisClient) SendAndReceiveList(req *RequestBuilder) ([]string, error) {
 	result, resType, err := c.makeRequest(req)
 
 	if err != nil {
@@ -121,7 +133,7 @@ func (c *RedisClient) sendAndReceiveList(req *RequestBuilder) ([]string, error) 
 	return nil, fmt.Errorf("unknown RESP type returned")
 }
 
-func (c *RedisClient) sendAndReceiveInt(req *RequestBuilder) (int, error) {
+func (c *RedisClient) SendAndReceiveInt(req *RequestBuilder) (int, error) {
 	result, resType, err := c.makeRequest(req)
 
 	if err != nil {

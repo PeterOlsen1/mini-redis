@@ -6,7 +6,7 @@ func (c *RedisClient) LPush(key string, values ...string) (int, error) {
 		req.AddParam(value)
 	}
 
-	return c.sendAndReceiveInt(
+	return c.SendAndReceiveInt(
 		req,
 	)
 }
@@ -17,25 +17,25 @@ func (c *RedisClient) RPush(key string, values ...string) (int, error) {
 		req.AddParam(value)
 	}
 
-	return c.sendAndReceiveInt(
+	return c.SendAndReceiveInt(
 		req,
 	)
 }
 
 func (c *RedisClient) LPop(key string) ([]string, error) {
-	return c.sendAndReceiveList(
+	return c.SendAndReceiveList(
 		InitRequest("LPOP").AddParam(key),
 	)
 }
 
 func (c *RedisClient) LPopMany(key string, num int) ([]string, error) {
-	return c.sendAndReceiveList(
+	return c.SendAndReceiveList(
 		InitRequest("LPOP").AddParam(key).AddParamInt(num),
 	)
 }
 
 func (c *RedisClient) LRange(key string, start int, end int) ([]string, error) {
-	return c.sendAndReceiveList(
+	return c.SendAndReceiveList(
 		InitRequest("LRANGE").AddParam(key).AddParamInt(start).AddParamInt(end),
 	)
 }

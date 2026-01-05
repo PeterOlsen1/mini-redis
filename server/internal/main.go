@@ -245,6 +245,10 @@ func LRange(key string, start int, end int) ([]string, error) {
 		return nil, errors.WRONGTYPE
 	}
 
+	if end < start {
+		return empty, nil
+	}
+
 	if start > len(arr) {
 		return empty, nil
 	}
@@ -256,5 +260,10 @@ func LRange(key string, start int, end int) ([]string, error) {
 	if end > len(arr) {
 		end = len(arr) - 1
 	}
-	return arr[start:][:end], nil
+
+	if start == end {
+		return []string{arr[start]}, nil
+	}
+
+	return arr[start:][:end+1], nil
 }

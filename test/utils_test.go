@@ -50,7 +50,8 @@ func checkExpectArray[T comparable](resp []T, err error, cmd commands.Command, e
 	}
 
 	if len(resp) != len(expect) {
-		t.Errorf("%s slice lengths do not match! %d, %d", cmd.String(), len(resp), len(expect))
+		// fatal becuase next lines will cause panic
+		t.Fatalf("%s slice lengths do not match! expected: %d, got: %d", cmd.String(), len(expect), len(resp))
 	}
 
 	for i := range len(resp) {

@@ -89,7 +89,19 @@ func TestLRange(t *testing.T) {
 		checkExpect(respInt, err, commands.LPUSH, i+1, t)
 	}
 
-	// expect := []string{"test-1", "test-2"}
-	// arr, err := c.
-	// checkExpectArray()
+	expect := []string{"test-4", "test-3"}
+	arr, err := c.LRange("test", 0, 1)
+	checkExpectArray(arr, err, commands.LRANGE, expect, t)
+
+	expect = []string{"test-4", "test-3", "test-2", "test-1", "test-0"}
+	arr, err = c.LRange("test", -100, 1000)
+	checkExpectArray(arr, err, commands.LRANGE, expect, t)
+
+	expect = []string{}
+	arr, err = c.LRange("test", 3, 2)
+	checkExpectArray(arr, err, commands.LRANGE, expect, t)
+
+	expect = []string{"test-2"}
+	arr, err = c.LRange("test", 2, 2)
+	checkExpectArray(arr, err, commands.LRANGE, expect, t)
 }
