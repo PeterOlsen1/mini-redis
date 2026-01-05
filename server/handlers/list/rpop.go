@@ -7,38 +7,38 @@ import (
 	"strconv"
 )
 
-func HandleRPop(args []resp.RESPItem) (string, error) {
+func HandleRPop(args []resp.RESPItem) ([]byte, error) {
 	if len(args) < 1 {
-		return "", fmt.Errorf("LPOP requires 1 arguments")
+		return nil, fmt.Errorf("LPOP requires 1 arguments")
 	}
 
 	key := args[0].Content
 	if len(args) == 1 {
 		res, err := internal.RPop(key, 1)
 		if err != nil {
-			return "", err
+			return nil, err
 		}
 
 		if len(res) == 0 {
-			return "", fmt.Errorf("cannot pop empty list")
+			return nil, fmt.Errorf("cannot pop empty list")
 		}
 
-		return res[0], nil
+		return resp.BYTE_STRING(res[0]), nil
 	}
 
 	num, err := strconv.Atoi(args[1].Content)
 	if err != nil {
-		return "", fmt.Errorf("invalid pop count")
+		return nil, fmt.Errorf("invalid pop count")
 	}
 	res, err := internal.RPop(key, num)
 	if err != nil {
-		return "", err
+		return nil, err
 	}
 
 	serialized, err := resp.Serialize(res, resp.ARRAY)
 	if err != nil {
-		return "", err
+		return nil, err
 	}
 
-	return string(serialized), nil
+	return serialized, nil
 }

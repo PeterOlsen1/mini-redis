@@ -7,16 +7,16 @@ import (
 	"mini-redis/types/errors"
 )
 
-func HandleIncr(args []resp.RESPItem) (string, error) {
+func HandleIncr(args []resp.RESPItem) ([]byte, error) {
 	if len(args) < 1 {
-		return "", fmt.Errorf("incr requires 1 argument")
+		return nil, fmt.Errorf("incr requires 1 argument")
 	}
 
 	key := args[0].Content
 	newVal, ok := internal.Incr(key)
 	if !ok {
-		return "", fmt.Errorf(errors.NOT_INTEGER)
+		return nil, fmt.Errorf(errors.NOT_INTEGER)
 	}
 
-	return newVal, nil
+	return resp.BYTE_STRING(newVal), nil
 }

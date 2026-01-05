@@ -8,20 +8,24 @@ import (
 	"mini-redis/types/errors"
 )
 
-func HandleGet(args []resp.RESPItem) (string, error) {
+func HandleGet(args []resp.RESPItem) ([]byte, error) {
 	if len(args) < 1 {
-		return "", fmt.Errorf("get requires 1 argument")
+		return nil, fmt.Errorf("get requires 1 argument")
 	}
 
 	key := args[0].Content
 	val := internal.Get(key)
 	if val == nil {
-		return "", nil
+		return nil, nil
 	}
 
 	if val.Type == types.STRING {
-		return val.Item.(string), nil
+		strVal, ok := val.Item.(string)
+		if !ok {
+			return nil, fmt.Errorf(errors.WRONGTYPE)
+		}
+		return resp.BYTE_STRING(strVal), nil
 	}
 
-	return "", fmt.Errorf(errors.WRONGTYPE)
+	return nil, fmt.Errorf(errors.WRONGTYPE)
 }

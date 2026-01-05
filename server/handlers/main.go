@@ -10,14 +10,14 @@ import (
 	"mini-redis/types"
 )
 
-func TODO(items []resp.RESPItem) (string, error) {
+func TODO(items []resp.RESPItem) ([]byte, error) {
 	fmt.Printf("Command handler not yet implemented!")
-	return "NOT IMPLEMENTED!!!!", nil
+	return []byte("NOT IMPLEMENTED!!!!"), nil
 }
 
-func HandleCommand(cmd types.Command, args []resp.RESPItem) (string, error) {
+func HandleCommand(cmd types.Command, args []resp.RESPItem) ([]byte, error) {
 	if !cmd.Valid() {
-		return "", fmt.Errorf("invalid command passed to handle command")
+		return nil, fmt.Errorf("invalid command passed to handle command")
 	}
 
 	fmt.Printf("command: %s\nargs: %v\n", cmd.String(), args)
@@ -25,7 +25,7 @@ func HandleCommand(cmd types.Command, args []resp.RESPItem) (string, error) {
 	return commandHandlers[cmd](args)
 }
 
-var commandHandlers = [...]func([]resp.RESPItem) (string, error){
+var commandHandlers = [...]func([]resp.RESPItem) ([]byte, error){
 	HandleNone,
 	server.HandlePing,
 	server.HandleEcho,
@@ -41,6 +41,7 @@ var commandHandlers = [...]func([]resp.RESPItem) (string, error){
 	list.HandleRPush,
 	list.HandleLPop,
 	list.HandleRPop,
+	list.HandleLRange,
 	TODO,
 	key.HandleFlushAll,
 }
@@ -61,5 +62,6 @@ var commandHandlers = [...]func([]resp.RESPItem) (string, error){
 	RPUSH
 	LPOP
 	RPOP
+	LRANGE
 	INFO
 */

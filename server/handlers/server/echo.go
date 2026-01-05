@@ -1,11 +1,14 @@
 package server
 
-import "mini-redis/resp"
+import (
+	"fmt"
+	"mini-redis/resp"
+)
 
-func HandleEcho(args []resp.RESPItem) (string, error) {
+func HandleEcho(args []resp.RESPItem) ([]byte, error) {
 	if len(args) == 0 {
-		return "ERROR ERROR!!!!!!", nil
+		return nil, fmt.Errorf("Echo requires 1 argument")
 	} else {
-		return args[0].Content, nil
+		return resp.BYTE_STRING(args[0].Content), nil
 	}
 }

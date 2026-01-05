@@ -130,13 +130,13 @@ func processArray(conn net.Conn, array []resp.RESPItem) error {
 				i += 1
 			}
 
-			resp, err := handlers.HandleCommand(cmd, args)
+			cmdResp, err := handlers.HandleCommand(cmd, args)
 			if err != nil {
-				if _, writeErr := conn.Write([]byte("-ERR " + err.Error() + "\r\n")); writeErr != nil {
+				if _, writeErr := conn.Write(resp.BYTE_ERR(err)); writeErr != nil {
 					return writeErr
 				}
 			} else {
-				if _, writeErr := conn.Write([]byte("+" + resp + "\r\n")); writeErr != nil {
+				if _, writeErr := conn.Write(cmdResp); writeErr != nil {
 					return writeErr
 				}
 			}

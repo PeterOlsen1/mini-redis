@@ -6,12 +6,12 @@ import (
 	"mini-redis/server/internal"
 )
 
-func HandleDel(args []resp.RESPItem) (string, error) {
+func HandleDel(args []resp.RESPItem) ([]byte, error) {
 	if len(args) < 1 {
-		return "", fmt.Errorf("del requires 1 argument")
+		return nil, fmt.Errorf("del requires 1 argument")
 	}
 
 	key := args[0].Content
 	internal.Del(key)
-	return "OK", nil
+	return resp.OK, nil
 }

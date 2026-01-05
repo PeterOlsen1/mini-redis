@@ -4,12 +4,11 @@ import (
 	"fmt"
 	"mini-redis/resp"
 	"mini-redis/server/internal"
-	"strconv"
 )
 
-func HandleExists(args []resp.RESPItem) (string, error) {
+func HandleExists(args []resp.RESPItem) ([]byte, error) {
 	if len(args) < 1 {
-		return "", fmt.Errorf("get requires 1 argument")
+		return nil, fmt.Errorf("get requires 1 argument")
 	}
 
 	stringArgs := make([]string, len(args))
@@ -24,5 +23,5 @@ func HandleExists(args []resp.RESPItem) (string, error) {
 			count += 1
 		}
 	}
-	return strconv.Itoa(count), nil
+	return resp.BYTE_INT(count), nil
 }
