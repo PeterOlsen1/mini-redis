@@ -16,7 +16,7 @@ func HandleGet(args []resp.RESPItem) ([]byte, error) {
 	key := args[0].Content
 	val := internal.Get(key)
 	if val == nil {
-		return nil, nil
+		return resp.BYTE_NULL, nil
 	}
 
 	if val.Type == types.STRING {

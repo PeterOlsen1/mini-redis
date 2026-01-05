@@ -13,5 +13,5 @@ func HandleDel(args []resp.RESPItem) ([]byte, error) {
 
 	key := args[0].Content
 	internal.Del(key)
-	return resp.OK, nil
+	return resp.BYTE_OK, nil
 }

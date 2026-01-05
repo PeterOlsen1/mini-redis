@@ -6,6 +6,24 @@ import (
 	"strings"
 )
 
+var BYTE_OK = []byte("+OK\r\n")
+var BYTE_NULL = []byte("_\r\n")
+
+func BYTE_INT(num int) []byte {
+	serialized, _ := Serialize(strconv.Itoa(num), STRING) // err is not nil on string type
+	return serialized
+}
+
+func BYTE_STRING(s string) []byte {
+	serialized, _ := Serialize(s, STRING) // err is not nil on string type
+	return serialized
+}
+
+func BYTE_ERR(e error) []byte {
+	serialized, _ := Serialize(e.Error(), ERR)
+	return serialized
+}
+
 // Implementation of the RESP - REdis Serialization Protocol
 // Somewhat naive, as bulk strings are not handled properly (length)
 
@@ -14,7 +32,7 @@ func Serialize(value any, valueType RespType) ([]byte, error) {
 	case STRING:
 		return fmt.Appendf(nil, "+%s\r\n", value), nil
 	case ERR:
-		return fmt.Appendf(nil, "-%s\r\n", value), nil
+		return fmt.Appendf(nil, "-ERR %s\r\n", value), nil
 	case NULL:
 		return []byte("_\r\n"), nil
 	case ARRAY: // assume array will only be made up of bulk strings

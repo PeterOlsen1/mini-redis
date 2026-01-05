@@ -10,8 +10,8 @@ func TestRequestBuilder(t *testing.T) {
 	req := client.InitRequest("PING")
 
 	expect := "*1\r\n$4\r\nPING\r\n"
-	if req.ToString() != expect {
-		t.Errorf("PING req does not match expected\nGot: %s\nExpected: %s\n", req.ToString(), expect)
+	if req.String() != expect {
+		t.Errorf("PING req does not match expected\nGot: %s\nExpected: %s\n", req.String(), expect)
 	}
 
 	if !bytes.Equal(req.ToBytes(), []byte(expect)) {
@@ -20,8 +20,8 @@ func TestRequestBuilder(t *testing.T) {
 
 	req = req.AddParam("TEST")
 	expect = "*2\r\n$4\r\nPING\r\n$4\r\nTEST\r\n"
-	if req.ToString() != expect {
-		t.Errorf("PING req does not match expected\nGot: %s\nExpected: %s\n", req.ToString(), expect)
+	if req.String() != expect {
+		t.Errorf("PING req does not match expected\nGot: %s\nExpected: %s\n", req.String(), expect)
 	}
 
 	if !bytes.Equal(req.ToBytes(), []byte(expect)) {
@@ -30,8 +30,8 @@ func TestRequestBuilder(t *testing.T) {
 
 	req = req.AddParamInt(1)
 	expect = "*3\r\n$4\r\nPING\r\n$4\r\nTEST\r\n$1\r\n1\r\n"
-	if req.ToString() != expect {
-		t.Errorf("PING req does not match expected\nGot: %s\nExpected: %s\n", req.ToString(), expect)
+	if req.String() != expect {
+		t.Errorf("PING req does not match expected\nGot: %s\nExpected: %s\n", req.String(), expect)
 	}
 
 	if !bytes.Equal(req.ToBytes(), []byte(expect)) {

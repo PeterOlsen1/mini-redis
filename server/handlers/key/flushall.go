@@ -8,5 +8,5 @@ import (
 func HandleFlushAll(_ []resp.RESPItem) ([]byte, error) {
 	internal.FlushAll()
 	internal.FlushAllTTL()
-	return resp.OK, nil
+	return resp.BYTE_OK, nil
 }

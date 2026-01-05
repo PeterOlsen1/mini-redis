@@ -15,5 +15,5 @@ func HandleSet(args []resp.RESPItem) ([]byte, error) {
 	value := args[1].Content
 
 	internal.Set(key, value)
-	return resp.OK, nil
+	return resp.BYTE_OK, nil
 }

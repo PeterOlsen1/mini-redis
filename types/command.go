@@ -32,6 +32,7 @@ const (
 	RPUSH
 	LPOP
 	RPOP
+	LRANGE
 	INFO
 	FLUSHALL
 )
@@ -52,6 +53,7 @@ var commandStrings = [...]string{
 	"RPUSH",
 	"LPOP",
 	"RPOP",
+	"LRANGE",
 	"INFO",
 	"FLUSHALL",
 }

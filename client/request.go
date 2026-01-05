@@ -27,10 +27,10 @@ func (r *RequestBuilder) AddParamInt(param int) *RequestBuilder {
 }
 
 func (r *RequestBuilder) ToBytes() []byte {
-	return []byte(r.ToString())
+	return []byte(r.String())
 }
 
-func (r *RequestBuilder) ToString() string {
+func (r *RequestBuilder) String() string {
 	return fmt.Sprintf("*%d%s", r.len, r.req)
 }
 
@@ -65,7 +65,9 @@ func (c *RedisClient) sendAndReceive(req *RequestBuilder) (string, error) {
 	}
 
 	switch resType {
-	case resp.STRING, resp.BULK_STRING, resp.NULL:
+	case resp.NULL:
+		return "", nil
+	case resp.STRING, resp.BULK_STRING:
 		out, ok := result.(string)
 		if !ok {
 			return "", fmt.Errorf("failed to parse return string")
