@@ -6,6 +6,7 @@ import (
 	"mini-redis/client"
 	"mini-redis/types/commands"
 	"os"
+	"strconv"
 	"strings"
 )
 
@@ -15,6 +16,8 @@ func main() {
 		fmt.Println("failed to establish redis connection, exiting...")
 		os.Exit(-1)
 	}
+
+	openHistoryFile()
 
 	reader := bufio.NewReader(os.Stdin)
 	for {
@@ -26,19 +29,35 @@ func main() {
 		}
 
 		input = strings.TrimSpace(input)
+		writeHistory(input)
 		tokens := strings.Split(input, " ")
-		fmt.Println("Input:", tokens)
+
+		if tokens[0] == "history" {
+			if len(tokens) == 1 {
+				showHistory(10)
+				continue
+			}
+
+			historyLen, err := strconv.Atoi(tokens[1])
+			if err != nil || historyLen < 0 {
+				fmt.Println("History length must be a positive integer")
+				continue
+			}
+
+			showHistory(historyLen)
+			continue
+		}
+
+		if input == "exit" {
+			fmt.Println("Exiting...")
+			break
+		}
 
 		resp, err := handleInput(c, tokens)
 		if err != nil {
 			fmt.Println(err)
 		} else {
 			fmt.Println(resp)
-		}
-
-		if input == "exit" {
-			fmt.Println("Exiting...")
-			break
 		}
 	}
 }
