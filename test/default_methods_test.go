@@ -63,6 +63,23 @@ func TestGet(t *testing.T) {
 	checkExpect(s, err, commands.GET, "TEST", t)
 }
 
+func TestDelete(t *testing.T) {
+	c := setupAndFlush(t)
+	defer teardown(c, t)
+
+	s, err := c.Set("test", "TEST")
+	checkExpect(s, err, commands.SET, "OK", t)
+
+	s, err = c.Get("test")
+	checkExpect(s, err, commands.GET, "TEST", t)
+
+	s, err = c.Del("test")
+	checkExpect(s, err, commands.GET, "OK", t)
+
+	s, err = c.Get("test")
+	checkExpect(s, err, commands.GET, "", t)
+}
+
 func TestFlushAll(t *testing.T) {
 	c, err := client.NewClient(&client.ClientOptions{Addr: "localhost:6379"})
 	if err != nil {
