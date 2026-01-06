@@ -26,6 +26,7 @@ func HandleCommand(cmd commands.Command, args []resp.RESPItem) ([]byte, error) {
 }
 
 // check "command" enum for order of commands
+// must be in order of commands in the enum type, since the map is indexed 0..n
 var commandHandlers = [...]func([]resp.RESPItem) ([]byte, error){
 	HandleNone,
 	server.HandlePing,
@@ -44,6 +45,6 @@ var commandHandlers = [...]func([]resp.RESPItem) ([]byte, error){
 	list.HandleRPop,
 	list.HandleLRange,
 	list.HandleLGet,
-	TODO,
+	server.HandleInfo,
 	key.HandleFlushAll,
 }

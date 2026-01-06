@@ -87,8 +87,6 @@ func handleLineIn(c *client.RedisClient, input string) error {
 }
 
 func handleInput(c *client.RedisClient, tokens []string) (string, error) {
-	fmt.Println("Input:", tokens)
-
 	if len(tokens) < 1 {
 		return "", fmt.Errorf("too few input tokens")
 	}
@@ -101,6 +99,11 @@ func handleInput(c *client.RedisClient, tokens []string) (string, error) {
 	req := client.InitRequest(cmd)
 	for i := 1; i < len(tokens); i++ {
 		req.AddParam(tokens[i])
+	}
+
+	// need extra buffer space for info command
+	if cmd == commands.INFO {
+		req.SetBufSize(4096)
 	}
 
 	return c.SendAndReceive(req)

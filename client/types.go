@@ -9,11 +9,12 @@ type RedisClient struct {
 	conn net.Conn
 }
 
-type Options struct {
+type ClientOptions struct {
 	Addr string
 }
 
 type RequestBuilder struct {
-	req string
-	len int
+	req     string
+	len     int
+	bufSize int
 }

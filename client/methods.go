@@ -77,3 +77,9 @@ func (c *RedisClient) FlushAll() (string, error) {
 		InitRequest(commands.FLUSHALL),
 	)
 }
+
+func (c *RedisClient) Info() (string, error) {
+	return c.SendAndReceive(
+		InitRequest(commands.INFO).SetBufSize(4096),
+	)
+}

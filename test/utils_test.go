@@ -7,7 +7,7 @@ import (
 )
 
 func setup(t *testing.T) *client.RedisClient {
-	c, err := client.NewClient(&client.Options{Addr: "localhost:6379"})
+	c, err := client.NewClient(&client.ClientOptions{Addr: "localhost:6379"})
 	if err != nil {
 		t.Errorf("client initialization")
 	}
@@ -16,7 +16,7 @@ func setup(t *testing.T) *client.RedisClient {
 }
 
 func setupAndFlush(t *testing.T) *client.RedisClient {
-	c, err := client.NewClient(&client.Options{Addr: "localhost:6379"})
+	c, err := client.NewClient(&client.ClientOptions{Addr: "localhost:6379"})
 	if err != nil {
 		t.Errorf("client initialization")
 	}

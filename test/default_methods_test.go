@@ -14,7 +14,7 @@ func TestInit(t *testing.T) {
 }
 
 func TestPing(t *testing.T) {
-	c, err := client.NewClient(&client.Options{Addr: "localhost:6379"})
+	c, err := client.NewClient(&client.ClientOptions{Addr: "localhost:6379"})
 	if err != nil {
 		t.Errorf("client initialization")
 	}
@@ -29,7 +29,7 @@ func TestPing(t *testing.T) {
 }
 
 func TestEcho(t *testing.T) {
-	c, err := client.NewClient(&client.Options{Addr: "localhost:6379"})
+	c, err := client.NewClient(&client.ClientOptions{Addr: "localhost:6379"})
 	if err != nil {
 		t.Errorf("client initialization")
 	}
@@ -41,7 +41,7 @@ func TestEcho(t *testing.T) {
 }
 
 func TestSet(t *testing.T) {
-	c, err := client.NewClient(&client.Options{Addr: "localhost:6379"})
+	c, err := client.NewClient(&client.ClientOptions{Addr: "localhost:6379"})
 	if err != nil {
 		t.Errorf("client initialization")
 	}
@@ -64,7 +64,7 @@ func TestGet(t *testing.T) {
 }
 
 func TestFlushAll(t *testing.T) {
-	c, err := client.NewClient(&client.Options{Addr: "localhost:6379"})
+	c, err := client.NewClient(&client.ClientOptions{Addr: "localhost:6379"})
 	if err != nil {
 		t.Errorf("client initialization")
 	}

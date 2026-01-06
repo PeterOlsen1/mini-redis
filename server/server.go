@@ -7,7 +7,9 @@ import (
 	"io"
 	"log"
 	"mini-redis/resp"
+	"mini-redis/server/cfg"
 	"mini-redis/server/handlers"
+	"mini-redis/server/info"
 	"mini-redis/types/commands"
 	"net"
 	"strconv"
@@ -15,12 +17,14 @@ import (
 )
 
 func StartServer(ctx context.Context) error {
-	listener, err := net.Listen("tcp", ":6379")
+	listener, err := net.Listen("tcp", fmt.Sprintf(":%d", cfg.Config.Server.Port))
 	if err != nil {
 		return err
 	}
 
 	fmt.Println("server running on localhost:6379")
+
+	info.InitServerInfo(cfg.Config.Server.Address, cfg.Config.Server.Port)
 
 	go func() {
 		<-ctx.Done()
@@ -50,6 +54,8 @@ func StartServer(ctx context.Context) error {
 
 func handleConnection(conn net.Conn) error {
 	log.Println("Established connection")
+	info.Connect()
+	defer info.Disconnect()
 	defer conn.Close()
 
 	for {
@@ -121,6 +127,11 @@ func processArray(conn net.Conn, array []resp.RESPItem) error {
 	for i < len(array) {
 		item := array[i]
 		cmd := commands.ParseCommand(item.Content)
+
+		if cfg.Config.Info.LogCommands {
+			info.Command(cmd)
+		}
+
 		if cmd != 0 {
 			args := make([]resp.RESPItem, 0)
 

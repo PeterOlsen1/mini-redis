@@ -2,6 +2,7 @@ package internal
 
 import (
 	"fmt"
+	"mini-redis/server/info"
 	"mini-redis/types"
 	"mini-redis/types/errors"
 	"strconv"
@@ -11,6 +12,13 @@ import (
 var store = make(map[string]*types.StoreItem)
 var storeMu sync.RWMutex
 
+func GetStoreSize() int {
+	storeMu.RLock()
+	defer storeMu.RUnlock()
+
+	return len(store)
+}
+
 func newItem(value any, storeType types.StoreType) *types.StoreItem {
 	return &types.StoreItem{
 		Item: value,
@@ -19,6 +27,7 @@ func newItem(value any, storeType types.StoreType) *types.StoreItem {
 }
 
 func Set(key string, value any) {
+	info.SetOp()
 	storeMu.Lock()
 	defer storeMu.Unlock()
 
@@ -28,21 +37,24 @@ func Set(key string, value any) {
 
 func Get(key string) *types.StoreItem {
 	ttl := GetTTL(key)
-	if ttl == -2 {
-		// key has TTL and it has expired
-		// deletion of the TTL entry is handled by GetTTL
-		Del(key)
-		return nil
-	}
+	info.GetOp()
 
 	storeMu.RLock()
 	defer storeMu.RUnlock()
+
+	if ttl == -2 {
+		// delete if TTL is expired
+		info.Expire()
+		delete(store, key)
+		return nil
+	}
 
 	return store[key]
 }
 
 func GetMany(keys []string) []any {
 	out := make([]any, len(keys))
+	info.GetOp()
 	storeMu.RLock()
 	defer storeMu.RUnlock()
 
@@ -63,6 +75,7 @@ func GetMany(keys []string) []any {
 // Not necessary to delete TTL, as if a new key with the same name is added,
 // it is deleted there
 func Del(key string) {
+	info.Delete()
 	storeMu.Lock()
 	defer storeMu.Unlock()
 

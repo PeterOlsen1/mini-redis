@@ -38,6 +38,8 @@ const (
 	FLUSHALL
 )
 
+const NUM_COMMANDS = len(commandStrings)
+
 var commandStrings = [...]string{
 	"NONE",
 	"PING",

@@ -4,10 +4,10 @@ import (
 	"net"
 )
 
-func NewClient(opt *Options) (*RedisClient, error) {
+func NewClient(opt *ClientOptions) (*RedisClient, error) {
 	var c RedisClient
 	if opt == nil {
-		opt = &Options{
+		opt = &ClientOptions{
 			Addr: "localhost:6379",
 		}
 	}

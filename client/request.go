@@ -8,11 +8,14 @@ import (
 	"strings"
 )
 
+const RESP_BUF_LEN = 256
+
 func InitRequest(command commands.Command) *RequestBuilder {
 	cmd := command.String()
 	return &RequestBuilder{
-		req: fmt.Sprintf("\r\n$%d\r\n%s\r\n", len(cmd), cmd),
-		len: 1,
+		req:     fmt.Sprintf("\r\n$%d\r\n%s\r\n", len(cmd), cmd),
+		len:     1,
+		bufSize: RESP_BUF_LEN,
 	}
 }
 
@@ -37,7 +40,15 @@ func (r *RequestBuilder) String() string {
 	return fmt.Sprintf("*%d%s", r.len, r.req)
 }
 
-const RESP_BUF_LEN = 256
+// Set the length of the response buffer
+func (r *RequestBuilder) SetBufSize(size int) *RequestBuilder {
+	if size < 0 {
+		return r
+	}
+
+	r.bufSize = size
+	return r
+}
 
 func (c *RedisClient) makeRequest(req *RequestBuilder) (any, resp.RespType, error) {
 	_, err := c.conn.Write(req.ToBytes())
@@ -45,7 +56,7 @@ func (c *RedisClient) makeRequest(req *RequestBuilder) (any, resp.RespType, erro
 		return "", resp.NULL, err
 	}
 
-	buf := make([]byte, RESP_BUF_LEN)
+	buf := make([]byte, req.bufSize)
 	n, err := c.conn.Read(buf)
 	if err != nil {
 		return "", resp.NULL, err
