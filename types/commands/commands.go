@@ -35,6 +35,7 @@ const (
 	LRANGE
 	LGET
 	INFO
+	KEYS
 	FLUSHALL
 )
 
@@ -59,6 +60,7 @@ var commandStrings = [...]string{
 	"LRANGE",
 	"LGET",
 	"INFO",
+	"KEYS",
 	"FLUSHALL",
 }
 

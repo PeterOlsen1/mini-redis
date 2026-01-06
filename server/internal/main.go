@@ -2,6 +2,7 @@ package internal
 
 import (
 	"fmt"
+	"maps"
 	"mini-redis/server/info"
 	"mini-redis/types"
 	"mini-redis/types/errors"
@@ -303,4 +304,17 @@ func LGet(key string) ([]string, error) {
 	}
 
 	return arr, nil
+}
+
+func Keys() []string {
+	storeMu.RLock()
+	keys := maps.Keys(store)
+	storeMu.RUnlock()
+
+	out := make([]string, 0)
+	for k := range keys {
+		out = append(out, k)
+	}
+
+	return out
 }

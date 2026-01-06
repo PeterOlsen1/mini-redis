@@ -1,6 +1,7 @@
 package miniredis_test
 
 import (
+	"fmt"
 	"mini-redis/client"
 	"mini-redis/types/commands"
 	"mini-redis/types/errors"
@@ -200,4 +201,35 @@ func TestDecr(t *testing.T) {
 
 	s, err = c.Get("test")
 	checkExpect(s, err, commands.GET, "0", t)
+}
+
+func TestKeys(t *testing.T) {
+	c := setupAndFlush(t)
+	defer teardown(c, t)
+
+	setKeys := make([]string, 5)
+	for i := range 5 {
+		key := fmt.Sprintf("test-%d", i)
+		setKeys[i] = key
+		res, err := c.Set(key, "1")
+		checkExpect(res, err, commands.SET, "OK", t)
+	}
+
+	keys, err := c.Keys()
+	if err != nil {
+		t.Errorf("failed to complete KEYS command: %e", err)
+	}
+	// cannot check with checkExpectArray method as map key ordering is random
+	for i := range 5 {
+		found := false
+		for j := range 5 {
+			if setKeys[j] == keys[i] {
+				found = true
+			}
+		}
+
+		if !found {
+			t.Errorf("Key %s not found in KEYS response array", keys[i])
+		}
+	}
 }

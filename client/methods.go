@@ -83,3 +83,9 @@ func (c *RedisClient) Info() (string, error) {
 		InitRequest(commands.INFO).SetBufSize(4096),
 	)
 }
+
+func (c *RedisClient) Keys() ([]string, error) {
+	return c.SendAndReceiveList(
+		InitRequest(commands.KEYS).SetBufSize(4096),
+	)
+}

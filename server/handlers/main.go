@@ -46,5 +46,6 @@ var commandHandlers = [...]func([]resp.RESPItem) ([]byte, error){
 	list.HandleLRange,
 	list.HandleLGet,
 	server.HandleInfo,
+	key.HandleKeys,
 	key.HandleFlushAll,
 }
