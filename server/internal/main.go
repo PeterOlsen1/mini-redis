@@ -157,8 +157,6 @@ func LPush(key string, values []string) int {
 	items = append(values, items...)
 	store[key].Item = items
 
-	fmt.Printf("LPUSH after: %v\n", items)
-
 	return len(items)
 }
 
@@ -224,17 +222,22 @@ func RPop(key string, num int) ([]string, error) {
 		return nil, errors.WRONGTYPE
 	}
 
-	arr := val.Array()
 	if num <= 0 {
 		return []string{}, nil
 	}
+
+	arr := val.Array()
 	if num >= len(arr) {
 		delete(store, key)
 		return arr, nil
 	}
 
-	ret := arr[num:]
-	val.Item = arr[:num]
+	ret := arr[len(arr)-num:]
+	val.Item = arr[:len(arr)-num]
+
+	for i, j := 0, len(ret)-1; i < j; i, j = i+1, j-1 {
+		ret[i], ret[j] = ret[j], ret[i]
+	}
 
 	return ret, nil
 }

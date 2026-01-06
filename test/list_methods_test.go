@@ -76,8 +76,41 @@ func TestLPopMany(t *testing.T) {
 
 	expect := []string{"test-4", "test-3", "test-2"}
 	respArr, err := c.LPopMany("test2", 3)
-	fmt.Printf("RESP array: %v\n", respArr)
 	checkExpectArray(respArr, err, commands.LPOP, expect, t)
+}
+
+func TestRPopOne(t *testing.T) {
+	c := setupAndFlush(t)
+	defer teardown(c, t)
+
+	s, err := c.Set("test", "TEST")
+	checkExpect(s, err, commands.SET, "OK", t)
+
+	respArr, err := c.RPop("test")
+	checkError(respArr, err, commands.RPOP, errors.WRONGTYPE.Error(), t)
+
+	for i := range 5 {
+		respInt, err := c.LPush("test2", fmt.Sprintf("test-%d", i))
+		checkExpect(respInt, err, commands.LPUSH, i+1, t)
+	}
+
+	expect := []string{"test-0"}
+	respArr, err = c.RPop("test2")
+	checkExpectArray(respArr, err, commands.RPOP, expect, t)
+}
+
+func TestRPopMany(t *testing.T) {
+	c := setupAndFlush(t)
+	defer teardown(c, t)
+
+	for i := range 5 {
+		respInt, err := c.LPush("test2", fmt.Sprintf("test-%d", i))
+		checkExpect(respInt, err, commands.LPUSH, i+1, t)
+	}
+
+	expect := []string{"test-0", "test-1", "test-2"}
+	respArr, err := c.RPopMany("test2", 3)
+	checkExpectArray(respArr, err, commands.RPOP, expect, t)
 }
 
 func TestLRange(t *testing.T) {

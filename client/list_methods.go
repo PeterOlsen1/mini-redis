@@ -31,12 +31,36 @@ func (c *RedisClient) LPop(key string) ([]string, error) {
 }
 
 func (c *RedisClient) LPopMany(key string, num int) ([]string, error) {
+	if num == 0 {
+		return []string{}, nil
+	}
+
 	return c.SendAndReceiveList(
 		InitRequest(commands.LPOP).AddParam(key).AddParamInt(num),
 	)
 }
 
+func (c *RedisClient) RPop(key string) ([]string, error) {
+	return c.SendAndReceiveList(
+		InitRequest(commands.RPOP).AddParam(key),
+	)
+}
+
+func (c *RedisClient) RPopMany(key string, num int) ([]string, error) {
+	if num == 0 {
+		return []string{}, nil
+	}
+
+	return c.SendAndReceiveList(
+		InitRequest(commands.RPOP).AddParam(key).AddParamInt(num),
+	)
+}
+
 func (c *RedisClient) LRange(key string, start int, end int) ([]string, error) {
+	if start > end {
+		return []string{}, nil
+	}
+
 	return c.SendAndReceiveList(
 		InitRequest(commands.LRANGE).AddParam(key).AddParamInt(start).AddParamInt(end),
 	)

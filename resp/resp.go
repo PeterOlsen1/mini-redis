@@ -6,6 +6,9 @@ import (
 	"strings"
 )
 
+// Implementation of RESP - REdis Serialization Protocol
+// Not very thurough, mostly just implemented what I needed for client + server to talk
+
 var BYTE_OK = []byte("+OK\r\n")
 var BYTE_NULL = []byte("_\r\n")
 
@@ -23,9 +26,6 @@ func BYTE_ERR(e error) []byte {
 	serialized, _ := Serialize(e.Error(), ERR)
 	return serialized
 }
-
-// Implementation of the RESP - REdis Serialization Protocol
-// Somewhat naive, as bulk strings are not handled properly (length)
 
 func Serialize(value any, valueType RespType) ([]byte, error) {
 	switch valueType {
