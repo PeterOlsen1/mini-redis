@@ -49,13 +49,13 @@ func openHistoryFile() {
 func writeHistory(line string) {
 	if historyFile == nil {
 		fmt.Printf("failed to write history")
-		os.Exit(-1)
+		os.Exit(1)
 	}
 
 	_, err := historyFile.WriteString(line + "\n")
 	if err != nil {
 		fmt.Printf("failed to write history")
-		os.Exit(-1)
+		os.Exit(1)
 	}
 
 	numLines += 1

@@ -17,14 +17,14 @@ import (
 )
 
 func StartServer(ctx context.Context) error {
-	listener, err := net.Listen("tcp", fmt.Sprintf(":%d", cfg.Config.Server.Port))
+	listener, err := net.Listen("tcp", fmt.Sprintf(":%d", cfg.Server.Port))
 	if err != nil {
 		return err
 	}
 
 	fmt.Println("server running on localhost:6379")
 
-	info.InitServerInfo(cfg.Config.Server.Address, cfg.Config.Server.Port)
+	info.InitServerInfo(cfg.Server.Address, cfg.Server.Port)
 
 	go func() {
 		<-ctx.Done()
@@ -53,13 +53,18 @@ func StartServer(ctx context.Context) error {
 }
 
 func handleConnection(conn net.Conn) error {
-	log.Println("Established connection")
+	if cfg.Log.Connect {
+		log.Printf("Established connection: %s\n", conn.RemoteAddr())
+	}
+
 	info.Connect()
 	defer info.Disconnect()
+	if cfg.Log.Disconnect {
+		defer log.Printf("Disconnect: %s\n", conn.RemoteAddr())
+	}
 	defer conn.Close()
 
 	for {
-		log.Println("Data sent on connection")
 		array, err := parseArray(conn)
 		if err != nil {
 			if err == io.EOF {
@@ -68,6 +73,10 @@ func handleConnection(conn net.Conn) error {
 
 			fmt.Printf("error parsing array: %e\n", err)
 			return err
+		}
+
+		if cfg.Log.DataEvent {
+			log.Printf("Data sent on connection: %s\n", conn.RemoteAddr())
 		}
 
 		err = processArray(conn, array)
@@ -128,7 +137,7 @@ func processArray(conn net.Conn, array []resp.RESPItem) error {
 		item := array[i]
 		cmd := commands.ParseCommand(item.Content)
 
-		if cfg.Config.Info.LogCommands {
+		if cfg.Info.CollectOps && cfg.Info.Command {
 			info.Command(cmd)
 		}
 

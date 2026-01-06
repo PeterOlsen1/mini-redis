@@ -3,6 +3,7 @@ package handlers
 import (
 	"fmt"
 	"mini-redis/resp"
+	"mini-redis/server/cfg"
 	"mini-redis/server/handlers/key"
 	"mini-redis/server/handlers/list"
 	"mini-redis/server/handlers/server"
@@ -11,8 +12,7 @@ import (
 )
 
 func TODO(items []resp.RESPItem) ([]byte, error) {
-	fmt.Printf("Command handler not yet implemented!")
-	return []byte("NOT IMPLEMENTED!!!!"), nil
+	return nil, fmt.Errorf("UNIMPLEMENTED!")
 }
 
 func HandleCommand(cmd commands.Command, args []resp.RESPItem) ([]byte, error) {
@@ -20,7 +20,9 @@ func HandleCommand(cmd commands.Command, args []resp.RESPItem) ([]byte, error) {
 		return nil, fmt.Errorf("invalid command passed to handle command")
 	}
 
-	fmt.Printf("command: %s\nargs: %v\n", cmd.String(), args)
+	if cfg.Log.Command {
+		fmt.Printf("Command: %s\nArgs: %v\n", cmd.String(), args)
+	}
 
 	return commandHandlers[cmd](args)
 }

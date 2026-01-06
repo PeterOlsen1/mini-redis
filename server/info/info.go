@@ -84,6 +84,9 @@ func (o *OpInfo) getOpInfo() string {
 	var out strings.Builder
 	out.WriteString("\n# Operation Info:\n")
 
+	if !cfg.Info.CollectOps {
+		out.WriteString("Info collection is not enabled in configuration.\n")
+	}
 	o.mu.Lock()
 	defer o.mu.Unlock()
 
@@ -91,15 +94,17 @@ func (o *OpInfo) getOpInfo() string {
 	out.WriteString("-Sets: " + strconv.Itoa(o.sets) + "\n")
 	out.WriteString("-Deletes: " + strconv.Itoa(o.deletes) + "\n")
 
-	// if the user wants to log all commands, do it!
-	if cfg.Config.Info.LogCommands {
+	// if the user wants to log all commands, show them
+	if cfg.Info.Command {
 		o.cmd.mu.Lock()
-		fmt.Fprintf(&out, "\n## Commands Run (%d)\n", o.cmd.total)
+		fmt.Fprintf(&out, "## Commands Run (%d)\n", o.cmd.total)
 
 		for i := range commands.NUM_COMMANDS {
 			fmt.Fprintf(&out, "-%s: %d\n", commands.Command(i), o.cmd.cmds[i])
 		}
 		o.cmd.mu.Unlock()
+	} else {
+		out.WriteString("> To see all commands run, enable Info.Command in config\n")
 	}
 
 	return out.String()

@@ -1,6 +1,9 @@
 package info
 
-import "mini-redis/types/commands"
+import (
+	"mini-redis/server/cfg"
+	"mini-redis/types/commands"
+)
 
 type InfoEvent struct {
 	Type InfoEventType
@@ -14,7 +17,6 @@ const (
 	DISCONNECT
 	GET
 	SET
-	LIST
 	EXPIRE
 	DELETE
 	COMMAND
@@ -66,11 +68,42 @@ func init() {
 	}()
 }
 
-func Connect()                     { eventChan <- InfoEvent{Type: CONNECT, Cmd: commands.Command(0)} }
-func Disconnect()                  { eventChan <- InfoEvent{Type: DISCONNECT, Cmd: commands.Command(0)} }
-func GetOp()                       { eventChan <- InfoEvent{Type: GET, Cmd: commands.Command(0)} }
-func SetOp()                       { eventChan <- InfoEvent{Type: SET, Cmd: commands.Command(0)} }
-func ListOp()                      { eventChan <- InfoEvent{Type: LIST, Cmd: commands.Command(0)} }
-func Expire()                      { eventChan <- InfoEvent{Type: EXPIRE, Cmd: commands.Command(0)} }
-func Delete()                      { eventChan <- InfoEvent{Type: DELETE, Cmd: commands.Command(0)} }
-func Command(cmd commands.Command) { eventChan <- InfoEvent{Type: COMMAND, Cmd: cmd} }
+func Connect() {
+	eventChan <- InfoEvent{Type: CONNECT, Cmd: commands.Command(0)}
+}
+func Disconnect() {
+	eventChan <- InfoEvent{Type: DISCONNECT, Cmd: commands.Command(0)}
+}
+
+func GetOp() {
+	if !cfg.Info.CollectOps {
+		return
+	}
+	eventChan <- InfoEvent{Type: GET, Cmd: commands.Command(0)}
+}
+
+func SetOp() {
+	if !cfg.Info.CollectOps {
+		return
+	}
+	eventChan <- InfoEvent{Type: SET, Cmd: commands.Command(0)}
+}
+
+func Expire() {
+	eventChan <- InfoEvent{Type: EXPIRE, Cmd: commands.Command(0)}
+}
+
+func Delete() {
+	if !cfg.Info.CollectOps {
+		return
+	}
+	eventChan <- InfoEvent{Type: DELETE, Cmd: commands.Command(0)}
+}
+
+// the Cmd field is only set on this command beucase type COMMAND is the only one to require it
+func Command(cmd commands.Command) {
+	if !cfg.Info.CollectOps {
+		return
+	}
+	eventChan <- InfoEvent{Type: COMMAND, Cmd: cmd}
+}

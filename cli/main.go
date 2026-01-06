@@ -14,7 +14,7 @@ func main() {
 	c, err := client.NewClient(nil)
 	if err != nil {
 		fmt.Println("failed to establish redis connection, exiting...")
-		os.Exit(-1)
+		os.Exit(1)
 	}
 
 	openHistoryFile()

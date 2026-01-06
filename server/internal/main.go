@@ -33,6 +33,7 @@ func Set(key string, value any) {
 	defer storeMu.Unlock()
 
 	store[key] = newItem(value, types.STRING)
+
 	DelTTL(key)
 }
 

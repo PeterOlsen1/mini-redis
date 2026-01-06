@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"flag"
 	"fmt"
 	"mini-redis/server/cfg"
 	"os"
@@ -10,9 +11,13 @@ import (
 )
 
 func main() {
-	if cfg.InitConfig() != nil {
-		fmt.Println("Failed to read configuration")
-		os.Exit(-1)
+	configPath := flag.String("cfg", "~/.mini-redis/config.yaml", "Location of configuration file")
+	flag.Parse()
+
+	err := cfg.LoadConfig(*configPath)
+	if err != nil {
+		fmt.Println("Failed to read config, exiting")
+		os.Exit(1)
 	}
 
 	ctx, cancel := context.WithCancel(context.Background())

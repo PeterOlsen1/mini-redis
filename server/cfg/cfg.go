@@ -1,28 +1,98 @@
 package cfg
 
+import (
+	"fmt"
+	"os"
+
+	"gopkg.in/yaml.v3"
+)
+
 // UPDATE THIS LATER TO TAKE A YAML CONFIG ARGUMENT ON SERVER START
 
 type ConfigType struct {
-	Server ServerConfig
-	Info   InfoConfig
+	Server ServerConfig `yaml:"server"`
+	Info   InfoConfig   `yaml:"info"`
+	Log    LogConfig    `yaml:"log"`
 }
 
 type ServerConfig struct {
+	// The address on which to run the server
 	Address string `yaml:"address"`
-	Port    int    `yaml:"port"`
+
+	// The port on which to run the server
+	Port int `yaml:"port"`
 }
 
+// For basic operations, disabling logging will result in a ~17% performance increase
 type InfoConfig struct {
-	LogCommands bool `yaml:"log_commands"`
+	// Should we be collecting info?
+	CollectOps bool `yaml:"collect_ops"`
+
+	// Should we collect info on every command?
+	// Adds overhead to every call instead of few
+	Command bool `yaml:"command"`
 }
 
-var Config ConfigType
+type LogConfig struct {
+	// Log connection events
+	Connect bool `yaml:"connect"`
 
-func InitConfig() error {
-	// do some file reading here
-	Config.Server.Address = "localhost"
-	Config.Server.Port = 6379
-	Config.Info.LogCommands = true
+	// Log disconnect events
+	Disconnect bool `yaml:"disconnect"`
+
+	// Log that data is sent by users
+	DataEvent bool `yaml:"data_event"`
+
+	// Log commands sent by users
+	Command bool `yaml:"command"`
+}
+
+var config ConfigType
+var Server ServerConfig
+var Info InfoConfig
+var Log LogConfig
+
+var defaultConfig = ConfigType{
+	Server: ServerConfig{
+		Address: "localhost",
+		Port:    6379,
+	},
+	Info: InfoConfig{
+		CollectOps: true,
+		Command:    false,
+	},
+	Log: LogConfig{
+		Connect:    true,
+		Disconnect: true,
+		DataEvent:  false,
+		Command:    false,
+	},
+}
+
+func LoadConfig(path string) error {
+	f, err := os.Open(path)
+	if err != nil { // just do the default if file open does not work
+		fmt.Println("Failed to read config file, using defaults")
+		config = defaultConfig
+		Server = config.Server
+		Info = config.Info
+		Log = config.Log
+		return nil
+	}
+	defer f.Close()
+
+	// set default config before
+	config = defaultConfig
+	err = yaml.NewDecoder(f).Decode(&config)
+	if err != nil {
+		fmt.Println("Error reading config file:", err)
+		return err
+	}
+
+	// update individual config objects
+	Server = config.Server
+	Info = config.Info
+	Log = config.Log
 
 	return nil
 }
