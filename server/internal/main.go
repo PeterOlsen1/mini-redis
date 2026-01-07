@@ -1,7 +1,6 @@
 package internal
 
 import (
-	"fmt"
 	"maps"
 	"mini-redis/server/info"
 	"mini-redis/types"
@@ -152,8 +151,6 @@ func LPush(key string, values []string) int {
 	if !ok {
 		return -1
 	}
-
-	fmt.Printf("LPUSH before: %v\n", items)
 
 	// append LEFT
 	items = append(values, items...)
