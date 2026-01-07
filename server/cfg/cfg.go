@@ -2,9 +2,7 @@ package cfg
 
 import (
 	"fmt"
-	"log"
 	"os"
-	"path/filepath"
 
 	"gopkg.in/yaml.v3"
 )
@@ -93,18 +91,6 @@ func LoadConfig(path string) error {
 	if err != nil {
 		fmt.Println("Error reading config file:", err)
 		return err
-	}
-
-	if config.Log.File {
-		homeDir, _ := os.UserHomeDir()
-		logDir := filepath.Join(homeDir, ".mini-redis", "logs")
-		os.MkdirAll(logDir, os.ModePerm)
-		outFile, err := os.Open(filepath.Join(logDir, "mini-redis.log"))
-		if err != nil {
-			return err
-		}
-
-		log.SetOutput(outFile)
 	}
 
 	// update individual config objects
