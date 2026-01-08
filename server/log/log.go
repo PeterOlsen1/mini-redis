@@ -1,7 +1,9 @@
 package log
 
 import (
+	"context"
 	"fmt"
+	"log"
 	"os"
 	"path/filepath"
 	"time"
@@ -9,24 +11,31 @@ import (
 
 var curFile *os.File
 
-func StartLogger() error {
-	ticker := time.NewTicker(time.Millisecond * 500)
+func StartLogger(ctx context.Context) error {
+	ticker := time.NewTicker(time.Second * 3) // 3 seconds, slow for testing
 
 	_, err := makeNewFile()
 	if err != nil {
+		fmt.Printf("error creating log file: %e", err)
 		return err
 	}
 
 	go func() {
-		for range ticker.C {
-			upgrade, err := readFileSize()
-			if err != nil {
-				continue
-			}
+		for {
+			select {
+			case <-ticker.C:
+				upgrade, err := readFileSize()
+				if err != nil {
+					continue
+				}
 
-			if upgrade {
+				if upgrade {
+					curFile.Close()
+					makeNewFile()
+				}
+			case <-ctx.Done():
 				curFile.Close()
-				makeNewFile()
+				return
 			}
 		}
 	}()
@@ -55,11 +64,12 @@ func makeNewFile() (*os.File, error) {
 	os.MkdirAll(logDir, os.ModePerm)
 
 	time := time.Now().Format(time.RFC3339)
-	outFile, err := os.Open(filepath.Join(logDir, fmt.Sprintf("mini-redis-%s.log", time)))
+	outFile, err := os.Create(filepath.Join(logDir, fmt.Sprintf("%s.log", time)))
 	if err != nil {
 		return nil, err
 	}
 
+	log.SetOutput(outFile)
 	curFile = outFile
 	return outFile, nil
 }
