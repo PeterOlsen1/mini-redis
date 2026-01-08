@@ -38,6 +38,8 @@ var commandHandlers = [...]func([]resp.RESPItem) ([]byte, error){
 	key.HandleDel,
 	key.HandleExists,
 	key.HandleExpire,
+	key.HandleExpireAt,
+	key.HandleExpireTime,
 	key.HandleTTL,
 	str.HandleIncr,
 	str.HandleDecr,

@@ -25,6 +25,8 @@ const (
 	DEL
 	EXISTS
 	EXPIRE
+	EXPIREAT
+	EXPIRETIME
 	TTL
 	INCR
 	DECR
@@ -50,6 +52,8 @@ var commandStrings = [...]string{
 	"DEL",
 	"EXISTS",
 	"EXPIRE",
+	"EXPIREAT",
+	"EXPIRETIME",
 	"TTL",
 	"INCR",
 	"DECR",

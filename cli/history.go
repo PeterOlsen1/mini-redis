@@ -108,5 +108,6 @@ func execHistory(c *client.RedisClient, n int) {
 	}
 
 	fmt.Println(line)
+	writeHistory(line)
 	handleLineIn(c, line)
 }

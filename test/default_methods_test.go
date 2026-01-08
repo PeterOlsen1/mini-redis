@@ -233,3 +233,24 @@ func TestKeys(t *testing.T) {
 		}
 	}
 }
+
+func TestExpireAtTime(t *testing.T) {
+	c := setupAndFlush(t)
+	defer teardown(c, t)
+
+	respInt, err := c.ExpireTime("hello")
+	checkExpect(respInt, err, commands.EXPIRETIME, -2, t)
+
+	resp, err := c.Set("hello", "hello")
+	checkExpect(resp, err, commands.SET, "OK", t)
+
+	respInt, err = c.ExpireTime("hello")
+	checkExpect(respInt, err, commands.EXPIRETIME, -1, t)
+
+	newTime := time.Now().UnixMilli()/1000 + 10
+	respInt, err = c.ExpireAt("hello", int(newTime))
+	checkExpect(respInt, err, commands.EXPIREAT, int(newTime), t)
+
+	respInt, err = c.ExpireTime("hello")
+	checkExpect(respInt, err, commands.EXPIRETIME, int(newTime), t)
+}

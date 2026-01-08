@@ -21,6 +21,10 @@ type ServerConfig struct {
 
 	// The port on which to run the server
 	Port int `yaml:"port"`
+
+	// The number of ms to check and wipe expired TTLs
+	// Set to <= 0 for no checking
+	TTLCheck int `yaml:"ttl_check"`
 }
 
 // For basic operations, disabling logging will result in a ~17% performance increase
@@ -57,8 +61,9 @@ var Log LogConfig
 
 var defaultConfig = ConfigType{
 	Server: ServerConfig{
-		Address: "localhost",
-		Port:    6379,
+		Address:  "localhost",
+		Port:     6379,
+		TTLCheck: 2000,
 	},
 	Info: InfoConfig{
 		CollectOps: true,

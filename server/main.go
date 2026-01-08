@@ -5,6 +5,7 @@ import (
 	"flag"
 	"fmt"
 	"mini-redis/server/cfg"
+	"mini-redis/server/internal"
 	"mini-redis/server/log"
 	"os"
 	"os/signal"
@@ -33,6 +34,7 @@ func main() {
 
 	ctx, cancel := context.WithCancel(context.Background())
 	log.StartLogger(ctx)
+	internal.StartTTLScan(ctx)
 	StartServer(ctx)
 
 	sig := make(chan os.Signal, 1)

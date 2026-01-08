@@ -89,3 +89,15 @@ func (c *RedisClient) Keys() ([]string, error) {
 		InitRequest(commands.KEYS).SetBufSize(4096),
 	)
 }
+
+func (c *RedisClient) ExpireAt(key string, secs int) (int, error) {
+	return c.SendAndReceiveInt(
+		InitRequest(commands.EXPIREAT).AddParam(key).AddParamInt(secs),
+	)
+}
+
+func (c *RedisClient) ExpireTime(key string) (int, error) {
+	return c.SendAndReceiveInt(
+		InitRequest(commands.EXPIRETIME).AddParam(key),
+	)
+}
