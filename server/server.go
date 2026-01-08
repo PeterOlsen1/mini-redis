@@ -10,6 +10,7 @@ import (
 	"mini-redis/server/cfg"
 	"mini-redis/server/handlers"
 	"mini-redis/server/info"
+	"mini-redis/types"
 	"mini-redis/types/commands"
 	"net"
 	"strconv"
@@ -43,8 +44,12 @@ func StartServer(ctx context.Context) error {
 			}
 		}
 
+		connWrapper := types.Connection{
+			Conn: conn,
+			Auth: false,
+		}
 		go func() {
-			err := handleConnection(conn)
+			err := handleConnection(connWrapper)
 			if err != nil {
 				log.Printf("error handling connection: %e", err)
 			}
@@ -52,17 +57,17 @@ func StartServer(ctx context.Context) error {
 	}
 }
 
-func handleConnection(conn net.Conn) error {
+func handleConnection(conn types.Connection) error {
 	if cfg.Log.Connect {
-		log.Printf("Established connection: %s\n", conn.RemoteAddr())
+		log.Printf("Established connection: %s\n", conn.Conn.RemoteAddr())
 	}
 
 	info.Connect()
 	defer info.Disconnect()
 	if cfg.Log.Disconnect {
-		defer log.Printf("Disconnect: %s\n", conn.RemoteAddr())
+		defer log.Printf("Disconnect: %s\n", conn.Conn.RemoteAddr())
 	}
-	defer conn.Close()
+	defer conn.Conn.Close()
 
 	for {
 		array, err := parseArray(conn)
@@ -76,7 +81,7 @@ func handleConnection(conn net.Conn) error {
 		}
 
 		if cfg.Log.DataEvent {
-			log.Printf("Data sent on connection: %s\n", conn.RemoteAddr())
+			log.Printf("Data sent on connection: %s\n", conn.Conn.RemoteAddr())
 		}
 
 		err = processArray(conn, array)
@@ -87,8 +92,8 @@ func handleConnection(conn net.Conn) error {
 	}
 }
 
-func parseArray(conn net.Conn) ([]resp.RESPItem, error) {
-	reader := bufio.NewReader(conn)
+func parseArray(conn types.Connection) ([]resp.RESPItem, error) {
+	reader := bufio.NewReader(conn.Conn)
 	header, err := reader.ReadString('\n')
 	if err != nil {
 		return nil, err
@@ -131,7 +136,7 @@ func parseArray(conn net.Conn) ([]resp.RESPItem, error) {
 	return array, nil
 }
 
-func processArray(conn net.Conn, array []resp.RESPItem) error {
+func processArray(conn types.Connection, array []resp.RESPItem) error {
 	i := 0
 	for i < len(array) {
 		item := array[i]
@@ -150,13 +155,13 @@ func processArray(conn net.Conn, array []resp.RESPItem) error {
 				i += 1
 			}
 
-			cmdResp, err := handlers.HandleCommand(cmd, args)
+			cmdResp, err := handlers.HandleCommand(conn, cmd, args)
 			if err != nil {
-				if _, writeErr := conn.Write(resp.BYTE_ERR(err)); writeErr != nil {
+				if _, writeErr := conn.Conn.Write(resp.BYTE_ERR(err)); writeErr != nil {
 					return writeErr
 				}
 			} else {
-				if _, writeErr := conn.Write(cmdResp); writeErr != nil {
+				if _, writeErr := conn.Conn.Write(cmdResp); writeErr != nil {
 					return writeErr
 				}
 			}

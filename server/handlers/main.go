@@ -8,6 +8,7 @@ import (
 	"mini-redis/server/handlers/list"
 	"mini-redis/server/handlers/server"
 	str "mini-redis/server/handlers/string"
+	"mini-redis/types"
 	"mini-redis/types/commands"
 )
 
@@ -15,9 +16,13 @@ func TODO(items []resp.RESPItem) ([]byte, error) {
 	return nil, fmt.Errorf("UNIMPLEMENTED!")
 }
 
-func HandleCommand(cmd commands.Command, args []resp.RESPItem) ([]byte, error) {
+func HandleCommand(conn types.Connection, cmd commands.Command, args []resp.RESPItem) ([]byte, error) {
 	if !cmd.Valid() {
 		return nil, fmt.Errorf("invalid command passed to handle command")
+	}
+
+	if cmd != commands.AUTH && !conn.Auth {
+		return nil, fmt.Errorf("user not authenticated")
 	}
 
 	if cfg.Log.Command {
@@ -52,4 +57,5 @@ var commandHandlers = [...]func([]resp.RESPItem) ([]byte, error){
 	server.HandleInfo,
 	key.HandleKeys,
 	key.HandleFlushAll,
+	server.HandleAuth,
 }

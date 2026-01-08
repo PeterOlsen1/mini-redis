@@ -1,5 +1,9 @@
 package types
 
+import (
+	"net"
+)
+
 type StoreItem struct {
 	Type StoreType
 	Item any
@@ -18,3 +22,8 @@ const (
 	STRING StoreType = iota
 	ARRAY
 )
+
+type Connection struct {
+	Conn net.Conn
+	Auth bool
+}

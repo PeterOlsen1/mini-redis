@@ -7,7 +7,10 @@ import (
 	"gopkg.in/yaml.v3"
 )
 
-// UPDATE THIS LATER TO TAKE A YAML CONFIG ARGUMENT ON SERVER START
+type User struct {
+	Username string `yaml:"username"`
+	Password string `yaml:"password"`
+}
 
 type ConfigType struct {
 	Server ServerConfig `yaml:"server"`
@@ -25,6 +28,15 @@ type ServerConfig struct {
 	// The number of ms to check and wipe expired TTLs
 	// Set to <= 0 for no checking
 	TTLCheck int `yaml:"ttl_check"`
+
+	// Set to true if you want to require authentication
+	RequireAuth bool `yaml:"require_auth"`
+
+	// Define a lsit of users
+	Users []User `yaml:"users"`
+
+	// To be loaded once the application runs. Not defined in yaml
+	LoadedUsers []User
 }
 
 // For basic operations, disabling logging will result in a ~17% performance increase
@@ -98,10 +110,35 @@ func LoadConfig(path string) error {
 		return err
 	}
 
+	// homeDir, err := os.UserHomeDir()
+	// if err != nil {
+	// 	fmt.Println("Error getting home directory:", err)
+	// 	os.Exit(1)
+	// }
+
+	// homeFolder := filepath.Join(homeDir, ".mini-redis")
+	// usersFilePath := filepath.Join(homeFolder, "users.acl")
+
+	// err = os.MkdirAll(homeFolder, 0755)
+	// if err != nil {
+	// 	fmt.Println("Failed to create .mini-redis directory:", err)
+	// 	os.Exit(1)
+	// }
+
+	// usersFile, err := os.OpenFile(usersFilePath, os.O_APPEND|os.O_CREATE|os.O_RDWR, 0644)
+	// if err != nil {
+	// 	fmt.Println("Failed to open or create history file:", err)
+	// 	os.Exit(1)
+	// }
+
 	// update individual config objects
 	Server = config.Server
 	Info = config.Info
 	Log = config.Log
+
+	if Server.RequireAuth && len(Server.Users) == 0 {
+		return fmt.Errorf("must have one defined user if authentication is required")
+	}
 
 	return nil
 }

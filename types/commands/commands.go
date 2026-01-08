@@ -39,6 +39,7 @@ const (
 	INFO
 	KEYS
 	FLUSHALL
+	AUTH
 )
 
 const NUM_COMMANDS = len(commandStrings)
@@ -66,6 +67,7 @@ var commandStrings = [...]string{
 	"INFO",
 	"KEYS",
 	"FLUSHALL",
+	"AUTH",
 }
 
 func (c Command) String() string {
