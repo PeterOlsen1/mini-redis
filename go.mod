@@ -2,4 +2,7 @@ module mini-redis
 
 go 1.25.1
 
-require gopkg.in/yaml.v3 v3.0.1
+require (
+	golang.org/x/crypto v0.46.0
+	gopkg.in/yaml.v3 v3.0.1
+)

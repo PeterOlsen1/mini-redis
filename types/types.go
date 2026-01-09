@@ -1,6 +1,7 @@
 package types
 
 import (
+	"mini-redis/server/auth"
 	"net"
 )
 
@@ -26,4 +27,5 @@ const (
 type Connection struct {
 	Conn net.Conn
 	Auth bool
+	auth.User
 }

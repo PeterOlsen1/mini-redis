@@ -2,15 +2,11 @@ package cfg
 
 import (
 	"fmt"
+	"mini-redis/server/auth"
 	"os"
 
 	"gopkg.in/yaml.v3"
 )
-
-type User struct {
-	Username string `yaml:"username"`
-	Password string `yaml:"password"`
-}
 
 type ConfigType struct {
 	Server ServerConfig `yaml:"server"`
@@ -33,10 +29,10 @@ type ServerConfig struct {
 	RequireAuth bool `yaml:"require_auth"`
 
 	// Define a lsit of users
-	Users []User `yaml:"users"`
+	Users []auth.User `yaml:"users"`
 
 	// To be loaded once the application runs. Not defined in yaml
-	LoadedUsers []User
+	LoadedUsers []auth.User
 }
 
 // For basic operations, disabling logging will result in a ~17% performance increase
@@ -110,26 +106,11 @@ func LoadConfig(path string) error {
 		return err
 	}
 
-	// homeDir, err := os.UserHomeDir()
-	// if err != nil {
-	// 	fmt.Println("Error getting home directory:", err)
-	// 	os.Exit(1)
-	// }
-
-	// homeFolder := filepath.Join(homeDir, ".mini-redis")
-	// usersFilePath := filepath.Join(homeFolder, "users.acl")
-
-	// err = os.MkdirAll(homeFolder, 0755)
-	// if err != nil {
-	// 	fmt.Println("Failed to create .mini-redis directory:", err)
-	// 	os.Exit(1)
-	// }
-
-	// usersFile, err := os.OpenFile(usersFilePath, os.O_APPEND|os.O_CREATE|os.O_RDWR, 0644)
-	// if err != nil {
-	// 	fmt.Println("Failed to open or create history file:", err)
-	// 	os.Exit(1)
-	// }
+	users, err := auth.LoadACLUsers()
+	if err != nil {
+		return err
+	}
+	config.Server.LoadedUsers = users
 
 	// update individual config objects
 	Server = config.Server
