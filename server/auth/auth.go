@@ -2,6 +2,7 @@ package auth
 
 import (
 	"fmt"
+	"io"
 	"os"
 	"path/filepath"
 
@@ -44,6 +45,9 @@ func LoadACLUsers() ([]User, error) {
 	users := make([]User, 0)
 	err = decoder.Decode(&users)
 	if err != nil {
+		if err == io.EOF {
+			return users, nil
+		}
 		return nil, err
 	}
 

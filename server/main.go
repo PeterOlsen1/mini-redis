@@ -29,6 +29,7 @@ func main() {
 	err := cfg.LoadConfig(*configPath)
 	if err != nil {
 		fmt.Println("Failed to read config, exiting")
+		fmt.Printf("Error: %e\n", err)
 		os.Exit(1)
 	}
 

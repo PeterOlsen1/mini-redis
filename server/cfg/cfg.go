@@ -72,6 +72,13 @@ var defaultConfig = ConfigType{
 		Address:  "localhost",
 		Port:     6379,
 		TTLCheck: 2000,
+		Users: []auth.User{
+			{
+				Username: "admin",
+				Password: "admin",
+				Perms:    0b111,
+			},
+		},
 	},
 	Info: InfoConfig{
 		CollectOps: true,
@@ -102,7 +109,6 @@ func LoadConfig(path string) error {
 	config = defaultConfig
 	err = yaml.NewDecoder(f).Decode(&config)
 	if err != nil {
-		fmt.Println("Error reading config file:", err)
 		return err
 	}
 
