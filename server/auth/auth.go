@@ -9,12 +9,6 @@ import (
 	"gopkg.in/yaml.v3"
 )
 
-type User struct {
-	Username string `yaml:"username"`
-	Password string `yaml:"password"`
-	Perms    int    `yaml:"perms"`
-}
-
 func OpenACLFile() (*os.File, error) {
 	homeDir, err := os.UserHomeDir()
 	if err != nil {
@@ -86,4 +80,33 @@ func AddACLUser(username string, password string, perms int) error {
 
 	encoder := yaml.NewEncoder(userFile)
 	return encoder.Encode(users)
+}
+
+func CheckACLUser(username string, password string) (bool, error) {
+	userFile, err := OpenACLFile()
+	if err != nil {
+		return false, err
+	}
+
+	defer userFile.Close()
+
+	decoder := yaml.NewDecoder(userFile)
+	users := make([]User, 0)
+	err = decoder.Decode(&users)
+	if err != nil {
+		return false, err
+	}
+
+	for _, u := range users {
+		if u.Username != username {
+			continue
+		}
+
+		err := bcrypt.CompareHashAndPassword([]byte(u.Password), []byte(password))
+		if err == nil {
+			return true, nil
+		}
+	}
+
+	return false, fmt.Errorf("user not found")
 }
