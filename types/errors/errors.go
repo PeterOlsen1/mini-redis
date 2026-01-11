@@ -2,6 +2,7 @@ package errors
 
 import (
 	"fmt"
+	"mini-redis/server/auth"
 	"mini-redis/types/commands"
 )
 
@@ -10,4 +11,17 @@ var NOT_INTEGER = fmt.Errorf("value is not an integer or out of range")
 var INVALID_ARG = fmt.Errorf("INVALID_ARG failed to parse integer argument") //make into a function to return invaid argument?
 func ARG_COUNT(cmd commands.Command, count int) error {
 	return fmt.Errorf("%s requires %d arguments", cmd, count)
+}
+
+func PERMISSIONS(cmd commands.Command, perm int) error {
+	switch perm {
+	case auth.ADMIN:
+		return fmt.Errorf("%s requires admin privileges", cmd.String())
+	case auth.READ:
+		return fmt.Errorf("%s requires read privileges", cmd.String())
+	case auth.WRITE:
+		return fmt.Errorf("%s requires write privileges", cmd.String())
+	}
+
+	return nil
 }

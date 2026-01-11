@@ -2,12 +2,17 @@ package string
 
 import (
 	"mini-redis/resp"
+	"mini-redis/server/auth"
 	"mini-redis/server/internal"
 	"mini-redis/types/commands"
 	"mini-redis/types/errors"
 )
 
-func HandleDecr(args []resp.RESPItem) ([]byte, error) {
+func HandleDecr(user auth.User, args []resp.RESPItem) ([]byte, error) {
+	if !user.Write() {
+		return nil, errors.PERMISSIONS(commands.DECR, auth.WRITE)
+	}
+
 	if len(args) < 1 {
 		return nil, errors.ARG_COUNT(commands.DECR, 1)
 	}

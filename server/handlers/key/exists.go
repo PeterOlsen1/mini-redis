@@ -2,12 +2,17 @@ package key
 
 import (
 	"mini-redis/resp"
+	"mini-redis/server/auth"
 	"mini-redis/server/internal"
 	"mini-redis/types/commands"
 	"mini-redis/types/errors"
 )
 
-func HandleExists(args []resp.RESPItem) ([]byte, error) {
+func HandleExists(user auth.User, args []resp.RESPItem) ([]byte, error) {
+	if !user.Read() {
+		return nil, errors.PERMISSIONS(commands.LGET, auth.READ)
+	}
+
 	if len(args) < 1 {
 		return nil, errors.ARG_COUNT(commands.EXISTS, 1)
 	}

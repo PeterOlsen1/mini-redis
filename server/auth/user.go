@@ -11,14 +11,36 @@ type User struct {
 	Perms int `yaml:"perms"`
 }
 
+const ADMIN = 0b1
+const READ = 0b10
+const WRITE = 0b100
+
+var authRequired = false
+
+func SetAuthRequired(new bool) {
+	authRequired = new
+}
+
 func (u User) Admin() bool {
-	return u.Perms&0b1 != 0
+	if !authRequired {
+		return true
+	}
+
+	return u.Perms&ADMIN != 0
 }
 
 func (u User) Read() bool {
-	return u.Perms&0b10 != 0
+	if !authRequired {
+		return true
+	}
+
+	return u.Perms&READ != 0
 }
 
 func (u User) Write() bool {
-	return u.Perms&0b100 != 0
+	if !authRequired {
+		return true
+	}
+
+	return u.Perms&WRITE != 0
 }

@@ -4,6 +4,7 @@ import (
 	"context"
 	"flag"
 	"fmt"
+	"mini-redis/server/auth"
 	"mini-redis/server/cfg"
 	"mini-redis/server/internal"
 	"mini-redis/server/log"
@@ -32,6 +33,7 @@ func main() {
 		fmt.Printf("Error: %e\n", err)
 		os.Exit(1)
 	}
+	auth.SetAuthRequired(cfg.Server.RequireAuth) // use this hook to avoid circular imports
 
 	ctx, cancel := context.WithCancel(context.Background())
 	log.StartLogger(ctx)

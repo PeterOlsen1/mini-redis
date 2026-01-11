@@ -2,12 +2,17 @@ package key
 
 import (
 	"mini-redis/resp"
+	"mini-redis/server/auth"
 	"mini-redis/server/internal"
 	"mini-redis/types/commands"
 	"mini-redis/types/errors"
 )
 
-func HandleTTL(params []resp.RESPItem) ([]byte, error) {
+func HandleTTL(user auth.User, params []resp.RESPItem) ([]byte, error) {
+	if !user.Read() {
+		return nil, errors.PERMISSIONS(commands.TTL, auth.READ)
+	}
+
 	if len(params) < 1 {
 		return nil, errors.ARG_COUNT(commands.TTL, 1)
 	}

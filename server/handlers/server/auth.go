@@ -9,7 +9,7 @@ import (
 	"mini-redis/types/errors"
 )
 
-func HandleAuth(args []resp.RESPItem) ([]byte, error) {
+func HandleAuth(user auth.User, args []resp.RESPItem) ([]byte, error) {
 	if len(args) < 2 {
 		return nil, errors.ARG_COUNT(commands.AUTH, 2)
 	}
@@ -25,7 +25,7 @@ func HandleAuth(args []resp.RESPItem) ([]byte, error) {
 
 	match, err := auth.CheckACLUser(username, pass)
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("could not authenticate")
 	}
 
 	if match {

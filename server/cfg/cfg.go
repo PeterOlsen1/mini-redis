@@ -69,9 +69,10 @@ var Log LogConfig
 
 var defaultConfig = ConfigType{
 	Server: ServerConfig{
-		Address:  "localhost",
-		Port:     6379,
-		TTLCheck: 2000,
+		Address:     "localhost",
+		Port:        6379,
+		TTLCheck:    2000,
+		RequireAuth: true,
 		Users: []auth.User{
 			{
 				Username: "admin",
@@ -109,7 +110,12 @@ func LoadConfig(path string) error {
 	config = defaultConfig
 	err = yaml.NewDecoder(f).Decode(&config)
 	if err != nil {
-		return err
+		fmt.Println("Failed to read config file, using defaults")
+		config = defaultConfig
+		Server = config.Server
+		Info = config.Info
+		Log = config.Log
+		return nil
 	}
 
 	users, err := auth.LoadACLUsers()

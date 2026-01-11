@@ -2,13 +2,18 @@ package list
 
 import (
 	"mini-redis/resp"
+	"mini-redis/server/auth"
 	"mini-redis/server/internal"
 	"mini-redis/types/commands"
 	"mini-redis/types/errors"
 	"strconv"
 )
 
-func HandleLRange(args []resp.RESPItem) ([]byte, error) {
+func HandleLRange(user auth.User, args []resp.RESPItem) ([]byte, error) {
+	if !user.Read() {
+		return nil, errors.PERMISSIONS(commands.LGET, auth.READ)
+	}
+
 	if len(args) < 3 {
 		return nil, errors.ARG_COUNT(commands.LRANGE, 3)
 	}

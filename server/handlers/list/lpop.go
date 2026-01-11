@@ -3,13 +3,18 @@ package list
 import (
 	"fmt"
 	"mini-redis/resp"
+	"mini-redis/server/auth"
 	"mini-redis/server/internal"
 	"mini-redis/types/commands"
 	"mini-redis/types/errors"
 	"strconv"
 )
 
-func HandleLPop(args []resp.RESPItem) ([]byte, error) {
+func HandleLPop(user auth.User, args []resp.RESPItem) ([]byte, error) {
+	if !user.Write() {
+		return nil, errors.PERMISSIONS(commands.LPOP, auth.WRITE)
+	}
+
 	if len(args) < 1 {
 		return nil, errors.ARG_COUNT(commands.LPOP, 1)
 	}
