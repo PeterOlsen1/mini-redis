@@ -40,6 +40,8 @@ const (
 	KEYS
 	FLUSHALL
 	AUTH
+	LOGOUT
+	WHOAMI
 )
 
 const NUM_COMMANDS = len(commandStrings)
@@ -68,6 +70,8 @@ var commandStrings = [...]string{
 	"KEYS",
 	"FLUSHALL",
 	"AUTH",
+	"LOGOUT",
+	"WHOAMI",
 }
 
 func (c Command) String() string {

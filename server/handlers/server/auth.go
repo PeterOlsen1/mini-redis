@@ -19,6 +19,8 @@ func HandleAuth(user *auth.User, args []resp.RESPItem) ([]byte, error) {
 
 	for _, u := range cfg.Server.Users {
 		if u.Username == username && u.Password == pass {
+			user.Username = u.Username
+			user.Perms = u.Perms
 			return resp.BYTE_OK, nil
 		}
 	}

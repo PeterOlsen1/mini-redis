@@ -11,7 +11,7 @@ import (
 
 func HandleLRange(user *auth.User, args []resp.RESPItem) ([]byte, error) {
 	if !user.Read() {
-		return nil, errors.PERMISSIONS(commands.LGET, auth.READ)
+		return nil, errors.PERMISSIONS(commands.LRANGE, auth.READ)
 	}
 
 	if len(args) < 3 {

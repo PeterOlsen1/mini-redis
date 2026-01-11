@@ -28,7 +28,7 @@ func HandleCommand(conn types.Connection, cmd commands.Command, args []resp.RESP
 		fmt.Printf("Command: %s\nArgs: %v\n", cmd.String(), args)
 	}
 
-	return commandHandlers[cmd](&conn.User, args)
+	return commandHandlers[cmd](conn.User, args)
 }
 
 // check "command" enum for order of commands
@@ -57,4 +57,6 @@ var commandHandlers = [...]func(*auth.User, []resp.RESPItem) ([]byte, error){
 	key.HandleKeys,
 	key.HandleFlushAll,
 	server.HandleAuth,
+	server.HandleLogout,
+	server.HandleWhoami,
 }

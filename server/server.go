@@ -47,7 +47,7 @@ func StartServer(ctx context.Context) error {
 
 		connWrapper := types.Connection{
 			Conn: conn,
-			User: auth.User{
+			User: &auth.User{
 				Username: "",
 				Password: "",
 				Perms:    0,

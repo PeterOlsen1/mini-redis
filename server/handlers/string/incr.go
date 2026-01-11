@@ -10,7 +10,7 @@ import (
 
 func HandleIncr(user *auth.User, args []resp.RESPItem) ([]byte, error) {
 	if !user.Write() {
-		return nil, errors.PERMISSIONS(commands.DECR, auth.WRITE)
+		return nil, errors.PERMISSIONS(commands.INCR, auth.WRITE)
 	}
 
 	if len(args) < 1 {

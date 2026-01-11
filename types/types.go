@@ -26,5 +26,5 @@ const (
 
 type Connection struct {
 	Conn net.Conn
-	auth.User
+	*auth.User
 }

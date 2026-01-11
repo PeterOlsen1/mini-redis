@@ -1,14 +1,15 @@
 package server
 
 import (
-	"fmt"
 	"mini-redis/resp"
 	"mini-redis/server/auth"
+	"mini-redis/types/commands"
+	"mini-redis/types/errors"
 )
 
 func HandleEcho(_ *auth.User, args []resp.RESPItem) ([]byte, error) {
-	if len(args) == 0 {
-		return nil, fmt.Errorf("Echo requires 1 argument")
+	if len(args) < 1 {
+		return nil, errors.ARG_COUNT(commands.ECHO, 1)
 	} else {
 		return resp.BYTE_STRING(args[0].Content), nil
 	}
