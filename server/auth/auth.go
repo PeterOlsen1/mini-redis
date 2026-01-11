@@ -33,7 +33,7 @@ func OpenACLFile() (*os.File, error) {
 	return userFile, nil
 }
 
-func LoadACLUsers() ([]User, error) {
+func GetACLUsers() ([]User, error) {
 	userFile, err := OpenACLFile()
 	if err != nil {
 		return nil, err
@@ -81,6 +81,38 @@ func AddACLUser(username string, password string, perms int) error {
 	}
 
 	users = append(users, newUser)
+
+	encoder := yaml.NewEncoder(userFile)
+	return encoder.Encode(users)
+}
+
+func RemoveACLUser(username string) error {
+	userFile, err := OpenACLFile()
+	if err != nil {
+		return err
+	}
+
+	defer userFile.Close()
+
+	decoder := yaml.NewDecoder(userFile)
+	users := make([]User, 0)
+	err = decoder.Decode(&users)
+	if err != nil {
+		return err
+	}
+
+	found := false
+	for i, u := range users {
+		if u.Username == username {
+			users = append(users[:i], users[i+1:]...)
+			found = true
+			break
+		}
+	}
+
+	if !found {
+		return fmt.Errorf("user could not be found")
+	}
 
 	encoder := yaml.NewEncoder(userFile)
 	return encoder.Encode(users)

@@ -8,7 +8,7 @@ import (
 	"mini-redis/types/errors"
 )
 
-func HandleKeys(user *auth.User, _ []resp.RESPItem) ([]byte, error) {
+func HandleKeys(user *auth.User, _ resp.ArgList) ([]byte, error) {
 	if !user.Read() {
 		return nil, errors.PERMISSIONS(commands.KEYS, auth.READ)
 	}

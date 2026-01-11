@@ -9,7 +9,7 @@ import (
 	"mini-redis/types/errors"
 )
 
-func HandleAuth(user *auth.User, args []resp.RESPItem) ([]byte, error) {
+func HandleAuth(user *auth.User, args resp.ArgList) ([]byte, error) {
 	if len(args) < 2 {
 		return nil, errors.ARG_COUNT(commands.AUTH, 2)
 	}

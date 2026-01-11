@@ -13,11 +13,11 @@ import (
 	"mini-redis/types/commands"
 )
 
-func TODO(items []resp.RESPItem) ([]byte, error) {
+func TODO(items resp.ArgList) ([]byte, error) {
 	return nil, fmt.Errorf("UNIMPLEMENTED!")
 }
 
-func HandleCommand(conn types.Connection, cmd commands.Command, args []resp.RESPItem) ([]byte, error) {
+func HandleCommand(conn types.Connection, cmd commands.Command, args resp.ArgList) ([]byte, error) {
 	if !cmd.Valid() {
 		return nil, fmt.Errorf("invalid command passed to handle command")
 	}
@@ -33,7 +33,7 @@ func HandleCommand(conn types.Connection, cmd commands.Command, args []resp.RESP
 
 // check "command" enum for order of commands
 // must be in order of commands in the enum type, since the map is indexed 0..n
-var commandHandlers = [...]func(*auth.User, []resp.RESPItem) ([]byte, error){
+var commandHandlers = [...]func(*auth.User, resp.ArgList) ([]byte, error){
 	HandleNone,
 	server.HandlePing,
 	server.HandleEcho,
@@ -59,4 +59,5 @@ var commandHandlers = [...]func(*auth.User, []resp.RESPItem) ([]byte, error){
 	server.HandleAuth,
 	server.HandleLogout,
 	server.HandleWhoami,
+	server.HandleSetUser,
 }

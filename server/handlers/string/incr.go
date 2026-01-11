@@ -8,7 +8,7 @@ import (
 	"mini-redis/types/errors"
 )
 
-func HandleIncr(user *auth.User, args []resp.RESPItem) ([]byte, error) {
+func HandleIncr(user *auth.User, args resp.ArgList) ([]byte, error) {
 	if !user.Write() {
 		return nil, errors.PERMISSIONS(commands.INCR, auth.WRITE)
 	}

@@ -8,7 +8,7 @@ import (
 	"strconv"
 )
 
-func HandleInfo(_ *auth.User, _ []resp.RESPItem) ([]byte, error) {
+func HandleInfo(_ *auth.User, _ resp.ArgList) ([]byte, error) {
 	// take information given from server, add total keys as well
 	respInfo := info.GetInfo()
 	respInfo += "-Total keys: " + strconv.Itoa(internal.GetStoreSize()) + "\n"

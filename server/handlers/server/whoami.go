@@ -6,7 +6,7 @@ import (
 	"mini-redis/server/auth"
 )
 
-func HandleWhoami(user *auth.User, args []resp.RESPItem) ([]byte, error) {
+func HandleWhoami(user *auth.User, args resp.ArgList) ([]byte, error) {
 	if user == nil || user.Username == "" {
 		return nil, fmt.Errorf("user is not authenticated")
 	}

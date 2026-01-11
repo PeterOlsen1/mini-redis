@@ -8,7 +8,7 @@ import (
 	"mini-redis/types/errors"
 )
 
-func HandleExpireTime(user *auth.User, args []resp.RESPItem) ([]byte, error) {
+func HandleExpireTime(user *auth.User, args resp.ArgList) ([]byte, error) {
 	if !user.Read() {
 		return nil, errors.PERMISSIONS(commands.EXPIRETIME, auth.READ)
 	}

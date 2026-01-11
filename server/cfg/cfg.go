@@ -118,7 +118,7 @@ func LoadConfig(path string) error {
 		return nil
 	}
 
-	users, err := auth.LoadACLUsers()
+	users, err := auth.GetACLUsers()
 	if err != nil {
 		return err
 	}

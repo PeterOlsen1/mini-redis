@@ -97,7 +97,7 @@ func handleConnection(conn types.Connection) error {
 	}
 }
 
-func parseArray(conn types.Connection) ([]resp.RESPItem, error) {
+func parseArray(conn types.Connection) (resp.ArgList, error) {
 	reader := bufio.NewReader(conn.Conn)
 	header, err := reader.ReadString('\n')
 	if err != nil {
@@ -111,7 +111,7 @@ func parseArray(conn types.Connection) ([]resp.RESPItem, error) {
 		return nil, err
 	}
 
-	array := make([]resp.RESPItem, 0, arrayLen)
+	array := make(resp.ArgList, 0, arrayLen)
 
 	for range arrayLen {
 		line, err := reader.ReadString('\n')
@@ -141,7 +141,7 @@ func parseArray(conn types.Connection) ([]resp.RESPItem, error) {
 	return array, nil
 }
 
-func processArray(conn types.Connection, array []resp.RESPItem) error {
+func processArray(conn types.Connection, array resp.ArgList) error {
 	i := 0
 	for i < len(array) {
 		item := array[i]
@@ -152,7 +152,7 @@ func processArray(conn types.Connection, array []resp.RESPItem) error {
 		}
 
 		if cmd != 0 {
-			args := make([]resp.RESPItem, 0)
+			args := make(resp.ArgList, 0)
 
 			i += 1
 			for i < len(array) && !commands.ParseCommand(array[i].Content).Valid() {

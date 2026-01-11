@@ -6,7 +6,7 @@ import (
 	"mini-redis/server/auth"
 )
 
-func HandleLogout(user *auth.User, args []resp.RESPItem) ([]byte, error) {
+func HandleLogout(user *auth.User, args resp.ArgList) ([]byte, error) {
 	if user == nil {
 		return nil, fmt.Errorf("user is not authenticated")
 	}

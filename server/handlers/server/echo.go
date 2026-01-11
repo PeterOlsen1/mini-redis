@@ -7,7 +7,7 @@ import (
 	"mini-redis/types/errors"
 )
 
-func HandleEcho(_ *auth.User, args []resp.RESPItem) ([]byte, error) {
+func HandleEcho(_ *auth.User, args resp.ArgList) ([]byte, error) {
 	if len(args) < 1 {
 		return nil, errors.ARG_COUNT(commands.ECHO, 1)
 	} else {
