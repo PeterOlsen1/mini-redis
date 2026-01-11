@@ -8,10 +8,11 @@ import (
 	"mini-redis/types/errors"
 )
 
-func HandleLGet(user auth.User, args []resp.RESPItem) ([]byte, error) {
+func HandleLGet(user *auth.User, args []resp.RESPItem) ([]byte, error) {
 	if !user.Read() {
 		return nil, errors.PERMISSIONS(commands.LGET, auth.READ)
 	}
+
 	if len(args) < 1 {
 		return nil, errors.ARG_COUNT(commands.LGET, 1)
 	}

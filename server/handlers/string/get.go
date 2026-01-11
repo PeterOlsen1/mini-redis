@@ -9,7 +9,7 @@ import (
 	"mini-redis/types/errors"
 )
 
-func HandleGet(user auth.User, args []resp.RESPItem) ([]byte, error) {
+func HandleGet(user *auth.User, args []resp.RESPItem) ([]byte, error) {
 	if !user.Read() {
 		return nil, errors.PERMISSIONS(commands.GET, auth.READ)
 	}

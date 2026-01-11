@@ -8,7 +8,7 @@ import (
 	"mini-redis/types/errors"
 )
 
-func HandleTTL(user auth.User, params []resp.RESPItem) ([]byte, error) {
+func HandleTTL(user *auth.User, params []resp.RESPItem) ([]byte, error) {
 	if !user.Read() {
 		return nil, errors.PERMISSIONS(commands.TTL, auth.READ)
 	}

@@ -9,7 +9,7 @@ import (
 	"mini-redis/types/errors"
 )
 
-func HandleSet(user auth.User, args []resp.RESPItem) ([]byte, error) {
+func HandleSet(user *auth.User, args []resp.RESPItem) ([]byte, error) {
 	if !user.Write() {
 		return nil, errors.PERMISSIONS(commands.DECR, auth.WRITE)
 	}

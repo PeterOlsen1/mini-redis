@@ -7,6 +7,7 @@ import (
 	"io"
 	"log"
 	"mini-redis/resp"
+	"mini-redis/server/auth"
 	"mini-redis/server/cfg"
 	"mini-redis/server/handlers"
 	"mini-redis/server/info"
@@ -46,7 +47,11 @@ func StartServer(ctx context.Context) error {
 
 		connWrapper := types.Connection{
 			Conn: conn,
-			Auth: false,
+			User: auth.User{
+				Username: "",
+				Password: "",
+				Perms:    0,
+			},
 		}
 		go func() {
 			err := handleConnection(connWrapper)

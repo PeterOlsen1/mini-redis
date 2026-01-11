@@ -129,6 +129,8 @@ func LoadConfig(path string) error {
 	Info = config.Info
 	Log = config.Log
 
+	auth.SetAuthRequired(Server.RequireAuth) // use this hook to avoid circular imports
+
 	if Server.RequireAuth && len(Server.Users) == 0 {
 		return fmt.Errorf("must have one defined user if authentication is required")
 	}

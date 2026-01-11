@@ -22,20 +22,18 @@ func HandleCommand(conn types.Connection, cmd commands.Command, args []resp.RESP
 		return nil, fmt.Errorf("invalid command passed to handle command")
 	}
 
-	if cmd != commands.AUTH && !conn.Auth {
-		return nil, fmt.Errorf("user not authenticated")
-	}
+	fmt.Printf("user: %s", conn.User.Username)
 
 	if cfg.Log.Command {
 		fmt.Printf("Command: %s\nArgs: %v\n", cmd.String(), args)
 	}
 
-	return commandHandlers[cmd](conn.User, args)
+	return commandHandlers[cmd](&conn.User, args)
 }
 
 // check "command" enum for order of commands
 // must be in order of commands in the enum type, since the map is indexed 0..n
-var commandHandlers = [...]func(auth.User, []resp.RESPItem) ([]byte, error){
+var commandHandlers = [...]func(*auth.User, []resp.RESPItem) ([]byte, error){
 	HandleNone,
 	server.HandlePing,
 	server.HandleEcho,

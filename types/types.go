@@ -26,6 +26,5 @@ const (
 
 type Connection struct {
 	Conn net.Conn
-	Auth bool
 	auth.User
 }

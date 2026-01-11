@@ -8,7 +8,7 @@ import (
 	"mini-redis/types/errors"
 )
 
-func HandleDel(user auth.User, args []resp.RESPItem) ([]byte, error) {
+func HandleDel(user *auth.User, args []resp.RESPItem) ([]byte, error) {
 	if !user.Write() {
 		return nil, errors.PERMISSIONS(commands.DEL, auth.WRITE)
 	}

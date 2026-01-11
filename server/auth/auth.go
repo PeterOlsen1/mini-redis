@@ -86,10 +86,10 @@ func AddACLUser(username string, password string, perms int) error {
 	return encoder.Encode(users)
 }
 
-func CheckACLUser(username string, password string) (bool, error) {
+func CheckACLUser(username string, password string) (*User, error) {
 	userFile, err := OpenACLFile()
 	if err != nil {
-		return false, err
+		return nil, err
 	}
 
 	defer userFile.Close()
@@ -98,7 +98,7 @@ func CheckACLUser(username string, password string) (bool, error) {
 	users := make([]User, 0)
 	err = decoder.Decode(&users)
 	if err != nil {
-		return false, err
+		return nil, err
 	}
 
 	for _, u := range users {
@@ -108,9 +108,9 @@ func CheckACLUser(username string, password string) (bool, error) {
 
 		err := bcrypt.CompareHashAndPassword([]byte(u.Password), []byte(password))
 		if err == nil {
-			return true, nil
+			return &u, nil
 		}
 	}
 
-	return false, fmt.Errorf("user not found")
+	return nil, fmt.Errorf("user not found")
 }

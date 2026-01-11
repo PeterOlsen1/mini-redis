@@ -8,7 +8,7 @@ import (
 	"mini-redis/types/errors"
 )
 
-func HandleRPush(user auth.User, args []resp.RESPItem) ([]byte, error) {
+func HandleRPush(user *auth.User, args []resp.RESPItem) ([]byte, error) {
 	if !user.Write() {
 		return nil, errors.PERMISSIONS(commands.RPUSH, auth.WRITE)
 	}

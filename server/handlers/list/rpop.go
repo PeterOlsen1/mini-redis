@@ -10,7 +10,7 @@ import (
 	"strconv"
 )
 
-func HandleRPop(user auth.User, args []resp.RESPItem) ([]byte, error) {
+func HandleRPop(user *auth.User, args []resp.RESPItem) ([]byte, error) {
 	if !user.Write() {
 		return nil, errors.PERMISSIONS(commands.RPOP, auth.WRITE)
 	}

@@ -10,7 +10,7 @@ import (
 	"strconv"
 )
 
-func HandleExpire(user auth.User, params []resp.RESPItem) ([]byte, error) {
+func HandleExpire(user *auth.User, params []resp.RESPItem) ([]byte, error) {
 	if !user.Write() {
 		return nil, errors.PERMISSIONS(commands.EXPIRE, auth.WRITE)
 	}

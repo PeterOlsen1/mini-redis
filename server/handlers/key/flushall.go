@@ -8,7 +8,7 @@ import (
 	"mini-redis/types/errors"
 )
 
-func HandleFlushAll(user auth.User, _ []resp.RESPItem) ([]byte, error) {
+func HandleFlushAll(user *auth.User, _ []resp.RESPItem) ([]byte, error) {
 	if !user.Write() {
 		return nil, errors.PERMISSIONS(commands.FLUSHALL, auth.WRITE)
 	}
