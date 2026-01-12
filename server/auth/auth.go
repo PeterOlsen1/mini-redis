@@ -54,10 +54,10 @@ func GetACLUsers() ([]User, error) {
 	return users, nil
 }
 
-func AddACLUser(username string, password string, perms int) error {
+func AddACLUser(username string, password string, perms int) ([]User, error) {
 	userFile, err := OpenACLFile()
 	if err != nil {
-		return err
+		return nil, err
 	}
 
 	defer userFile.Close()
@@ -65,13 +65,13 @@ func AddACLUser(username string, password string, perms int) error {
 	decoder := yaml.NewDecoder(userFile)
 	users := make([]User, 0)
 	err = decoder.Decode(&users)
-	if err != nil {
-		return err
+	if err != nil && err != io.EOF {
+		return nil, err
 	}
 
 	hashedPass, err := bcrypt.GenerateFromPassword([]byte(password), bcrypt.DefaultCost)
 	if err != nil {
-		return err
+		return nil, err
 	}
 
 	newUser := User{
@@ -83,7 +83,12 @@ func AddACLUser(username string, password string, perms int) error {
 	users = append(users, newUser)
 
 	encoder := yaml.NewEncoder(userFile)
-	return encoder.Encode(users)
+	err = encoder.Encode(users)
+	if err != nil {
+		return nil, err
+	}
+
+	return users, nil
 }
 
 func RemoveACLUser(username string) error {
@@ -97,7 +102,7 @@ func RemoveACLUser(username string) error {
 	decoder := yaml.NewDecoder(userFile)
 	users := make([]User, 0)
 	err = decoder.Decode(&users)
-	if err != nil {
+	if err != nil { // accept EOF error since we cannot remove from empty file
 		return err
 	}
 
@@ -129,7 +134,7 @@ func CheckACLUser(username string, password string) (*User, error) {
 	decoder := yaml.NewDecoder(userFile)
 	users := make([]User, 0)
 	err = decoder.Decode(&users)
-	if err != nil {
+	if err != nil && err != io.EOF {
 		return nil, err
 	}
 

@@ -1,7 +1,6 @@
 package server
 
 import (
-	"fmt"
 	"mini-redis/resp"
 	"mini-redis/server/auth"
 	"mini-redis/server/cfg"
@@ -10,6 +9,10 @@ import (
 )
 
 func HandleAuth(user *auth.User, args resp.ArgList) ([]byte, error) {
+	if user.Username != "" && user.Perms == 0 {
+		return nil, errors.ALREADY_AUTH
+	}
+
 	if len(args) < 2 {
 		return nil, errors.ARG_COUNT(commands.AUTH, 2)
 	}
@@ -27,7 +30,7 @@ func HandleAuth(user *auth.User, args resp.ArgList) ([]byte, error) {
 
 	newUser, err := auth.CheckACLUser(username, pass)
 	if err != nil {
-		return nil, fmt.Errorf("could not authenticate")
+		return nil, errors.COULD_NOT_AUTHENTICATE
 	}
 
 	if newUser != nil {
@@ -37,5 +40,5 @@ func HandleAuth(user *auth.User, args resp.ArgList) ([]byte, error) {
 		return resp.BYTE_OK, nil
 	}
 
-	return nil, fmt.Errorf("could not authenticate")
+	return nil, errors.COULD_NOT_AUTHENTICATE
 }

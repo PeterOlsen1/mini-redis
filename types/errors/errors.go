@@ -25,3 +25,6 @@ func PERMISSIONS(cmd commands.Command, perm int) error {
 
 	return nil
 }
+
+var ALREADY_AUTH = fmt.Errorf("user is already authenticated. use logout to destroy session")
+var COULD_NOT_AUTHENTICATE = fmt.Errorf("could not authenticate")

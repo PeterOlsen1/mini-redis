@@ -1,7 +1,6 @@
 package internal
 
 import (
-	"fmt"
 	"maps"
 	"mini-redis/server/info"
 	"mini-redis/types"
@@ -28,12 +27,9 @@ func newItem(value any, storeType types.StoreType) *types.StoreItem {
 }
 
 func Set(key string, value any) {
-	fmt.Println("set op")
 	info.SetOp()
-	fmt.Println("store mu lock")
 	storeMu.Lock()
 	store[key] = newItem(value, types.STRING)
-	fmt.Println("store unlock")
 	storeMu.Unlock()
 
 	DelTTL(key)

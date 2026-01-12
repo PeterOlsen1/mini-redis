@@ -22,8 +22,6 @@ func HandleCommand(conn types.Connection, cmd commands.Command, args resp.ArgLis
 		return nil, fmt.Errorf("invalid command passed to handle command")
 	}
 
-	fmt.Printf("user: %s", conn.User.Username)
-
 	if cfg.Log.Command {
 		fmt.Printf("Command: %s\nArgs: %v\n", cmd.String(), args)
 	}
