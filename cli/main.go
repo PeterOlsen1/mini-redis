@@ -11,7 +11,10 @@ import (
 )
 
 func main() {
-	c, err := client.NewClient(nil)
+	c, err := client.NewClient(&client.ClientOptions{
+		URL: "redis://admin:admin@localhost:6379",
+	})
+
 	if err != nil {
 		fmt.Println("failed to establish redis connection, exiting...")
 		os.Exit(1)

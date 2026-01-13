@@ -10,7 +10,11 @@ type RedisClient struct {
 }
 
 type ClientOptions struct {
+	// Does not need to be filled out if URL is complete
 	Addr string
+
+	// redis://user:password@host:port
+	URL string
 }
 
 type RequestBuilder struct {

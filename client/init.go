@@ -1,7 +1,9 @@
 package client
 
 import (
+	"fmt"
 	"net"
+	"strings"
 )
 
 func NewClient(opt *ClientOptions) (*RedisClient, error) {
@@ -11,7 +13,34 @@ func NewClient(opt *ClientOptions) (*RedisClient, error) {
 			Addr: "localhost:6379",
 		}
 	}
-	if opt.Addr == "" {
+
+	if opt.URL != "" {
+		trimmed := strings.TrimPrefix(opt.URL, "redis://")
+		parts := strings.Split(trimmed, "@")
+
+		if len(parts) != 2 {
+			return nil, fmt.Errorf("failed to parse connection string")
+		}
+
+		firstParts := strings.Split(parts[0], ":")
+		if len(firstParts) != 2 {
+			return nil, fmt.Errorf("failed to parse connection string")
+		}
+		username := firstParts[0]
+		pass := firstParts[1]
+
+		c.addr = parts[1]
+
+		if err := c.establishConnection(); err != nil {
+			return nil, err
+		}
+		_, err := c.Auth(username, pass)
+		if err != nil {
+			return nil, fmt.Errorf("failed to authenticate")
+		}
+
+		return &c, nil
+	} else if opt.Addr == "" {
 		c.addr = "localhost:6379"
 	} else {
 		c.addr = opt.Addr
