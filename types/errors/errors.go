@@ -6,6 +6,7 @@ import (
 	"mini-redis/types/commands"
 )
 
+var GENERAL = fmt.Errorf("an error occoured")
 var WRONGTYPE = fmt.Errorf("WRONGTYPE Operation against a key holding the wrong kind of value")
 var NOT_INTEGER = fmt.Errorf("value is not an integer or out of range")
 var INVALID_ARG = fmt.Errorf("INVALID_ARG failed to parse integer argument") //make into a function to return invaid argument?

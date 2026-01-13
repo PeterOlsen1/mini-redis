@@ -1,5 +1,7 @@
 package auth
 
+import "strings"
+
 type User struct {
 	Username string `yaml:"username"`
 	Password string `yaml:"password"`
@@ -43,4 +45,25 @@ func (u User) Write() bool {
 	}
 
 	return u.Perms&WRITE != 0
+}
+
+func (u User) PermString() string {
+	perms := make([]string, 0)
+	if u.Admin() {
+		perms = append(perms, "admin")
+	}
+
+	if u.Read() {
+		perms = append(perms, "read")
+	}
+
+	if u.Write() {
+		perms = append(perms, "write")
+	}
+
+	if len(perms) == 0 {
+		perms = append(perms, "none")
+	}
+
+	return strings.Join(perms, ", ")
 }

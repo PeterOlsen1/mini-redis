@@ -44,6 +44,7 @@ const (
 	WHOAMI
 	SETUSER
 	RMUSER
+	UGET
 )
 
 const NUM_COMMANDS = len(commandStrings)
@@ -76,6 +77,7 @@ var commandStrings = [...]string{
 	"WHOAMI",
 	"SETUSER",
 	"RMUSER",
+	"UGET",
 }
 
 func (c Command) String() string {

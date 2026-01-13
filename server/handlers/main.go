@@ -59,4 +59,5 @@ var commandHandlers = [...]func(*auth.User, resp.ArgList) ([]byte, error){
 	server.HandleWhoami,
 	server.HandleSetUser,
 	server.HandleRMUser,
+	server.HandleUGet,
 }
