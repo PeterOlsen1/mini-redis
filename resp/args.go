@@ -1,6 +1,7 @@
 package resp
 
 import (
+	"mini-redis/types/errors"
 	"strconv"
 )
 
@@ -18,7 +19,7 @@ func (l ArgList) Int(idx int) (int, error) {
 	item := l[idx]
 	itemInt, err := strconv.Atoi(item.Content)
 	if err != nil {
-		return -1, err
+		return -1, errors.INVALID_ARG
 	}
 
 	return itemInt, nil

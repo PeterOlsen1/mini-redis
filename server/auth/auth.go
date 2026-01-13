@@ -91,10 +91,10 @@ func AddACLUser(username string, password string, perms int) ([]User, error) {
 	return users, nil
 }
 
-func RemoveACLUser(username string) error {
+func RemoveACLUser(username string) ([]User, error) {
 	userFile, err := OpenACLFile()
 	if err != nil {
-		return err
+		return nil, err
 	}
 
 	defer userFile.Close()
@@ -103,7 +103,7 @@ func RemoveACLUser(username string) error {
 	users := make([]User, 0)
 	err = decoder.Decode(&users)
 	if err != nil { // accept EOF error since we cannot remove from empty file
-		return err
+		return nil, err
 	}
 
 	found := false
@@ -116,11 +116,16 @@ func RemoveACLUser(username string) error {
 	}
 
 	if !found {
-		return fmt.Errorf("user could not be found")
+		return nil, fmt.Errorf("user could not be found")
 	}
 
 	encoder := yaml.NewEncoder(userFile)
-	return encoder.Encode(users)
+	err = encoder.Encode(users)
+	if err != nil {
+		return nil, err
+	}
+
+	return users, nil
 }
 
 func CheckACLUser(username string, password string) (*User, error) {

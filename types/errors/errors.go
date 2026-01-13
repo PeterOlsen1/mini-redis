@@ -13,6 +13,10 @@ func ARG_COUNT(cmd commands.Command, count int) error {
 	return fmt.Errorf("%s requires %d arguments", cmd, count)
 }
 
+func PERMS_GENERAL(cmd commands.Command) error {
+	return fmt.Errorf("you do not have permissions to run %s", cmd.String())
+}
+
 func PERMISSIONS(cmd commands.Command, perm int) error {
 	switch perm {
 	case auth.ADMIN:
