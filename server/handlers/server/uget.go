@@ -20,12 +20,12 @@ func HandleUGet(user *auth.User, args resp.ArgList) ([]byte, error) {
 		var out strings.Builder
 		out.WriteString("Defined users:\n")
 		for i, u := range cfg.Server.Users {
-			fmt.Fprintf(&out, "%d) %s: %s\n", i, u.Username, u.PermString())
+			fmt.Fprintf(&out, "%d) %s: %s\n", i+1, u.Username, u.PermString())
 		}
 
 		out.WriteString("\nACL users:\n")
 		for i, u := range cfg.Server.LoadedUsers {
-			fmt.Fprintf(&out, "%d) %s: %s\n", i, u.Username, u.PermString())
+			fmt.Fprintf(&out, "%d) %s: %s\n", i+1, u.Username, u.PermString())
 		}
 
 		return resp.BYTE_STRING(out.String()), nil

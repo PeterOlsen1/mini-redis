@@ -10,7 +10,7 @@ import (
 	"gopkg.in/yaml.v3"
 )
 
-func OpenACLFile() (*os.File, error) {
+func OpenACLFile(truncate bool) (*os.File, error) {
 	homeDir, err := os.UserHomeDir()
 	if err != nil {
 		fmt.Println("Error getting home directory:", err)
@@ -25,7 +25,14 @@ func OpenACLFile() (*os.File, error) {
 		return nil, err
 	}
 
-	userFile, err := os.OpenFile(usersFilePath, os.O_APPEND|os.O_CREATE|os.O_RDWR, 0644)
+	flags := os.O_CREATE | os.O_RDWR
+	if truncate {
+		flags |= os.O_TRUNC
+	} else {
+		flags |= os.O_APPEND
+	}
+
+	userFile, err := os.OpenFile(usersFilePath, flags, 0644)
 	if err != nil {
 		return nil, err
 	}
@@ -34,7 +41,7 @@ func OpenACLFile() (*os.File, error) {
 }
 
 func GetACLUsers() ([]User, error) {
-	userFile, err := OpenACLFile()
+	userFile, err := OpenACLFile(false)
 	if err != nil {
 		return nil, err
 	}
@@ -55,7 +62,7 @@ func GetACLUsers() ([]User, error) {
 }
 
 func AddACLUser(username string, password string, perms int) ([]User, error) {
-	userFile, err := OpenACLFile()
+	userFile, err := OpenACLFile(false)
 	if err != nil {
 		return nil, err
 	}
@@ -82,6 +89,12 @@ func AddACLUser(username string, password string, perms int) ([]User, error) {
 
 	users = append(users, newUser)
 
+	userFile, err = OpenACLFile(true)
+	if err != nil {
+		return nil, err
+	}
+	defer userFile.Close()
+
 	encoder := yaml.NewEncoder(userFile)
 	err = encoder.Encode(users)
 	if err != nil {
@@ -92,7 +105,8 @@ func AddACLUser(username string, password string, perms int) ([]User, error) {
 }
 
 func RemoveACLUser(username string) ([]User, error) {
-	userFile, err := OpenACLFile()
+	// Open the file without append mode to allow truncation
+	userFile, err := OpenACLFile(false)
 	if err != nil {
 		return nil, err
 	}
@@ -102,7 +116,7 @@ func RemoveACLUser(username string) ([]User, error) {
 	decoder := yaml.NewDecoder(userFile)
 	users := make([]User, 0)
 	err = decoder.Decode(&users)
-	if err != nil { // accept EOF error since we cannot remove from empty file
+	if err != nil {
 		return nil, err
 	}
 
@@ -119,6 +133,13 @@ func RemoveACLUser(username string) ([]User, error) {
 		return nil, fmt.Errorf("user could not be found")
 	}
 
+	// Reopen the file in truncate mode for writing
+	userFile, err = OpenACLFile(true)
+	if err != nil {
+		return nil, err
+	}
+	defer userFile.Close()
+
 	encoder := yaml.NewEncoder(userFile)
 	err = encoder.Encode(users)
 	if err != nil {
@@ -129,7 +150,7 @@ func RemoveACLUser(username string) ([]User, error) {
 }
 
 func CheckACLUser(username string, password string) (*User, error) {
-	userFile, err := OpenACLFile()
+	userFile, err := OpenACLFile(false)
 	if err != nil {
 		return nil, err
 	}

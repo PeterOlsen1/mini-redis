@@ -14,6 +14,10 @@ import (
 )
 
 func main() {
+	Run()
+}
+
+func Run() {
 	configPath := flag.String("cfg", "~/.mini-redis/config.yaml", "Location of configuration file")
 	flag.Parse()
 
