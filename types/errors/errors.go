@@ -2,7 +2,7 @@ package errors
 
 import (
 	"fmt"
-	"mini-redis/server/auth"
+	"mini-redis/server/auth/authtypes"
 	"mini-redis/types/commands"
 )
 
@@ -18,13 +18,13 @@ func PERMS_GENERAL(cmd commands.Command) error {
 	return fmt.Errorf("you do not have permissions to run %s", cmd.String())
 }
 
-func PERMISSIONS(cmd commands.Command, perm auth.UserPermission) error {
+func PERMISSIONS(cmd commands.Command, perm authtypes.UserPermission) error {
 	switch perm {
-	case auth.ADMIN:
+	case authtypes.ADMIN:
 		return fmt.Errorf("%s requires admin privileges", cmd.String())
-	case auth.READ:
+	case authtypes.READ:
 		return fmt.Errorf("%s requires read privileges", cmd.String())
-	case auth.WRITE:
+	case authtypes.WRITE:
 		return fmt.Errorf("%s requires write privileges", cmd.String())
 	}
 

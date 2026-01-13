@@ -3,15 +3,15 @@ package server
 import (
 	"mini-redis/resp"
 	"mini-redis/server/auth"
-	"mini-redis/server/cfg"
+	"mini-redis/server/auth/authtypes"
 	"mini-redis/types/commands"
 	"mini-redis/types/errors"
 	"strings"
 )
 
-func HandleSetUser(user *auth.User, args resp.ArgList) ([]byte, error) {
+func HandleSetUser(user *authtypes.User, args resp.ArgList) ([]byte, error) {
 	if !user.Admin() {
-		return nil, errors.PERMISSIONS(commands.SETUSER, auth.ADMIN)
+		return nil, errors.PERMISSIONS(commands.SETUSER, authtypes.ADMIN)
 	}
 
 	if len(args) < 2 {
@@ -21,54 +21,51 @@ func HandleSetUser(user *auth.User, args resp.ArgList) ([]byte, error) {
 	username := args[0].Content
 	pass := args[1].Content
 
-	rules := make([]auth.Rule, 0)
+	rules := make([]authtypes.Rule, 0)
 	perms := 0
 	if args.Includes("admin") {
-		perms |= auth.ADMIN
+		perms |= authtypes.ADMIN
 	}
 	if idx := args.SubstringIdx("read"); idx != -1 {
 		if strings.Contains(args.String(idx), "(") {
 			cut := strings.TrimSuffix(strings.TrimPrefix(args.String(idx), "read("), ")")
 			mode := cut[0]
-			modeType := auth.ALLOW
+			modeType := authtypes.ALLOW
 			if mode == '-' {
-				modeType = auth.DENY
+				modeType = authtypes.DENY
 			}
 
-			rule := auth.Rule{
+			rule := authtypes.Rule{
 				Regex:     cut[1:],
 				Mode:      modeType,
-				Operation: auth.READ,
+				Operation: authtypes.READ,
 			}
 			rules = append(rules, rule)
 		}
-		perms |= auth.READ
+		perms |= authtypes.READ
 	}
 	if idx := args.SubstringIdx("write"); idx != -1 {
 		if strings.Contains(args.String(idx), "(") {
 			cut := strings.TrimSuffix(strings.TrimPrefix(args.String(idx), "write("), ")")
 			mode := cut[0]
-			modeType := auth.ALLOW
+			modeType := authtypes.ALLOW
 			if mode == '-' {
-				modeType = auth.DENY
+				modeType = authtypes.DENY
 			}
 
-			rule := auth.Rule{
+			rule := authtypes.Rule{
 				Regex:     cut[1:],
 				Mode:      modeType,
-				Operation: auth.WRITE,
+				Operation: authtypes.WRITE,
 			}
 			rules = append(rules, rule)
 		}
-		perms |= auth.WRITE
+		perms |= authtypes.WRITE
 	}
 
-	users, err := auth.AddACLUser(username, pass, perms, rules)
+	err := auth.AddACLUser(username, pass, perms, rules)
 	if err != nil {
 		return nil, err
 	}
-
-	// update loaded user list. Can't be done in AddACLUser bc circular import
-	cfg.Server.LoadedUsers = users
 	return resp.BYTE_OK, nil
 }

@@ -3,16 +3,16 @@ package server
 import (
 	"fmt"
 	"mini-redis/resp"
-	"mini-redis/server/auth"
+	"mini-redis/server/auth/authtypes"
 	"mini-redis/server/cfg"
 	"mini-redis/types/commands"
 	"mini-redis/types/errors"
 	"strings"
 )
 
-func HandleUGet(user *auth.User, args resp.ArgList) ([]byte, error) {
+func HandleUGet(user *authtypes.User, args resp.ArgList) ([]byte, error) {
 	if len(args) == 0 && !user.Admin() {
-		return nil, errors.PERMISSIONS(commands.UGET, auth.ADMIN)
+		return nil, errors.PERMISSIONS(commands.UGET, authtypes.ADMIN)
 	}
 
 	// no args means list all users
@@ -32,7 +32,7 @@ func HandleUGet(user *auth.User, args resp.ArgList) ([]byte, error) {
 
 				for _, rule := range u.Rules {
 					operationString := "READ"
-					if rule.Operation == auth.WRITE {
+					if rule.Operation == authtypes.WRITE {
 						operationString = "WRITE"
 					}
 
@@ -63,7 +63,7 @@ func HandleUGet(user *auth.User, args resp.ArgList) ([]byte, error) {
 
 				for _, rule := range u.Rules {
 					operationString := "READ"
-					if rule.Operation == auth.WRITE {
+					if rule.Operation == authtypes.WRITE {
 						operationString = "WRITE"
 					}
 

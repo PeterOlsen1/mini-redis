@@ -8,6 +8,7 @@ import (
 	"log"
 	"mini-redis/resp"
 	"mini-redis/server/auth"
+	"mini-redis/server/auth/authtypes"
 	"mini-redis/server/cfg"
 	"mini-redis/server/handlers"
 	"mini-redis/server/info"
@@ -41,6 +42,14 @@ func Start(configPath string) {
 		fmt.Printf("Error: %e\n", err)
 		os.Exit(1)
 	}
+
+	users, err := auth.LoadACLUsers()
+	if err != nil {
+		fmt.Println("Failed to load users")
+		fmt.Printf("Error: %s\n", err)
+		os.Exit(1)
+	}
+	cfg.Server.LoadedUsers = users
 
 	// logger.StartLogger(ctx)
 	internal.StartTTLScan(ctx)
@@ -88,7 +97,7 @@ func startServer(ctx context.Context) error {
 
 		connWrapper := types.Connection{
 			Conn: conn,
-			User: &auth.User{
+			User: &authtypes.User{
 				Username: "",
 				Password: "",
 				Perms:    0,

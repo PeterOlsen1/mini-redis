@@ -2,16 +2,16 @@ package list
 
 import (
 	"mini-redis/resp"
-	"mini-redis/server/auth"
+	"mini-redis/server/auth/authtypes"
 	"mini-redis/server/internal"
 	"mini-redis/types/commands"
 	"mini-redis/types/errors"
 	"strconv"
 )
 
-func HandleLRange(user *auth.User, args resp.ArgList) ([]byte, error) {
+func HandleLRange(user *authtypes.User, args resp.ArgList) ([]byte, error) {
 	if !user.Read() {
-		return nil, errors.PERMISSIONS(commands.LRANGE, auth.READ)
+		return nil, errors.PERMISSIONS(commands.LRANGE, authtypes.READ)
 	}
 
 	if len(args) < 3 {

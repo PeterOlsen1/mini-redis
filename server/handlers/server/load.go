@@ -3,7 +3,7 @@ package server
 import (
 	"fmt"
 	"mini-redis/resp"
-	"mini-redis/server/auth"
+	"mini-redis/server/auth/authtypes"
 	"mini-redis/server/internal"
 	"mini-redis/types/commands"
 	"mini-redis/types/errors"
@@ -11,9 +11,9 @@ import (
 	"path/filepath"
 )
 
-func HandleLoad(user *auth.User, args resp.ArgList) ([]byte, error) {
+func HandleLoad(user *authtypes.User, args resp.ArgList) ([]byte, error) {
 	if !user.Admin() {
-		return nil, errors.PERMISSIONS(commands.LOAD, auth.ADMIN)
+		return nil, errors.PERMISSIONS(commands.LOAD, authtypes.ADMIN)
 	}
 
 	if len(args) < 1 {

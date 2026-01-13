@@ -3,7 +3,7 @@ package server
 import (
 	"fmt"
 	"mini-redis/resp"
-	"mini-redis/server/auth"
+	"mini-redis/server/auth/authtypes"
 	"mini-redis/server/internal"
 	"mini-redis/types/commands"
 	"mini-redis/types/errors"
@@ -12,9 +12,9 @@ import (
 	"time"
 )
 
-func HandleSave(user *auth.User, args resp.ArgList) ([]byte, error) {
+func HandleSave(user *authtypes.User, args resp.ArgList) ([]byte, error) {
 	if !user.Admin() {
-		return nil, errors.PERMISSIONS(commands.SAVE, auth.ADMIN)
+		return nil, errors.PERMISSIONS(commands.SAVE, authtypes.ADMIN)
 	}
 
 	homeDir, err := os.UserHomeDir()

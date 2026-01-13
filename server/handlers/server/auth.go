@@ -3,12 +3,13 @@ package server
 import (
 	"mini-redis/resp"
 	"mini-redis/server/auth"
+	"mini-redis/server/auth/authtypes"
 	"mini-redis/server/cfg"
 	"mini-redis/types/commands"
 	"mini-redis/types/errors"
 )
 
-func HandleAuth(user *auth.User, args resp.ArgList) ([]byte, error) {
+func HandleAuth(user *authtypes.User, args resp.ArgList) ([]byte, error) {
 	if user.Username != "" && user.Perms == 0 {
 		return nil, errors.ALREADY_AUTH
 	}

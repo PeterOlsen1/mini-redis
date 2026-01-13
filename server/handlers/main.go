@@ -3,7 +3,7 @@ package handlers
 import (
 	"fmt"
 	"mini-redis/resp"
-	"mini-redis/server/auth"
+	"mini-redis/server/auth/authtypes"
 	"mini-redis/server/cfg"
 	"mini-redis/server/handlers/key"
 	"mini-redis/server/handlers/list"
@@ -31,7 +31,7 @@ func HandleCommand(conn types.Connection, cmd commands.Command, args resp.ArgLis
 
 // check "command" enum for order of commands
 // must be in order of commands in the enum type, since the map is indexed 0..n
-var commandHandlers = [...]func(*auth.User, resp.ArgList) ([]byte, error){
+var commandHandlers = [...]func(*authtypes.User, resp.ArgList) ([]byte, error){
 	HandleNone,
 	server.HandlePing,
 	server.HandleEcho,

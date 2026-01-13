@@ -2,10 +2,10 @@ package server
 
 import (
 	"mini-redis/resp"
-	"mini-redis/server/auth"
+	"mini-redis/server/auth/authtypes"
 )
 
-func HandlePing(_ *auth.User, args resp.ArgList) ([]byte, error) {
+func HandlePing(_ *authtypes.User, args resp.ArgList) ([]byte, error) {
 	if len(args) == 0 {
 		return resp.BYTE_STRING("PONG"), nil
 	}

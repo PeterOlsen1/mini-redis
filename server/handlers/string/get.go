@@ -3,15 +3,15 @@ package string
 import (
 	"fmt"
 	"mini-redis/resp"
-	"mini-redis/server/auth"
+	"mini-redis/server/auth/authtypes"
 	"mini-redis/server/internal"
 	"mini-redis/types/commands"
 	"mini-redis/types/errors"
 )
 
-func HandleGet(user *auth.User, args resp.ArgList) ([]byte, error) {
+func HandleGet(user *authtypes.User, args resp.ArgList) ([]byte, error) {
 	if !user.Read() {
-		return nil, errors.PERMISSIONS(commands.GET, auth.READ)
+		return nil, errors.PERMISSIONS(commands.GET, authtypes.READ)
 	}
 
 	if len(args) < 1 {

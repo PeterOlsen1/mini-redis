@@ -3,16 +3,16 @@ package key
 import (
 	"fmt"
 	"mini-redis/resp"
-	"mini-redis/server/auth"
+	"mini-redis/server/auth/authtypes"
 	"mini-redis/server/internal"
 	"mini-redis/types/commands"
 	"mini-redis/types/errors"
 	"strconv"
 )
 
-func HandleExpire(user *auth.User, params resp.ArgList) ([]byte, error) {
+func HandleExpire(user *authtypes.User, params resp.ArgList) ([]byte, error) {
 	if !user.Write() {
-		return nil, errors.PERMISSIONS(commands.EXPIRE, auth.WRITE)
+		return nil, errors.PERMISSIONS(commands.EXPIRE, authtypes.WRITE)
 	}
 
 	if len(params) < 2 {

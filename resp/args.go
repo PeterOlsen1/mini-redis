@@ -37,14 +37,14 @@ func (l ArgList) String(idx int) string {
 
 func (l ArgList) Slice(start int, end int) []string {
 	if start < 0 {
-		start = 1
+		start = 0
 	}
 
-	if end >= len(l) {
-		end = len(l) - 1
+	if end > len(l) {
+		end = len(l)
 	}
 
-	out := make([]string, 0)
+	out := make([]string, end-start)
 	j := 0
 	for i := start; i < end; i++ {
 		out[j] = l[i].Content

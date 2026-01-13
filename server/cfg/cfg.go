@@ -2,7 +2,7 @@ package cfg
 
 import (
 	"fmt"
-	"mini-redis/server/auth"
+	"mini-redis/server/auth/authtypes"
 	"os"
 
 	"gopkg.in/yaml.v3"
@@ -28,11 +28,15 @@ type ServerConfig struct {
 	// Set to true if you want to require authentication
 	RequireAuth bool `yaml:"require_auth"`
 
-	// Define a lsit of users
-	Users []auth.User `yaml:"users"`
+	// Define a list of users to be loaded by default.
+	// Enesure that these users have long + secure passwords,
+	// since there is no limiting on the number of requests to AUTH
+	Users []authtypes.User `yaml:"users"`
 
 	// To be loaded once the application runs. Not defined in yaml
-	LoadedUsers []auth.User
+	LoadedUsers []authtypes.User
+
+	LoadedUsersMap map[string]authtypes.User
 }
 
 // For basic operations, disabling logging will result in a ~17% performance increase
@@ -73,7 +77,7 @@ var defaultConfig = ConfigType{
 		Port:        6379,
 		TTLCheck:    2000,
 		RequireAuth: true,
-		Users: []auth.User{
+		Users: []authtypes.User{
 			{
 				Username: "admin",
 				Password: "admin",
@@ -118,18 +122,12 @@ func LoadConfig(path string) error {
 		return nil
 	}
 
-	users, err := auth.GetACLUsers()
-	if err != nil {
-		return err
-	}
-	config.Server.LoadedUsers = users
-
 	// update individual config objects
 	Server = config.Server
 	Info = config.Info
 	Log = config.Log
 
-	auth.SetAuthRequired(Server.RequireAuth) // use this hook to avoid circular imports
+	authtypes.SetAuthRequired(Server.RequireAuth) // use this hook to avoid circular imports
 
 	if Server.RequireAuth && len(Server.Users) == 0 {
 		return fmt.Errorf("must have one defined user if authentication is required")

@@ -3,12 +3,13 @@ package server
 import (
 	"mini-redis/resp"
 	"mini-redis/server/auth"
+	"mini-redis/server/auth/authtypes"
 	"mini-redis/server/cfg"
 	"mini-redis/types/commands"
 	"mini-redis/types/errors"
 )
 
-func HandleSetRules(user *auth.User, args resp.ArgList) ([]byte, error) {
+func HandleSetRules(user *authtypes.User, args resp.ArgList) ([]byte, error) {
 	if !user.Admin() {
 		return nil, errors.PERMS_GENERAL(commands.SETRULE)
 	}

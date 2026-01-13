@@ -2,15 +2,15 @@ package key
 
 import (
 	"mini-redis/resp"
-	"mini-redis/server/auth"
+	"mini-redis/server/auth/authtypes"
 	"mini-redis/server/internal"
 	"mini-redis/types/commands"
 	"mini-redis/types/errors"
 )
 
-func HandleKeys(user *auth.User, _ resp.ArgList) ([]byte, error) {
+func HandleKeys(user *authtypes.User, _ resp.ArgList) ([]byte, error) {
 	if !user.Read() {
-		return nil, errors.PERMISSIONS(commands.KEYS, auth.READ)
+		return nil, errors.PERMISSIONS(commands.KEYS, authtypes.READ)
 	}
 
 	serialized, err := resp.Serialize(internal.Keys(), resp.ARRAY)

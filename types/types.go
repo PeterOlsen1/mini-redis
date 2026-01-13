@@ -1,11 +1,11 @@
 package types
 
 import (
-	"mini-redis/server/auth"
+	"mini-redis/server/auth/authtypes"
 	"net"
 )
 
 type Connection struct {
 	Conn net.Conn
-	*auth.User
+	*authtypes.User
 }

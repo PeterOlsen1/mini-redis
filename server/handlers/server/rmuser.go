@@ -3,12 +3,12 @@ package server
 import (
 	"mini-redis/resp"
 	"mini-redis/server/auth"
-	"mini-redis/server/cfg"
+	"mini-redis/server/auth/authtypes"
 	"mini-redis/types/commands"
 	"mini-redis/types/errors"
 )
 
-func HandleRMUser(user *auth.User, args resp.ArgList) ([]byte, error) {
+func HandleRMUser(user *authtypes.User, args resp.ArgList) ([]byte, error) {
 	if len(args) < 1 {
 		return nil, errors.ARG_COUNT(commands.RMUSER, 1)
 	}
@@ -19,12 +19,10 @@ func HandleRMUser(user *auth.User, args resp.ArgList) ([]byte, error) {
 		return nil, errors.PERMS_GENERAL(commands.RMUSER)
 	}
 
-	newUsers, err := auth.RemoveACLUser(delUser)
+	err := auth.RemoveACLUser(delUser)
 	if err != nil {
 		return nil, err
 	}
-
-	cfg.Server.LoadedUsers = newUsers
 
 	if user.Username == delUser {
 		user.Username = ""
