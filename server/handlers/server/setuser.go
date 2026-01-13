@@ -6,6 +6,7 @@ import (
 	"mini-redis/server/cfg"
 	"mini-redis/types/commands"
 	"mini-redis/types/errors"
+	"strings"
 )
 
 func HandleSetUser(user *auth.User, args resp.ArgList) ([]byte, error) {
@@ -20,22 +21,49 @@ func HandleSetUser(user *auth.User, args resp.ArgList) ([]byte, error) {
 	username := args[0].Content
 	pass := args[1].Content
 
-	admin := args.Includes("admin")
-	read := args.Includes("read")
-	write := args.Includes("write")
-
+	rules := make([]auth.Rule, 0)
 	perms := 0
-	if admin {
+	if args.Includes("admin") {
 		perms |= auth.ADMIN
 	}
-	if read {
+	if idx := args.SubstringIdx("read"); idx != -1 {
+		if strings.Contains(args.String(idx), "(") {
+			cut := strings.TrimSuffix(strings.TrimPrefix(args.String(idx), "("), ")")
+			mode := cut[0]
+			modeType := auth.ALLOW
+			if mode == '-' {
+				modeType = auth.DENY
+			}
+
+			rule := auth.Rule{
+				Regex:     cut[1:],
+				Mode:      modeType,
+				Operation: auth.READ,
+			}
+			rules = append(rules, rule)
+		}
 		perms |= auth.READ
 	}
-	if write {
+	if idx := args.SubstringIdx("write"); idx != -1 {
+		if strings.Contains(args.String(idx), "(") {
+			cut := strings.TrimSuffix(strings.TrimPrefix(args.String(idx), "("), ")")
+			mode := cut[0]
+			modeType := auth.ALLOW
+			if mode == '-' {
+				modeType = auth.DENY
+			}
+
+			rule := auth.Rule{
+				Regex:     cut[1:],
+				Mode:      modeType,
+				Operation: auth.WRITE,
+			}
+			rules = append(rules, rule)
+		}
 		perms |= auth.WRITE
 	}
 
-	users, err := auth.AddACLUser(username, pass, perms)
+	users, err := auth.AddACLUser(username, pass, perms, rules)
 	if err != nil {
 		return nil, err
 	}

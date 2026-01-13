@@ -18,7 +18,7 @@ func PERMS_GENERAL(cmd commands.Command) error {
 	return fmt.Errorf("you do not have permissions to run %s", cmd.String())
 }
 
-func PERMISSIONS(cmd commands.Command, perm int) error {
+func PERMISSIONS(cmd commands.Command, perm auth.UserPermission) error {
 	switch perm {
 	case auth.ADMIN:
 		return fmt.Errorf("%s requires admin privileges", cmd.String())

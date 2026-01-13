@@ -61,7 +61,7 @@ func GetACLUsers() ([]User, error) {
 	return users, nil
 }
 
-func AddACLUser(username string, password string, perms int) ([]User, error) {
+func AddACLUser(username string, password string, perms int, rules []Rule) ([]User, error) {
 	userFile, err := OpenACLFile(false)
 	if err != nil {
 		return nil, err
@@ -85,6 +85,7 @@ func AddACLUser(username string, password string, perms int) ([]User, error) {
 		Username: username,
 		Password: string(hashedPass),
 		Perms:    perms,
+		Rules:    rules,
 	}
 
 	users = append(users, newUser)

@@ -3,6 +3,7 @@ package resp
 import (
 	"mini-redis/types/errors"
 	"strconv"
+	"strings"
 )
 
 type ArgList []RESPItem
@@ -55,10 +56,21 @@ func (l ArgList) Slice(start int, end int) []string {
 
 func (l ArgList) Includes(substring string) bool {
 	for _, item := range l {
-		if item.Content == substring {
+		if strings.Contains(item.Content, substring) {
 			return true
 		}
 	}
 
 	return false
+}
+
+// Return the index of the first argument that contains the requested substring
+func (l ArgList) SubstringIdx(substring string) int {
+	for i, item := range l {
+		if strings.Contains(item.Content, substring) {
+			return i
+		}
+	}
+
+	return -1
 }
