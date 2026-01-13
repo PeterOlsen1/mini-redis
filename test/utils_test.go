@@ -6,33 +6,51 @@ import (
 	"testing"
 )
 
+var globalClient *client.RedisClient
+
 func setup(t *testing.T) *client.RedisClient {
-	c, err := client.NewClient(&client.ClientOptions{Addr: "localhost:6379"})
-	if err != nil {
-		t.Errorf("client initialization")
+	if globalClient == nil {
+		c, err := client.NewClient(&client.ClientOptions{Addr: "localhost:6379"})
+		if err != nil {
+			t.Errorf("client initialization")
+		}
+
+		globalClient = c
+		return c
 	}
 
-	return c
+	return globalClient
 }
 
 func setupAndFlush(t *testing.T) *client.RedisClient {
-	c, err := client.NewClient(&client.ClientOptions{Addr: "localhost:6379"})
-	if err != nil {
-		t.Errorf("client initialization")
+	if globalClient == nil {
+		c, err := client.NewClient(&client.ClientOptions{Addr: "localhost:6379"})
+		if err != nil {
+			t.Errorf("client initialization")
+		}
+
+		_, err = c.FlushAll()
+		if err != nil {
+			t.Errorf("initial flush")
+		}
+
+		globalClient = c
+		return c
 	}
 
-	_, err = c.FlushAll()
+	_, err := globalClient.FlushAll()
 	if err != nil {
 		t.Errorf("initial flush")
 	}
-	return c
+	return globalClient
 }
 
+// teardown method left empty for now due to use of global client
 func teardown(c *client.RedisClient, t *testing.T) {
-	err := c.Close()
-	if err != nil {
-		t.Errorf("client close")
-	}
+	// err := c.Close()
+	// if err != nil {
+	// 	t.Errorf("client close")
+	// }
 }
 
 func checkExpect[T comparable](resp T, err error, cmd commands.Command, expect T, t *testing.T) {

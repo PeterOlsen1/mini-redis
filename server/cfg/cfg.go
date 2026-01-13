@@ -124,6 +124,7 @@ func LoadConfig(path string) error {
 	}
 	config.Server.LoadedUsers = users
 
+	fmt.Printf("%v", config)
 	// update individual config objects
 	Server = config.Server
 	Info = config.Info
