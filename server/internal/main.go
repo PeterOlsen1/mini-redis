@@ -1,15 +1,35 @@
 package internal
 
 import (
+	"encoding/gob"
 	"maps"
 	"mini-redis/server/info"
-	"mini-redis/types"
 	"mini-redis/types/errors"
+	"os"
 	"strconv"
 	"sync"
 )
 
-var store = make(map[string]*types.StoreItem)
+type StoreItem struct {
+	Type StoreType
+	Item any
+}
+
+func (i *StoreItem) Array() []string {
+	return i.Item.([]string)
+}
+func (i *StoreItem) String() string {
+	return i.Item.(string)
+}
+
+type StoreType int
+
+const (
+	STRING StoreType = iota
+	ARRAY
+)
+
+var store = make(map[string]*StoreItem)
 var storeMu sync.RWMutex
 
 func GetStoreSize() int {
@@ -19,8 +39,8 @@ func GetStoreSize() int {
 	return len(store)
 }
 
-func newItem(value any, storeType types.StoreType) *types.StoreItem {
-	return &types.StoreItem{
+func newItem(value any, storeType StoreType) *StoreItem {
+	return &StoreItem{
 		Item: value,
 		Type: storeType,
 	}
@@ -29,13 +49,13 @@ func newItem(value any, storeType types.StoreType) *types.StoreItem {
 func Set(key string, value any) {
 	info.SetOp()
 	storeMu.Lock()
-	store[key] = newItem(value, types.STRING)
+	store[key] = newItem(value, STRING)
 	storeMu.Unlock()
 
 	DelTTL(key)
 }
 
-func Get(key string) *types.StoreItem {
+func Get(key string) *StoreItem {
 	ttl := GetTTL(key)
 	info.GetOp()
 
@@ -86,7 +106,7 @@ func FlushAll() {
 	storeMu.Lock()
 	defer storeMu.Unlock()
 
-	store = make(map[string]*types.StoreItem)
+	store = make(map[string]*StoreItem)
 }
 
 func Incr(key string) (string, bool) {
@@ -94,11 +114,11 @@ func Incr(key string) (string, bool) {
 	defer storeMu.Unlock()
 
 	if store[key] == nil {
-		store[key] = newItem("1", types.STRING)
+		store[key] = newItem("1", STRING)
 		return "1", true
 	}
 
-	if store[key].Type != types.STRING {
+	if store[key].Type != STRING {
 		return "0", false
 	}
 
@@ -117,11 +137,11 @@ func Decr(key string) (string, bool) {
 	defer storeMu.Unlock()
 
 	if store[key] == nil {
-		store[key] = newItem("-1", types.STRING)
+		store[key] = newItem("-1", STRING)
 		return "-1", true
 	}
 
-	if store[key].Type != types.STRING {
+	if store[key].Type != STRING {
 		return "0", false
 	}
 
@@ -140,7 +160,7 @@ func LPush(key string, values []string) int {
 	defer storeMu.Unlock()
 
 	if store[key] == nil {
-		new := newItem(values, types.ARRAY)
+		new := newItem(values, ARRAY)
 		store[key] = new
 
 		return len(values)
@@ -163,7 +183,7 @@ func RPush(key string, values []string) int {
 	defer storeMu.Unlock()
 
 	if store[key] == nil {
-		new := newItem(values, types.ARRAY)
+		new := newItem(values, ARRAY)
 		store[key] = new
 
 		return len(values)
@@ -189,7 +209,7 @@ func LPop(key string, num int) ([]string, error) {
 	if val == nil {
 		return nil, nil
 	}
-	if val.Type != types.ARRAY {
+	if val.Type != ARRAY {
 		return nil, errors.WRONGTYPE
 	}
 
@@ -216,7 +236,7 @@ func RPop(key string, num int) ([]string, error) {
 	if val == nil {
 		return nil, nil
 	}
-	if val.Type != types.ARRAY {
+	if val.Type != ARRAY {
 		return nil, errors.WRONGTYPE
 	}
 
@@ -250,7 +270,7 @@ func LRange(key string, start int, end int) ([]string, error) {
 		return empty, nil
 	}
 
-	if val.Type != types.ARRAY {
+	if val.Type != ARRAY {
 		return nil, errors.WRONGTYPE
 	}
 
@@ -291,7 +311,7 @@ func LGet(key string) ([]string, error) {
 		return nil, nil
 	}
 
-	if val.Type != types.ARRAY {
+	if val.Type != ARRAY {
 		return nil, errors.WRONGTYPE
 	}
 
@@ -314,4 +334,21 @@ func Keys() []string {
 	}
 
 	return out
+}
+
+func Save(file *os.File) error {
+	storeMu.RLock()
+	defer storeMu.RUnlock()
+
+	encoder := gob.NewEncoder(file)
+	return encoder.Encode(store)
+}
+
+func Load(file *os.File) error {
+	storeMu.Lock()
+	defer storeMu.Unlock()
+
+	store = make(map[string]*StoreItem)
+	decoder := gob.NewDecoder(file)
+	return decoder.Decode(&store)
 }

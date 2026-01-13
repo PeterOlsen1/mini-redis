@@ -4,7 +4,6 @@ import (
 	"mini-redis/resp"
 	"mini-redis/server/auth"
 	"mini-redis/server/internal"
-	"mini-redis/types"
 	"mini-redis/types/commands"
 	"mini-redis/types/errors"
 )
@@ -24,7 +23,7 @@ func HandleGet(user *auth.User, args resp.ArgList) ([]byte, error) {
 		return resp.BYTE_NULL, nil
 	}
 
-	if val.Type == types.STRING {
+	if val.Type == internal.STRING {
 		strVal, ok := val.Item.(string)
 		if !ok {
 			return nil, errors.WRONGTYPE

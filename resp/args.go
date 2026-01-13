@@ -12,10 +12,6 @@ func (l ArgList) Int(idx int) (int, error) {
 		idx = len(l) - 1
 	}
 
-	if idx == 0 {
-		idx = 0
-	}
-
 	item := l[idx]
 	itemInt, err := strconv.Atoi(item.Content)
 	if err != nil {

@@ -45,6 +45,8 @@ const (
 	SETUSER
 	RMUSER
 	UGET
+	SAVE
+	LOAD
 )
 
 const NUM_COMMANDS = len(commandStrings)
@@ -78,6 +80,8 @@ var commandStrings = [...]string{
 	"SETUSER",
 	"RMUSER",
 	"UGET",
+	"SAVE",
+	"LOAD",
 }
 
 func (c Command) String() string {
