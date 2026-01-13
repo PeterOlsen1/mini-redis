@@ -18,7 +18,7 @@ func HandleUGet(user *auth.User, args resp.ArgList) ([]byte, error) {
 	// no args means list all users
 	if len(args) == 0 && user.Admin() {
 		var out strings.Builder
-		out.WriteString("Defined users:\n")
+		out.WriteString("Config defined users:\n")
 		for i, u := range cfg.Server.Users {
 			fmt.Fprintf(&out, "%d) %s: %s\n", i+1, u.Username, u.PermString())
 		}
@@ -26,6 +26,23 @@ func HandleUGet(user *auth.User, args resp.ArgList) ([]byte, error) {
 		out.WriteString("\nACL users:\n")
 		for i, u := range cfg.Server.LoadedUsers {
 			fmt.Fprintf(&out, "%d) %s: %s\n", i+1, u.Username, u.PermString())
+
+			if len(u.Rules) > 0 {
+				fmt.Fprintf(&out, "   User rules:\n")
+
+				for _, rule := range u.Rules {
+					operationString := "READ"
+					if rule.Operation == auth.WRITE {
+						operationString = "WRITE"
+					}
+
+					if rule.Mode {
+						fmt.Fprintf(&out, "   + on %s: %s\n", operationString, rule.Regex)
+					} else {
+						fmt.Fprintf(&out, "   - on %s: %s\n", operationString, rule.Regex)
+					}
+				}
+			}
 		}
 
 		return resp.BYTE_STRING(out.String()), nil
@@ -38,7 +55,27 @@ func HandleUGet(user *auth.User, args resp.ArgList) ([]byte, error) {
 	requested := args.String(0)
 	for _, u := range cfg.Server.LoadedUsers {
 		if u.Username == requested {
-			return resp.BYTE_STRING(fmt.Sprintf("user: %s\npermissions: %s\n", args.String(0), u.PermString())), nil
+			var out strings.Builder
+			fmt.Fprintf(&out, "%s: %s\n", u.Username, u.PermString())
+
+			if len(u.Rules) > 0 {
+				fmt.Fprintf(&out, "   User rules:\n")
+
+				for _, rule := range u.Rules {
+					operationString := "READ"
+					if rule.Operation == auth.WRITE {
+						operationString = "WRITE"
+					}
+
+					if rule.Mode {
+						fmt.Fprintf(&out, "   + on %s: %s\n", operationString, rule.Regex)
+					} else {
+						fmt.Fprintf(&out, "   - on %s: %s\n", operationString, rule.Regex)
+					}
+				}
+			}
+
+			return resp.BYTE_STRING(out.String()), nil
 		}
 	}
 

@@ -19,7 +19,7 @@ func HandleExpireAt(user *auth.User, args resp.ArgList) ([]byte, error) {
 		return nil, errors.ARG_COUNT(commands.EXPIREAT, 2)
 	}
 
-	key := args[0].Content
+	key := args.String(0)
 
 	timeString := args[1].Content
 	time, err := strconv.Atoi(timeString)

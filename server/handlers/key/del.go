@@ -17,7 +17,7 @@ func HandleDel(user *auth.User, args resp.ArgList) ([]byte, error) {
 		return nil, errors.ARG_COUNT(commands.DEL, 1)
 	}
 
-	key := args[0].Content
+	key := args.String(0)
 	internal.Del(key)
 	return resp.BYTE_OK, nil
 }

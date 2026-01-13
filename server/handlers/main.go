@@ -60,6 +60,8 @@ var commandHandlers = [...]func(*auth.User, resp.ArgList) ([]byte, error){
 	server.HandleSetUser,
 	server.HandleRMUser,
 	server.HandleUGet,
+	server.HandleSetRules,
+	server.HandleRMRule,
 	server.HandleSave,
 	server.HandleLoad,
 }

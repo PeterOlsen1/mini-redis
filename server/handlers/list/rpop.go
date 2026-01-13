@@ -19,7 +19,7 @@ func HandleRPop(user *auth.User, args resp.ArgList) ([]byte, error) {
 		return nil, fmt.Errorf("ERR wrong number of arguments for 'rpop' command")
 	}
 
-	key := args[0].Content
+	key := args.String(0)
 	if len(args) == 1 {
 		res, err := internal.RPop(key, 1)
 		if err != nil {

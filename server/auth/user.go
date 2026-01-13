@@ -15,7 +15,7 @@ type User struct {
 	// idx 2 = write
 	Perms int `yaml:"perms"`
 
-	Rules []Rule `yaml:"rules"`
+	Rules Ruleset `yaml:"rules"`
 }
 
 type UserPermission int
@@ -23,15 +23,6 @@ type UserPermission int
 const ADMIN = 0b1
 const READ = 0b10
 const WRITE = 0b100
-
-type Rule struct {
-	Regex     string         `yaml:"regex"`
-	Mode      bool           `yaml:"mode"`
-	Operation UserPermission `yaml:"operation"`
-}
-
-const ALLOW = true
-const DENY = false
 
 var authRequired = false
 
@@ -66,19 +57,19 @@ func (u User) Write() bool {
 func (u User) PermString() string {
 	perms := make([]string, 0)
 	if u.Admin() {
-		perms = append(perms, "admin")
+		perms = append(perms, "ADMIN")
 	}
 
 	if u.Read() {
-		perms = append(perms, "read")
+		perms = append(perms, "READ")
 	}
 
 	if u.Write() {
-		perms = append(perms, "write")
+		perms = append(perms, "WRITE")
 	}
 
 	if len(perms) == 0 {
-		perms = append(perms, "none")
+		perms = append(perms, "NONE")
 	}
 
 	return strings.Join(perms, ", ")

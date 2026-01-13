@@ -28,7 +28,7 @@ func HandleSetUser(user *auth.User, args resp.ArgList) ([]byte, error) {
 	}
 	if idx := args.SubstringIdx("read"); idx != -1 {
 		if strings.Contains(args.String(idx), "(") {
-			cut := strings.TrimSuffix(strings.TrimPrefix(args.String(idx), "("), ")")
+			cut := strings.TrimSuffix(strings.TrimPrefix(args.String(idx), "read("), ")")
 			mode := cut[0]
 			modeType := auth.ALLOW
 			if mode == '-' {
@@ -46,7 +46,7 @@ func HandleSetUser(user *auth.User, args resp.ArgList) ([]byte, error) {
 	}
 	if idx := args.SubstringIdx("write"); idx != -1 {
 		if strings.Contains(args.String(idx), "(") {
-			cut := strings.TrimSuffix(strings.TrimPrefix(args.String(idx), "("), ")")
+			cut := strings.TrimSuffix(strings.TrimPrefix(args.String(idx), "write("), ")")
 			mode := cut[0]
 			modeType := auth.ALLOW
 			if mode == '-' {

@@ -19,7 +19,7 @@ func HandleLRange(user *auth.User, args resp.ArgList) ([]byte, error) {
 	}
 
 	// parse arguments
-	key := args[0].Content
+	key := args.String(0)
 	start := args[1].Content
 	end := args[2].Content
 	startInt, err := strconv.Atoi(start)

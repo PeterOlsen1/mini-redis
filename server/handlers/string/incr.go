@@ -17,7 +17,7 @@ func HandleIncr(user *auth.User, args resp.ArgList) ([]byte, error) {
 		return nil, errors.ARG_COUNT(commands.INCR, 1)
 	}
 
-	key := args[0].Content
+	key := args.String(0)
 	newVal, ok := internal.Incr(key)
 	if !ok {
 		return nil, errors.NOT_INTEGER

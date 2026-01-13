@@ -17,7 +17,7 @@ func HandleRPush(user *auth.User, args resp.ArgList) ([]byte, error) {
 		return nil, errors.ARG_COUNT(commands.RPUSH, 2)
 	}
 
-	key := args[0].Content
+	key := args.String(0)
 	vals := make([]string, len(args)-1)
 	for i, arg := range args[1:] {
 		vals[i] = arg.Content

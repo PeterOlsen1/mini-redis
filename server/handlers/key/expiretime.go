@@ -17,7 +17,7 @@ func HandleExpireTime(user *auth.User, args resp.ArgList) ([]byte, error) {
 		return nil, errors.ARG_COUNT(commands.EXPIRETIME, 1)
 	}
 
-	key := args[0].Content
+	key := args.String(0)
 	ret := internal.HandleExpireTime(key)
 
 	return resp.BYTE_INT(int(ret)), nil

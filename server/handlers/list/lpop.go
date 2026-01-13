@@ -19,7 +19,7 @@ func HandleLPop(user *auth.User, args resp.ArgList) ([]byte, error) {
 		return nil, errors.ARG_COUNT(commands.LPOP, 1)
 	}
 
-	key := args[0].Content
+	key := args.String(0)
 	if len(args) == 1 {
 		res, err := internal.LPop(key, 1)
 

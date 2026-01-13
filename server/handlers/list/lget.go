@@ -17,7 +17,7 @@ func HandleLGet(user *auth.User, args resp.ArgList) ([]byte, error) {
 		return nil, errors.ARG_COUNT(commands.LGET, 1)
 	}
 
-	key := args[0].Content
+	key := args.String(0)
 	arr, err := internal.LGet(key)
 	if err != nil {
 		return nil, err

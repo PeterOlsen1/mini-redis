@@ -17,7 +17,7 @@ func HandleDecr(user *auth.User, args resp.ArgList) ([]byte, error) {
 		return nil, errors.ARG_COUNT(commands.DECR, 1)
 	}
 
-	key := args[0].Content
+	key := args.String(0)
 	newVal, ok := internal.Decr(key)
 	if !ok {
 		return nil, errors.NOT_INTEGER

@@ -1,6 +1,7 @@
 package string
 
 import (
+	"fmt"
 	"mini-redis/resp"
 	"mini-redis/server/auth"
 	"mini-redis/server/internal"
@@ -17,7 +18,9 @@ func HandleGet(user *auth.User, args resp.ArgList) ([]byte, error) {
 		return nil, errors.ARG_COUNT(commands.GET, 1)
 	}
 
-	key := args[0].Content
+	fmt.Println(user.CanRead(args.String(0)))
+
+	key := args.String(0)
 	val := internal.Get(key)
 	if val == nil {
 		return resp.BYTE_NULL, nil

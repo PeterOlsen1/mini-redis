@@ -18,7 +18,7 @@ func HandleSet(user *auth.User, args resp.ArgList) ([]byte, error) {
 		return nil, fmt.Errorf("set requires 2 arguments")
 	}
 
-	key := args[0].Content
+	key := args.String(0)
 	value := args[1].Content
 
 	internal.Set(key, value)
