@@ -3,6 +3,7 @@ package server
 import (
 	"fmt"
 	"mini-redis/resp"
+	"mini-redis/server/auth"
 	"mini-redis/server/auth/authtypes"
 	"mini-redis/server/cfg"
 	"mini-redis/types/commands"
@@ -24,7 +25,7 @@ func HandleUGet(user *authtypes.User, args resp.ArgList) ([]byte, error) {
 		}
 
 		out.WriteString("\nACL users:\n")
-		for i, u := range cfg.Server.LoadedUsers {
+		for i, u := range auth.GetAllUsers() {
 			fmt.Fprintf(&out, "%d) %s: %s\n", i+1, u.Username, u.PermString())
 
 			if len(u.Rules) > 0 {
@@ -53,7 +54,7 @@ func HandleUGet(user *authtypes.User, args resp.ArgList) ([]byte, error) {
 	}
 
 	requested := args.String(0)
-	for _, u := range cfg.Server.LoadedUsers {
+	for _, u := range auth.GetAllUsers() {
 		if u.Username == requested {
 			var out strings.Builder
 			fmt.Fprintf(&out, "%s: %s\n", u.Username, u.PermString())

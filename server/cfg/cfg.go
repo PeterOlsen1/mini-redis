@@ -32,11 +32,6 @@ type ServerConfig struct {
 	// Enesure that these users have long + secure passwords,
 	// since there is no limiting on the number of requests to AUTH
 	Users []authtypes.User `yaml:"users"`
-
-	// To be loaded once the application runs. Not defined in yaml
-	LoadedUsers []authtypes.User
-
-	LoadedUsersMap map[string]authtypes.User
 }
 
 // For basic operations, disabling logging will result in a ~17% performance increase

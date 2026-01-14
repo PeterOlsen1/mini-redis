@@ -45,7 +45,7 @@ const (
 	SETUSER
 	RMUSER
 	UGET
-	SETRULE
+	ADDRULE
 	RMRULE
 	SAVE
 	LOAD
@@ -82,7 +82,7 @@ var commandStrings = [...]string{
 	"SETUSER",
 	"RMUSER",
 	"UGET",
-	"SETRULE",
+	"ADDRULE",
 	"RMRULE",
 	"SAVE",
 	"LOAD",

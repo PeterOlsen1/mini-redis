@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"io"
 	"mini-redis/server/auth/authtypes"
-	"mini-redis/server/cfg"
 	"os"
 	"path/filepath"
 
@@ -42,11 +41,27 @@ func OpenACLFile(truncate bool) (*os.File, error) {
 	return userFile, nil
 }
 
+func UpdateACLFile() error {
+	userFile, err := OpenACLFile(true)
+	if err != nil {
+		return err
+	}
+	defer userFile.Close()
+
+	encoder := yaml.NewEncoder(userFile)
+	err = encoder.Encode(GetAllUsers())
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
 // Opens the ACL file and reads all users initially
-func LoadACLUsers() ([]authtypes.User, error) {
+func LoadACLUsers() error {
 	userFile, err := OpenACLFile(false)
 	if err != nil {
-		return nil, err
+		return err
 	}
 
 	defer userFile.Close()
@@ -56,12 +71,16 @@ func LoadACLUsers() ([]authtypes.User, error) {
 	err = decoder.Decode(&users)
 	if err != nil {
 		if err == io.EOF {
-			return users, nil
+			return nil
 		}
-		return nil, err
+		return err
 	}
 
-	return users, nil
+	for _, user := range users {
+		SetUser(user)
+	}
+
+	return nil
 }
 
 // Add a user to the ACL file
@@ -78,71 +97,18 @@ func AddACLUser(username string, password string, perms int, rules authtypes.Rul
 		Rules:    rules,
 	}
 
-	cfg.Server.LoadedUsers = append(cfg.Server.LoadedUsers, newUser)
+	SetUser(newUser)
 
-	userFile, err := OpenACLFile(true)
-	if err != nil {
-		return err
-	}
-	defer userFile.Close()
-
-	encoder := yaml.NewEncoder(userFile)
-	err = encoder.Encode(cfg.Server.LoadedUsers)
-	if err != nil {
-		return err
-	}
-
-	return nil
+	return UpdateACLFile()
 }
 
 func RemoveACLUser(username string) error {
-	found := false
-	users := cfg.Server.LoadedUsers
-
-	for i, u := range users {
-		if u.Username == username {
-			cfg.Server.LoadedUsers = append(users[:i], users[i+1:]...)
-			found = true
-			break
-		}
-	}
-
-	if !found {
-		return fmt.Errorf("user could not be found")
-	}
-
-	// Reopen the file in truncate mode for writing
-	userFile, err := OpenACLFile(true)
-	if err != nil {
-		return err
-	}
-	defer userFile.Close()
-
-	encoder := yaml.NewEncoder(userFile)
-	err = encoder.Encode(users)
-	if err != nil {
-		return err
-	}
-
-	return nil
+	DeleteUser(username)
+	return UpdateACLFile()
 }
 
 func CheckACLUser(username string, password string) (*authtypes.User, error) {
-	userFile, err := OpenACLFile(false)
-	if err != nil {
-		return nil, err
-	}
-
-	defer userFile.Close()
-
-	decoder := yaml.NewDecoder(userFile)
-	users := make([]authtypes.User, 0)
-	err = decoder.Decode(&users)
-	if err != nil && err != io.EOF {
-		return nil, err
-	}
-
-	for _, u := range users {
+	for _, u := range GetAllUsers() {
 		if u.Username != username {
 			continue
 		}

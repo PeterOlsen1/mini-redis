@@ -4,8 +4,6 @@ import (
 	"fmt"
 	"mini-redis/server/auth/authtypes"
 	"strings"
-
-	"gopkg.in/yaml.v3"
 )
 
 func ParseRules(rules ...string) authtypes.Ruleset {
@@ -47,92 +45,28 @@ func ParseRules(rules ...string) authtypes.Ruleset {
 	return out
 }
 
-func SetRules(username string, rules ...authtypes.Rule) ([]authtypes.User, error) {
-	userFile, err := OpenACLFile(false)
-	if err != nil {
-		return nil, err
+func AddRules(username string, rules ...authtypes.Rule) error {
+	user, ok := GetUser(username)
+
+	if !ok {
+		return fmt.Errorf("user could not be found")
 	}
 
-	defer userFile.Close()
+	user.Rules.Add(rules)
+	SetUser(user)
 
-	decoder := yaml.NewDecoder(userFile)
-	users := make([]authtypes.User, 0)
-	err = decoder.Decode(&users)
-	if err != nil {
-		return nil, err
-	}
-
-	found := false
-	for _, u := range users {
-		if u.Username == username {
-			u.Rules.Add(rules)
-			found = true
-		}
-	}
-
-	if !found {
-		return nil, fmt.Errorf("user could not be found")
-	}
-
-	// Reopen the file in truncate mode for writing
-	userFile, err = OpenACLFile(true)
-	if err != nil {
-		return nil, err
-	}
-	defer userFile.Close()
-
-	encoder := yaml.NewEncoder(userFile)
-	err = encoder.Encode(users)
-	if err != nil {
-		return nil, err
-	}
-
-	return users, nil
+	return UpdateACLFile()
 }
 
-func RemoveRules(username string, rules ...authtypes.Rule) ([]authtypes.User, error) {
-	userFile, err := OpenACLFile(false)
-	if err != nil {
-		return nil, err
+func RemoveRules(username string, rules ...authtypes.Rule) error {
+	user, ok := GetUser(username)
+
+	if !ok {
+		return fmt.Errorf("user could not be found")
 	}
 
-	defer userFile.Close()
+	user.Rules.Subtract(rules)
+	SetUser(user)
 
-	decoder := yaml.NewDecoder(userFile)
-	users := make([]authtypes.User, 0)
-	err = decoder.Decode(&users)
-	if err != nil {
-		return nil, err
-	}
-
-	fmt.Println(users)
-
-	found := false
-	for _, u := range users {
-		if u.Username == username {
-			u.Rules.Subtract(rules)
-			found = true
-		}
-	}
-
-	fmt.Println(users)
-
-	if !found {
-		return nil, fmt.Errorf("user could not be found")
-	}
-
-	// Reopen the file in truncate mode for writing
-	userFile, err = OpenACLFile(true)
-	if err != nil {
-		return nil, err
-	}
-	defer userFile.Close()
-
-	encoder := yaml.NewEncoder(userFile)
-	err = encoder.Encode(users)
-	if err != nil {
-		return nil, err
-	}
-
-	return users, nil
+	return UpdateACLFile()
 }

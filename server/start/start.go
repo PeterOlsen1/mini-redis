@@ -43,13 +43,12 @@ func Start(configPath string) {
 		os.Exit(1)
 	}
 
-	users, err := auth.LoadACLUsers()
+	err = auth.LoadACLUsers()
 	if err != nil {
 		fmt.Println("Failed to load users")
 		fmt.Printf("Error: %s\n", err)
 		os.Exit(1)
 	}
-	cfg.Server.LoadedUsers = users
 
 	// logger.StartLogger(ctx)
 	internal.StartTTLScan(ctx)
