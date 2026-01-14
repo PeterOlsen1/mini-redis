@@ -8,7 +8,7 @@ import (
 	"mini-redis/types/errors"
 )
 
-func HandleAddRules(user *authtypes.User, args resp.ArgList) ([]byte, error) {
+func HandleAddRule(user *authtypes.User, args resp.ArgList) ([]byte, error) {
 	if !user.Admin() {
 		return nil, errors.PERMS_GENERAL(commands.ADDRULE)
 	}

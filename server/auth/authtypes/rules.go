@@ -1,6 +1,6 @@
 package authtypes
 
-import "fmt"
+import "iter"
 
 type Rule struct {
 	// The regex matching which keys the user can access
@@ -18,8 +18,8 @@ const DENY = false
 
 type Ruleset []Rule
 
-func (rset Ruleset) Contains(rule Rule) bool {
-	for _, r := range rset {
+func (rset *Ruleset) Contains(rule Rule) bool {
+	for _, r := range *rset {
 		if r.Regex == rule.Regex && r.Mode == rule.Mode && r.Operation == rule.Operation {
 			return true
 		}
@@ -29,13 +29,9 @@ func (rset Ruleset) Contains(rule Rule) bool {
 }
 
 func (rset *Ruleset) Remove(rule Rule) {
-	deref := *rset
-	for i, r := range deref {
+	for i, r := range *rset {
 		if r.Regex == rule.Regex && r.Mode == rule.Mode && r.Operation == rule.Operation {
-			deref = append(deref[:i], deref[i+1:]...)
-			rset = &deref
-			fmt.Println("removing rule")
-			fmt.Println(rset)
+			*rset = append((*rset)[:i], (*rset)[i+1:]...)
 			return
 		}
 	}
@@ -48,13 +44,36 @@ func (rset *Ruleset) Add(other Ruleset) {
 			continue
 		}
 
-		deref := append(*rset, rule)
-		rset = &deref
+		*rset = append(*rset, rule)
 	}
 }
 
 func (rset *Ruleset) Subtract(other Ruleset) {
 	for _, rule := range other {
 		rset.Remove(rule)
+	}
+}
+
+func (rset Ruleset) Negatives() iter.Seq2[int, Rule] {
+	return func(yield func(int, Rule) bool) {
+		for i, rule := range rset {
+			if rule.Mode == DENY {
+				if !yield(i, rule) {
+					return
+				}
+			}
+		}
+	}
+}
+
+func (rset Ruleset) Positives() iter.Seq2[int, Rule] {
+	return func(yield func(int, Rule) bool) {
+		for i, rule := range rset {
+			if rule.Mode == ALLOW {
+				if !yield(i, rule) {
+					return
+				}
+			}
+		}
 	}
 }

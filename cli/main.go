@@ -74,11 +74,12 @@ func handleLineIn(c *client.RedisClient, input string) error {
 		return nil
 	}
 
-	if input == "exit" {
+	if strings.ToLower(input) == "exit" {
 		fmt.Println("Exiting...")
 		return fmt.Errorf("")
 	}
 
+	tokens = joinParenthesisTokens(tokens)
 	resp, err := handleInput(c, tokens)
 	if err != nil {
 		fmt.Println(err)
@@ -110,4 +111,32 @@ func handleInput(c *client.RedisClient, tokens []string) (string, error) {
 	}
 
 	return c.SendAndReceive(req)
+}
+
+func joinParenthesisTokens(tokens []string) []string {
+	var result []string
+	var buffer []string
+	inParentheses := false
+
+	for _, token := range tokens {
+		if strings.Contains(token, "(") {
+			inParentheses = true
+			buffer = append(buffer, token)
+		} else if strings.HasSuffix(token, ")") && inParentheses {
+			buffer = append(buffer, token)
+			result = append(result, strings.Join(buffer, " "))
+			buffer = nil
+			inParentheses = false
+		} else if inParentheses {
+			buffer = append(buffer, token)
+		} else {
+			result = append(result, token)
+		}
+	}
+
+	if inParentheses {
+		result = append(result, strings.Join(buffer, " "))
+	}
+
+	return result
 }
