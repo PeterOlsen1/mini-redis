@@ -1,6 +1,9 @@
 package authtypes
 
-import "iter"
+import (
+	"iter"
+	"slices"
+)
 
 type Rule struct {
 	// The regex matching which keys the user can access
@@ -18,19 +21,37 @@ const DENY = false
 
 type Ruleset []Rule
 
-func (rset *Ruleset) Contains(rule Rule) bool {
-	for _, r := range *rset {
-		if r.Regex == rule.Regex && r.Mode == rule.Mode && r.Operation == rule.Operation {
-			return true
-		}
-	}
+var READALL = Rule{
+	Regex:     "@",
+	Mode:      ALLOW,
+	Operation: READ,
+}
 
-	return false
+var READNONE = Rule{
+	Regex:     "@",
+	Mode:      DENY,
+	Operation: READ,
+}
+
+var WRITEALL = Rule{
+	Regex:     "@",
+	Mode:      ALLOW,
+	Operation: WRITE,
+}
+
+var WRITENONE = Rule{
+	Regex:     "@",
+	Mode:      DENY,
+	Operation: WRITE,
+}
+
+func (rset *Ruleset) Contains(rule Rule) bool {
+	return slices.Contains(*rset, rule)
 }
 
 func (rset *Ruleset) Remove(rule Rule) {
 	for i, r := range *rset {
-		if r.Regex == rule.Regex && r.Mode == rule.Mode && r.Operation == rule.Operation {
+		if r == rule {
 			*rset = append((*rset)[:i], (*rset)[i+1:]...)
 			return
 		}

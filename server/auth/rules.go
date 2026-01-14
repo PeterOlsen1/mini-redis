@@ -51,7 +51,7 @@ func ParseRules(rules ...string) authtypes.Ruleset {
 	return out
 }
 
-func AddRules(username string, rules ...authtypes.Rule) error {
+func AddRules(username string, rules authtypes.Ruleset) error {
 	user, ok := GetUser(username)
 
 	if !ok {
@@ -64,7 +64,7 @@ func AddRules(username string, rules ...authtypes.Rule) error {
 	return UpdateACLFile()
 }
 
-func RemoveRules(username string, rules ...authtypes.Rule) error {
+func RemoveRules(username string, rules authtypes.Ruleset) error {
 	user, ok := GetUser(username)
 
 	if !ok {

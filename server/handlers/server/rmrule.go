@@ -21,7 +21,7 @@ func HandleRMRule(user *authtypes.User, args resp.ArgList) ([]byte, error) {
 	dstUser := args.String(0)
 	rules := auth.ParseRules(args.Slice(1, 100000)...)
 
-	err := auth.RemoveRules(dstUser, rules...)
+	err := auth.RemoveRules(dstUser, rules)
 	if err != nil {
 		log.Println(err)
 		return nil, errors.GENERAL

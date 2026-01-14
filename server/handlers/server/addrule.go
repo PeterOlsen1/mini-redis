@@ -20,7 +20,7 @@ func HandleAddRule(user *authtypes.User, args resp.ArgList) ([]byte, error) {
 	dstUser := args.String(0)
 	rules := auth.ParseRules(args.Slice(1, 100000)...)
 
-	err := auth.AddRules(dstUser, rules...)
+	err := auth.AddRules(dstUser, rules)
 	if err != nil {
 		return nil, errors.GENERAL
 	}

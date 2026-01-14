@@ -42,16 +42,26 @@ func DeleteUser(user string) {
 	delete(userMap, user)
 }
 
-func UpdateUserRules(username string, rules ...authtypes.Rule) error {
+func AddUserPerm(username string, perm int) {
 	mu.Lock()
 	defer mu.Unlock()
 
 	user, ok := userMap[username]
 	if !ok {
-		return nil
+		return
 	}
 
-	user.Rules.Add(rules)
+	user.Perms |= perm
+}
 
-	return nil
+func RemoveUserPerm(username string, perm int) {
+	mu.Lock()
+	defer mu.Unlock()
+
+	user, ok := userMap[username]
+	if !ok {
+		return
+	}
+
+	user.Perms ^= perm
 }
