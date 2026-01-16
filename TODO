@@ -1,0 +1,22 @@
+* TODO
+  * Rule brainstorming
+    * Don't give all access by default? (special all key)
+    * Positives tak
+    * Use +@ or -@ for read/write all/none
+  * Fix logger with files vs stdout
+  * Fix new TTL commands (EXPIREAT, EXPIRETIME)
+  * Implement ArgString, ArgInt, etc on server.
+
+* Backlog
+  * Add logging to all handler errors
+  * Make save / load interface nicer
+  * Handle TCP disconnect gracefully (call disconnect info function)
+
+* Way backlog
+  * Different database numbers
+  * Add help command
+  * Improve testing environment
+  * Github actions testing
+  * Pipelining
+  * Blocking pop calls
+  * Include length calculations in RESP data
