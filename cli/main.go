@@ -59,7 +59,7 @@ func handleLineIn(c *client.RedisClient, input string) error {
 
 		return nil
 	}
-	if strings.ToLower(tokens[0]) == "history" {
+	if strings.ToLower(tokens[0]) == "history" || tokens[0] == "!" {
 		if len(tokens) == 1 {
 			showHistory(10)
 			return nil

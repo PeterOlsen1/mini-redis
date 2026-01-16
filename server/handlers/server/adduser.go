@@ -20,18 +20,17 @@ func HandleAddUser(user *authtypes.User, args resp.ArgList) ([]byte, error) {
 	username := args.String(0)
 	pass := args.String(1)
 
-	perms := 0
-	if args.Includes("admin") {
-		perms |= authtypes.ADMIN
+	if testUsr, exists := auth.GetUser(username); exists == true || testUsr != nil {
+		return nil, errors.USER_EXISTS
 	}
 
-	err := auth.AddACLUser(username, pass)
+	newUser, err := auth.AddACLUser(username, pass)
 	if err != nil {
 		return nil, err
 	}
 
 	ruleSlice := args.Slice(2, 10000)
-	user.Rules = auth.ParseRules(ruleSlice...)
-	user.Perms |= user.Rules.ExtractPerms()
+	newUser.Rules = auth.ParseRules(ruleSlice...)
+	newUser.Perms |= newUser.Rules.ExtractPerms()
 	return resp.BYTE_OK, nil
 }

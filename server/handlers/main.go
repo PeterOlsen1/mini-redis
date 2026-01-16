@@ -28,10 +28,8 @@ func HandleCommand(conn *types.Connection, cmd commands.Command, args resp.ArgLi
 
 	// auth alters the conn.User ptr, so we need the special case
 	if cmd == commands.AUTH {
-		fmt.Println(conn.User)
 		return server.HandleAuth(&conn.User, args)
 	}
-	fmt.Println(conn.User)
 
 	return commandHandlers[cmd](conn.User, args)
 }

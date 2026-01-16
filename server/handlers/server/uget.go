@@ -35,6 +35,8 @@ func HandleUGet(user *authtypes.User, args resp.ArgList) ([]byte, error) {
 					operationString := "READ"
 					if rule.Operation == authtypes.WRITE {
 						operationString = "WRITE"
+					} else if rule.Operation == authtypes.ADMIN {
+						continue
 					}
 
 					if rule.Mode {

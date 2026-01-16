@@ -30,6 +30,10 @@ func SetAuthRequired(new bool) {
 	authRequired = new
 }
 
+func (u User) NoAuth() bool {
+	return u.Password == "" && u.Username == ""
+}
+
 func (u User) Admin() bool {
 	if !authRequired {
 		return true
@@ -56,15 +60,15 @@ func (u User) Write() bool {
 
 func (u User) PermString() string {
 	perms := make([]string, 0)
-	if u.Admin() {
+	if u.Perms&ADMIN != 0 {
 		perms = append(perms, "ADMIN")
 	}
 
-	if u.Read() {
+	if u.Perms&READ != 0 {
 		perms = append(perms, "READ")
 	}
 
-	if u.Write() {
+	if u.Perms&WRITE != 0 {
 		perms = append(perms, "WRITE")
 	}
 

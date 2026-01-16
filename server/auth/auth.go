@@ -88,10 +88,10 @@ func LoadACLUsers() error {
 // Note for myslef:
 // Go uses double pointers to signify if the function changes the pointer argument.
 // Only use if you want to reassign the callee's pointer
-func AddACLUser(user *authtypes.User, username string, password string) error {
+func AddACLUser(username string, password string) (*authtypes.User, error) {
 	hashedPass, err := bcrypt.GenerateFromPassword([]byte(password), bcrypt.DefaultCost)
 	if err != nil {
-		return err
+		return nil, err
 	}
 
 	newUser := &authtypes.User{
@@ -103,7 +103,7 @@ func AddACLUser(user *authtypes.User, username string, password string) error {
 
 	SetUser(newUser)
 
-	return UpdateACLFile()
+	return newUser, UpdateACLFile()
 }
 
 func RemoveACLUser(username string) error {

@@ -59,6 +59,7 @@ func Start(configPath string) {
 
 	go func() {
 		<-sig
+		auth.UpdateACLFile() // update user file on stop server
 		cancel()
 	}()
 }
