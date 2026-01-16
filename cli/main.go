@@ -113,6 +113,7 @@ func handleInput(c *client.RedisClient, tokens []string) (string, error) {
 	return c.SendAndReceive(req)
 }
 
+// Helper function so that when .Split splits wtihin the parenthesis, rejoin it
 func joinParenthesisTokens(tokens []string) []string {
 	var result []string
 	var buffer []string
@@ -122,8 +123,12 @@ func joinParenthesisTokens(tokens []string) []string {
 		if strings.Contains(token, "(") {
 			inParentheses = true
 			buffer = append(buffer, token)
-		} else if strings.HasSuffix(token, ")") && inParentheses {
-			buffer = append(buffer, token)
+		}
+
+		if strings.HasSuffix(token, ")") && inParentheses {
+			if len(buffer) > 1 {
+				buffer = append(buffer, token)
+			}
 			result = append(result, strings.Join(buffer, " "))
 			buffer = nil
 			inParentheses = false
