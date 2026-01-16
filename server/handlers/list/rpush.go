@@ -18,10 +18,7 @@ func HandleRPush(user *authtypes.User, args resp.ArgList) ([]byte, error) {
 	}
 
 	key := args.String(0)
-	vals := make([]string, len(args)-1)
-	for i, arg := range args[1:] {
-		vals[i] = arg.Content
-	}
+	vals := args.Slice(1, 10000)
 
 	ret := internal.RPush(key, vals)
 	if ret == -1 {

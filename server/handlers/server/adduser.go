@@ -17,15 +17,15 @@ func HandleAddUser(user *authtypes.User, args resp.ArgList) ([]byte, error) {
 		return nil, errors.ARG_COUNT(commands.ADDUSER, 2)
 	}
 
-	username := args[0].Content
-	pass := args[1].Content
+	username := args.String(0)
+	pass := args.String(1)
 
 	perms := 0
 	if args.Includes("admin") {
 		perms |= authtypes.ADMIN
 	}
 
-	err := auth.AddACLUser(&user, username, pass)
+	err := auth.AddACLUser(username, pass)
 	if err != nil {
 		return nil, err
 	}

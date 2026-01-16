@@ -19,7 +19,7 @@ func HandleSet(user *authtypes.User, args resp.ArgList) ([]byte, error) {
 	}
 
 	key := args.String(0)
-	value := args[1].Content
+	value := args.String(1)
 
 	internal.Set(key, value)
 	return resp.BYTE_OK, nil

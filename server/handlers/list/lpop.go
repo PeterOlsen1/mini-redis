@@ -7,7 +7,6 @@ import (
 	"mini-redis/server/internal"
 	"mini-redis/types/commands"
 	"mini-redis/types/errors"
-	"strconv"
 )
 
 func HandleLPop(user *authtypes.User, args resp.ArgList) ([]byte, error) {
@@ -34,7 +33,7 @@ func HandleLPop(user *authtypes.User, args resp.ArgList) ([]byte, error) {
 		return resp.BYTE_STRING(res[0]), nil
 	}
 
-	num, err := strconv.Atoi(args[1].Content)
+	num, err := args.Int(1)
 	if err != nil {
 		return nil, fmt.Errorf("invalid pop count")
 	}

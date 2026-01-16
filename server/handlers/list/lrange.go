@@ -6,7 +6,6 @@ import (
 	"mini-redis/server/internal"
 	"mini-redis/types/commands"
 	"mini-redis/types/errors"
-	"strconv"
 )
 
 func HandleLRange(user *authtypes.User, args resp.ArgList) ([]byte, error) {
@@ -20,18 +19,13 @@ func HandleLRange(user *authtypes.User, args resp.ArgList) ([]byte, error) {
 
 	// parse arguments
 	key := args.String(0)
-	start := args[1].Content
-	end := args[2].Content
-	startInt, err := strconv.Atoi(start)
-	if err != nil {
-		return nil, errors.INVALID_ARG
-	}
-	endInt, err := strconv.Atoi(end)
-	if err != nil {
+	start, startErr := args.Int(1)
+	end, endErr := args.Int(1)
+	if startErr != nil || endErr != nil {
 		return nil, errors.INVALID_ARG
 	}
 
-	internalResp, err := internal.LRange(key, startInt, endInt)
+	internalResp, err := internal.LRange(key, start, end)
 	if err != nil {
 		return nil, err
 	}
