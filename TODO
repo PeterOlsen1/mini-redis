@@ -1,7 +1,8 @@
 * TODO
   * Rule brainstorming
+    * Saving of ACL users seems to be weird. Debug this
     * Handle updating of rules
-    * Potential thread safety issues with user profiles. Could add a lock to each user for this, necessary?
+    * Potential thread safety issues with user profiles. Could add a lock to each user for this, necessary? (probably)
   * Fix logger with files vs stdout
   * Fix new TTL commands (EXPIREAT, EXPIRETIME)
   * Implement ArgString, ArgInt, etc on server.
