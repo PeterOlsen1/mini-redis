@@ -80,32 +80,28 @@ func (u User) CanRead(key string) bool {
 		return true
 	}
 
-	// general read permission
-	// check out negatives
-	if u.Read() {
-		for _, rule := range u.Rules.Negatives().Read() {
-			matched, err := regexp.Match(rule.Regex, []byte(key))
-			if err == nil && matched == true {
-				return false
-			}
-		}
-
-		return true
-	}
-
-	for _, rule := range u.Rules {
-		if rule.Operation != READ {
-			continue
-		}
-
+	// Check negatives
+	for _, rule := range u.Rules.Iter().Negatives().Read() {
 		matched, err := regexp.Match(rule.Regex, []byte(key))
-		if err != nil || matched == false {
-			continue
+		if err == nil && matched {
+			return false
 		}
+	}
 
+	// Check general read bit
+	if u.Read() {
 		return true
 	}
 
+	// Check positives
+	for _, rule := range u.Rules.Iter().Positives().Read() {
+		matched, err := regexp.Match(rule.Regex, []byte(key))
+		if err == nil && matched {
+			return true
+		}
+	}
+
+	// Default to false
 	return false
 }
 
@@ -114,30 +110,27 @@ func (u User) CanWrite(key string) bool {
 		return true
 	}
 
-	// general write permission
-	if u.Write() {
-		for _, rule := range u.Rules.Negatives().Write() {
-			matched, err := regexp.Match(rule.Regex, []byte(key))
-			if err == nil && matched == true {
-				return false
-			}
-		}
-
-		return true
-	}
-
-	for _, rule := range u.Rules {
-		if rule.Operation != WRITE {
-			continue
-		}
-
+	// Check negatives
+	for _, rule := range u.Rules.Iter().Negatives().Write() {
 		matched, err := regexp.Match(rule.Regex, []byte(key))
-		if err != nil || matched == false {
-			continue
+		if err == nil && matched {
+			return false
 		}
+	}
 
+	// Check general write bit
+	if u.Write() {
 		return true
 	}
 
+	// Check positives
+	for _, rule := range u.Rules.Iter().Positives().Write() {
+		matched, err := regexp.Match(rule.Regex, []byte(key))
+		if err == nil && matched {
+			return true
+		}
+	}
+
+	// Default to false
 	return false
 }

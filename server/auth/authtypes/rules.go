@@ -95,9 +95,22 @@ func (rset *Ruleset) Subtract(other Ruleset) {
 	}
 }
 
+// Playing with go iterators
+//
+// Not strictly necessary but cool
 type RulesetIterator iter.Seq2[int, Rule]
 
-func (rset Ruleset) Negatives() RulesetIterator {
+func (rset Ruleset) Iter() RulesetIterator {
+	return func(yield func(int, Rule) bool) {
+		for i, rule := range rset {
+			if !yield(i, rule) {
+				return
+			}
+		}
+	}
+}
+
+func (rset RulesetIterator) Negatives() RulesetIterator {
 	return func(yield func(int, Rule) bool) {
 		for i, rule := range rset {
 			if rule.Mode == DENY {
@@ -109,7 +122,7 @@ func (rset Ruleset) Negatives() RulesetIterator {
 	}
 }
 
-func (rset Ruleset) Positives() RulesetIterator {
+func (rset RulesetIterator) Positives() RulesetIterator {
 	return func(yield func(int, Rule) bool) {
 		for i, rule := range rset {
 			if rule.Mode == ALLOW {
