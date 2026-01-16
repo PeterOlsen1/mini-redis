@@ -81,8 +81,16 @@ func (u User) CanRead(key string) bool {
 	}
 
 	// general read permission
-	if !u.Read() {
-		return false
+	// check out negatives
+	if u.Read() {
+		for _, rule := range u.Rules.Negatives().Read() {
+			matched, err := regexp.Match(rule.Regex, []byte(key))
+			if err == nil && matched == true {
+				return false
+			}
+		}
+
+		return true
 	}
 
 	for _, rule := range u.Rules {
@@ -107,8 +115,15 @@ func (u User) CanWrite(key string) bool {
 	}
 
 	// general write permission
-	if !u.Write() {
-		return false
+	if u.Write() {
+		for _, rule := range u.Rules.Negatives().Write() {
+			matched, err := regexp.Match(rule.Regex, []byte(key))
+			if err == nil && matched == true {
+				return false
+			}
+		}
+
+		return true
 	}
 
 	for _, rule := range u.Rules {

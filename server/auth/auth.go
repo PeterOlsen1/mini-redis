@@ -77,27 +77,31 @@ func LoadACLUsers() error {
 	}
 
 	for _, user := range users {
-		SetUser(user)
+		SetUser(&user)
 	}
 
 	return nil
 }
 
 // Add a user to the ACL file
-func AddACLUser(username string, password string, perms int, rules authtypes.Ruleset) error {
+//
+// Note for myslef:
+// Go uses double pointers to signify if the function changes the pointer argument.
+// Only use if you want to reassign the callee's pointer
+func AddACLUser(user **authtypes.User, username string, password string) error {
 	hashedPass, err := bcrypt.GenerateFromPassword([]byte(password), bcrypt.DefaultCost)
 	if err != nil {
 		return err
 	}
 
-	newUser := authtypes.User{
+	*user = &authtypes.User{
 		Username: username,
 		Password: string(hashedPass),
-		Perms:    perms,
-		Rules:    rules,
+		Perms:    0,
+		Rules:    make(authtypes.Ruleset, 0),
 	}
 
-	SetUser(newUser)
+	SetUser(*user)
 
 	return UpdateACLFile()
 }
@@ -115,7 +119,7 @@ func CheckACLUser(username string, password string) (*authtypes.User, error) {
 
 		err := bcrypt.CompareHashAndPassword([]byte(u.Password), []byte(password))
 		if err == nil {
-			return &u, nil
+			return u, nil
 		}
 	}
 

@@ -35,10 +35,7 @@ func HandleAuth(user *authtypes.User, args resp.ArgList) ([]byte, error) {
 	}
 
 	if newUser != nil {
-		user.Username = newUser.Username
-		user.Perms = newUser.Perms
-		user.Rules = newUser.Rules
-		// don't set the password bc we don't need that
+		user = newUser
 		return resp.BYTE_OK, nil
 	}
 

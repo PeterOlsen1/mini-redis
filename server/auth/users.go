@@ -5,10 +5,10 @@ import (
 	"sync"
 )
 
-var userMap map[string]authtypes.User = make(map[string]authtypes.User)
+var userMap map[string]*authtypes.User = make(map[string]*authtypes.User)
 var mu sync.Mutex
 
-func GetUser(username string) (authtypes.User, bool) {
+func GetUser(username string) (*authtypes.User, bool) {
 	mu.Lock()
 	defer mu.Unlock()
 
@@ -16,18 +16,18 @@ func GetUser(username string) (authtypes.User, bool) {
 	return user, ok
 }
 
-func SetUser(user authtypes.User) {
+func SetUser(user *authtypes.User) {
 	mu.Lock()
 	defer mu.Unlock()
 
 	userMap[user.Username] = user
 }
 
-func GetAllUsers() []authtypes.User {
+func GetAllUsers() []*authtypes.User {
 	mu.Lock()
 	defer mu.Unlock()
 
-	out := make([]authtypes.User, 0)
+	out := make([]*authtypes.User, 0)
 	for _, user := range userMap {
 		out = append(out, user)
 	}
@@ -40,28 +40,4 @@ func DeleteUser(user string) {
 	defer mu.Unlock()
 
 	delete(userMap, user)
-}
-
-func AddUserPerm(username string, perm int) {
-	mu.Lock()
-	defer mu.Unlock()
-
-	user, ok := userMap[username]
-	if !ok {
-		return
-	}
-
-	user.Perms |= perm
-}
-
-func RemoveUserPerm(username string, perm int) {
-	mu.Lock()
-	defer mu.Unlock()
-
-	user, ok := userMap[username]
-	if !ok {
-		return
-	}
-
-	user.Perms ^= perm
 }

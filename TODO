@@ -1,8 +1,9 @@
 * TODO
   * Rule brainstorming
     * Don't give all access by default? (special all key)
-    * Positives tak
+    * Positives take precedence (iterate over positives and check them first)
     * Use +@ or -@ for read/write all/none
+    * Potential thread safety issues with user profiles. Could add a lock to each user for this, necessary?
   * Fix logger with files vs stdout
   * Fix new TTL commands (EXPIREAT, EXPIRETIME)
   * Implement ArgString, ArgInt, etc on server.

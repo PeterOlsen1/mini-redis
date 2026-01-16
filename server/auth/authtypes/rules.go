@@ -12,7 +12,7 @@ type Rule struct {
 	// Either ALLOW or DENY
 	Mode bool `yaml:"mode"`
 
-	// The operation this rule is set on. Either READ or WRITE, not admin
+	// The operation this rule is set on. Either READ or WRITE. ADMIN for privileges
 	Operation UserPermission `yaml:"operation"`
 }
 
@@ -45,6 +45,26 @@ var WRITENONE = Rule{
 	Operation: WRITE,
 }
 
+var ADMIN_RULE = Rule{
+	Regex:     "",
+	Mode:      ALLOW,
+	Operation: ADMIN,
+}
+
+func (rset *Ruleset) ExtractPerms() int {
+	out := 0
+	for _, r := range *rset {
+		if r == READALL {
+			out |= READ
+		}
+		if r == WRITEALL {
+			out |= WRITE
+		}
+	}
+
+	return out
+}
+
 func (rset *Ruleset) Contains(rule Rule) bool {
 	return slices.Contains(*rset, rule)
 }
@@ -75,7 +95,9 @@ func (rset *Ruleset) Subtract(other Ruleset) {
 	}
 }
 
-func (rset Ruleset) Negatives() iter.Seq2[int, Rule] {
+type RulesetIterator iter.Seq2[int, Rule]
+
+func (rset Ruleset) Negatives() RulesetIterator {
 	return func(yield func(int, Rule) bool) {
 		for i, rule := range rset {
 			if rule.Mode == DENY {
@@ -87,10 +109,34 @@ func (rset Ruleset) Negatives() iter.Seq2[int, Rule] {
 	}
 }
 
-func (rset Ruleset) Positives() iter.Seq2[int, Rule] {
+func (rset Ruleset) Positives() RulesetIterator {
 	return func(yield func(int, Rule) bool) {
 		for i, rule := range rset {
 			if rule.Mode == ALLOW {
+				if !yield(i, rule) {
+					return
+				}
+			}
+		}
+	}
+}
+
+func (rset RulesetIterator) Read() RulesetIterator {
+	return func(yield func(int, Rule) bool) {
+		for i, rule := range rset {
+			if rule.Operation == READ {
+				if !yield(i, rule) {
+					return
+				}
+			}
+		}
+	}
+}
+
+func (rset RulesetIterator) Write() RulesetIterator {
+	return func(yield func(int, Rule) bool) {
+		for i, rule := range rset {
+			if rule.Operation == WRITE {
 				if !yield(i, rule) {
 					return
 				}

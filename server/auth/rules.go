@@ -9,6 +9,7 @@ import (
 func ParseRules(rules ...string) authtypes.Ruleset {
 	out := make([]authtypes.Rule, 0)
 	for _, ruleString := range rules {
+		// Ifs are mutually exclusive with admin last in the weird case that someone had a regex including "admin"
 		if strings.Contains(ruleString, "read") {
 			cut := strings.TrimSuffix(strings.TrimPrefix(ruleString, "read("), ")")
 			readSplit := strings.SplitSeq(cut, " ")
@@ -26,8 +27,7 @@ func ParseRules(rules ...string) authtypes.Ruleset {
 				}
 				out = append(out, rule)
 			}
-		}
-		if strings.Contains(ruleString, "write") {
+		} else if strings.Contains(ruleString, "write") {
 			cut := strings.TrimSuffix(strings.TrimPrefix(ruleString, "write("), ")")
 			writeSplit := strings.SplitSeq(cut, " ")
 			for writeRule := range writeSplit {
@@ -45,6 +45,8 @@ func ParseRules(rules ...string) authtypes.Ruleset {
 
 				out = append(out, rule)
 			}
+		} else if strings.Contains(ruleString, "admin") {
+			out = append(out, authtypes.ADMIN_RULE)
 		}
 	}
 
@@ -59,6 +61,7 @@ func AddRules(username string, rules authtypes.Ruleset) error {
 	}
 
 	user.Rules.Add(rules)
+	user.Perms &= user.Rules.ExtractPerms()
 	SetUser(user)
 
 	return UpdateACLFile()
