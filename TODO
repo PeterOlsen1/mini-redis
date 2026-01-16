@@ -1,12 +1,14 @@
 * TODO
   * Rule brainstorming
-    * Handle updating of rules with wildcard rules
+    * Handle updating of rules
     * Potential thread safety issues with user profiles. Could add a lock to each user for this, necessary?
   * Fix logger with files vs stdout
   * Fix new TTL commands (EXPIREAT, EXPIRETIME)
   * Implement ArgString, ArgInt, etc on server.
 
 * Backlog
+  * Add a goroutine to update the ACL file occasionally instead of calling many methods. Call on shutdown too
+    * Users map is a buffer cache over the ACL file
   * Add logging to all handler errors
   * Make save / load interface nicer
   * Handle TCP disconnect gracefully (call disconnect info function)

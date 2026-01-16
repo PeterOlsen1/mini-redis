@@ -103,7 +103,7 @@ func startServer(ctx context.Context) error {
 			},
 		}
 		go func() {
-			err := handleConnection(connWrapper)
+			err := handleConnection(&connWrapper)
 			if err != nil {
 				log.Printf("error handling connection: %e", err)
 			}
@@ -111,7 +111,7 @@ func startServer(ctx context.Context) error {
 	}
 }
 
-func handleConnection(conn types.Connection) error {
+func handleConnection(conn *types.Connection) error {
 	if cfg.Log.Connect {
 		log.Printf("Established connection: %s\n", conn.Conn.RemoteAddr())
 	}
@@ -146,7 +146,7 @@ func handleConnection(conn types.Connection) error {
 	}
 }
 
-func parseArray(conn types.Connection) (resp.ArgList, error) {
+func parseArray(conn *types.Connection) (resp.ArgList, error) {
 	reader := bufio.NewReader(conn.Conn)
 	header, err := reader.ReadString('\n')
 	if err != nil {
@@ -190,7 +190,7 @@ func parseArray(conn types.Connection) (resp.ArgList, error) {
 	return array, nil
 }
 
-func processArray(conn types.Connection, array resp.ArgList) error {
+func processArray(conn *types.Connection, array resp.ArgList) error {
 	i := 0
 	for i < len(array) {
 		item := array[i]

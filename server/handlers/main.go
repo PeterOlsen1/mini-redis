@@ -17,7 +17,7 @@ func TODO(items resp.ArgList) ([]byte, error) {
 	return nil, fmt.Errorf("UNIMPLEMENTED!")
 }
 
-func HandleCommand(conn types.Connection, cmd commands.Command, args resp.ArgList) ([]byte, error) {
+func HandleCommand(conn *types.Connection, cmd commands.Command, args resp.ArgList) ([]byte, error) {
 	if !cmd.Valid() {
 		return nil, fmt.Errorf("invalid command passed to handle command")
 	}
@@ -25,6 +25,13 @@ func HandleCommand(conn types.Connection, cmd commands.Command, args resp.ArgLis
 	if cfg.Log.Command {
 		fmt.Printf("Command: %s\nArgs: %v\n", cmd.String(), args)
 	}
+
+	// auth alters the conn.User ptr, so we need the special case
+	if cmd == commands.AUTH {
+		fmt.Println(conn.User)
+		return server.HandleAuth(&conn.User, args)
+	}
+	fmt.Println(conn.User)
 
 	return commandHandlers[cmd](conn.User, args)
 }
@@ -54,10 +61,10 @@ var commandHandlers = [...]func(*authtypes.User, resp.ArgList) ([]byte, error){
 	server.HandleInfo,
 	key.HandleKeys,
 	key.HandleFlushAll,
-	server.HandleAuth,
+	nil, // exception for handle auth since it requies double pointer. HandleCommand takes care of this
 	server.HandleLogout,
 	server.HandleWhoami,
-	server.HandleSetUser,
+	server.HandleAddUser,
 	server.HandleRMUser,
 	server.HandleUGet,
 	server.HandleAddRule,

@@ -60,6 +60,9 @@ func (rset *Ruleset) ExtractPerms() int {
 		if r == WRITEALL {
 			out |= WRITE
 		}
+		if r == ADMIN_RULE {
+			out |= ADMIN
+		}
 	}
 
 	return out

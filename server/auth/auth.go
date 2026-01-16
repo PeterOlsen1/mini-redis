@@ -111,7 +111,7 @@ func RemoveACLUser(username string) error {
 	return UpdateACLFile()
 }
 
-func CheckACLUser(username string, password string) (*authtypes.User, error) {
+func CheckACLUser(currentUser **authtypes.User, username string, password string) error {
 	for _, u := range GetAllUsers() {
 		if u.Username != username {
 			continue
@@ -119,9 +119,10 @@ func CheckACLUser(username string, password string) (*authtypes.User, error) {
 
 		err := bcrypt.CompareHashAndPassword([]byte(u.Password), []byte(password))
 		if err == nil {
-			return u, nil
+			*currentUser = u
+			return nil
 		}
 	}
 
-	return nil, fmt.Errorf("user not found")
+	return fmt.Errorf("user not found")
 }

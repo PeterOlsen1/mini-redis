@@ -55,13 +55,12 @@ func ParseRules(rules ...string) authtypes.Ruleset {
 
 func AddRules(username string, rules authtypes.Ruleset) error {
 	user, ok := GetUser(username)
-
 	if !ok {
 		return fmt.Errorf("user could not be found")
 	}
 
 	user.Rules.Add(rules)
-	user.Perms &= user.Rules.ExtractPerms()
+	user.Perms = user.Rules.ExtractPerms()
 	SetUser(user)
 
 	return UpdateACLFile()
@@ -75,6 +74,7 @@ func RemoveRules(username string, rules authtypes.Ruleset) error {
 	}
 
 	user.Rules.Subtract(rules)
+	user.Perms = user.Rules.ExtractPerms()
 	SetUser(user)
 
 	return UpdateACLFile()

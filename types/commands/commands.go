@@ -42,7 +42,7 @@ const (
 	AUTH
 	LOGOUT
 	WHOAMI
-	SETUSER
+	ADDUSER
 	RMUSER
 	UGET
 	ADDRULE
@@ -79,7 +79,7 @@ var commandStrings = [...]string{
 	"AUTH",
 	"LOGOUT",
 	"WHOAMI",
-	"SETUSER",
+	"ADDUSER",
 	"RMUSER",
 	"UGET",
 	"ADDRULE",

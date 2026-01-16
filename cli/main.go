@@ -17,6 +17,7 @@ func main() {
 
 	if err != nil {
 		fmt.Println("failed to establish redis connection, exiting...")
+		fmt.Println(err)
 		os.Exit(1)
 	}
 
@@ -79,6 +80,7 @@ func handleLineIn(c *client.RedisClient, input string) error {
 		return fmt.Errorf("")
 	}
 
+	// join parenthesis tokens because they will come in like this from the client
 	tokens = joinParenthesisTokens(tokens)
 	resp, err := handleInput(c, tokens)
 	if err != nil {

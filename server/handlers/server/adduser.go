@@ -8,13 +8,13 @@ import (
 	"mini-redis/types/errors"
 )
 
-func HandleSetUser(user *authtypes.User, args resp.ArgList) ([]byte, error) {
+func HandleAddUser(user *authtypes.User, args resp.ArgList) ([]byte, error) {
 	if !user.Admin() {
-		return nil, errors.PERMISSIONS(commands.SETUSER, authtypes.ADMIN)
+		return nil, errors.PERMISSIONS(commands.ADDUSER, authtypes.ADMIN)
 	}
 
 	if len(args) < 2 {
-		return nil, errors.ARG_COUNT(commands.SETUSER, 2)
+		return nil, errors.ARG_COUNT(commands.ADDUSER, 2)
 	}
 
 	username := args[0].Content

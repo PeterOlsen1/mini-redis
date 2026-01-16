@@ -9,7 +9,8 @@ import (
 	"mini-redis/types/errors"
 )
 
-func HandleAuth(user *authtypes.User, args resp.ArgList) ([]byte, error) {
+func HandleAuth(userPtr **authtypes.User, args resp.ArgList) ([]byte, error) {
+	user := *userPtr
 	if user.Username != "" && user.Perms == 0 {
 		return nil, errors.ALREADY_AUTH
 	}
@@ -18,8 +19,8 @@ func HandleAuth(user *authtypes.User, args resp.ArgList) ([]byte, error) {
 		return nil, errors.ARG_COUNT(commands.AUTH, 2)
 	}
 
-	username := args[0].Content
-	pass := args[1].Content
+	username := args.String(0)
+	pass := args.String(1)
 
 	for _, u := range cfg.Server.Users {
 		if u.Username == username && u.Password == pass {
@@ -29,15 +30,10 @@ func HandleAuth(user *authtypes.User, args resp.ArgList) ([]byte, error) {
 		}
 	}
 
-	newUser, err := auth.CheckACLUser(username, pass)
+	err := auth.CheckACLUser(userPtr, username, pass)
 	if err != nil {
 		return nil, errors.COULD_NOT_AUTHENTICATE
 	}
 
-	if newUser != nil {
-		user = newUser
-		return resp.BYTE_OK, nil
-	}
-
-	return nil, errors.COULD_NOT_AUTHENTICATE
+	return resp.BYTE_OK, nil
 }
