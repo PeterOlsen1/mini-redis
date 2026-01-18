@@ -9,15 +9,14 @@ import (
 )
 
 func HandleRPush(user *authtypes.User, args resp.ArgList) ([]byte, error) {
-	if !user.Write() {
-		return nil, errors.PERMISSIONS(commands.RPUSH, authtypes.WRITE)
-	}
-
 	if len(args) < 2 {
 		return nil, errors.ARG_COUNT(commands.RPUSH, 2)
 	}
 
 	key := args.String(0)
+	if !user.CanWrite(key) {
+		return nil, errors.PERMS_KEY(commands.RPUSH, authtypes.WRITE, key)
+	}
 	vals := args.Slice(1, 10000)
 
 	ret := internal.RPush(key, vals)

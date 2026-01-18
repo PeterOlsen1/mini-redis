@@ -1,7 +1,6 @@
 package string
 
 import (
-	"fmt"
 	"mini-redis/resp"
 	"mini-redis/server/auth/authtypes"
 	"mini-redis/server/internal"
@@ -10,17 +9,15 @@ import (
 )
 
 func HandleGet(user *authtypes.User, args resp.ArgList) ([]byte, error) {
-	if !user.Read() {
-		return nil, errors.PERMISSIONS(commands.GET, authtypes.READ)
-	}
-
 	if len(args) < 1 {
 		return nil, errors.ARG_COUNT(commands.GET, 1)
 	}
 
-	fmt.Println(user.CanRead(args.String(0)))
-
 	key := args.String(0)
+	if !user.CanRead(key) {
+		return nil, errors.PERMS_KEY(commands.GET, authtypes.READ, key)
+	}
+
 	val := internal.Get(key)
 	if val == nil {
 		return resp.BYTE_NULL, nil

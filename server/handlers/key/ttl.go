@@ -9,16 +9,16 @@ import (
 )
 
 func HandleTTL(user *authtypes.User, params resp.ArgList) ([]byte, error) {
-	if !user.Read() {
-		return nil, errors.PERMISSIONS(commands.TTL, authtypes.READ)
-	}
-
 	if len(params) < 1 {
 		return nil, errors.ARG_COUNT(commands.TTL, 1)
 	}
 
 	// return -2 on non-existent key
-	key := params[0].Content
+	key := params.String(0)
+	if !user.CanRead(key) {
+		return nil, errors.PERMS_KEY(commands.TTL, authtypes.READ, key)
+	}
+
 	if internal.Get(key) == nil {
 		return resp.BYTE_INT(-2), nil
 	}

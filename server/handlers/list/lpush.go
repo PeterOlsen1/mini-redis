@@ -9,15 +9,15 @@ import (
 )
 
 func HandleLPush(user *authtypes.User, args resp.ArgList) ([]byte, error) {
-	if !user.Write() {
-		return nil, errors.PERMISSIONS(commands.LPUSH, authtypes.WRITE)
-	}
-
 	if len(args) < 2 {
 		return nil, errors.ARG_COUNT(commands.LPUSH, 2)
 	}
 
 	key := args.String(0)
+	if !user.CanWrite(key) {
+		return nil, errors.PERMS_KEY(commands.LPUSH, authtypes.WRITE, key)
+	}
+
 	vals := args.Slice(1, 10000)
 
 	ret := internal.LPush(key, vals)

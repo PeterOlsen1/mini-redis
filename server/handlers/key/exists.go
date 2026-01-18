@@ -9,16 +9,16 @@ import (
 )
 
 func HandleExists(user *authtypes.User, args resp.ArgList) ([]byte, error) {
-	if !user.Read() {
-		return nil, errors.PERMISSIONS(commands.EXISTS, authtypes.READ)
-	}
-
 	if len(args) < 1 {
 		return nil, errors.ARG_COUNT(commands.EXISTS, 1)
 	}
 
 	stringArgs := make([]string, len(args))
 	for i, a := range args {
+		if !user.CanRead(a.Content) {
+			return nil, errors.PERMS_KEY(commands.EXISTS, authtypes.READ, a.Content)
+		}
+
 		stringArgs[i] = a.Content
 	}
 	results := internal.GetMany(stringArgs)

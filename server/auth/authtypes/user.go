@@ -24,7 +24,7 @@ const ADMIN = 0b1
 const READ = 0b10
 const WRITE = 0b100
 
-var authRequired = false
+var authRequired = true
 
 func SetAuthRequired(new bool) {
 	authRequired = new

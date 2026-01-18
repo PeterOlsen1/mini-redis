@@ -11,15 +11,14 @@ import (
 )
 
 func HandleExpireAt(user *authtypes.User, args resp.ArgList) ([]byte, error) {
-	if !user.Write() {
-		return nil, errors.PERMISSIONS(commands.EXPIREAT, authtypes.WRITE)
-	}
-
 	if len(args) < 2 {
 		return nil, errors.ARG_COUNT(commands.EXPIREAT, 2)
 	}
 
 	key := args.String(0)
+	if !user.CanWrite(key) {
+		return nil, errors.PERMS_KEY(commands.EXPIREAT, authtypes.WRITE, key)
+	}
 
 	timeString := args[1].Content
 	time, err := strconv.Atoi(timeString)

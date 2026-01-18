@@ -9,16 +9,16 @@ import (
 )
 
 func HandleLRange(user *authtypes.User, args resp.ArgList) ([]byte, error) {
-	if !user.Read() {
-		return nil, errors.PERMISSIONS(commands.LRANGE, authtypes.READ)
-	}
-
 	if len(args) < 3 {
 		return nil, errors.ARG_COUNT(commands.LRANGE, 3)
 	}
 
 	// parse arguments
 	key := args.String(0)
+	if !user.CanRead(key) {
+		return nil, errors.PERMS_KEY(commands.LRANGE, authtypes.READ, key)
+	}
+
 	start, startErr := args.Int(1)
 	end, endErr := args.Int(1)
 	if startErr != nil || endErr != nil {

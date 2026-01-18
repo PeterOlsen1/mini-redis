@@ -9,15 +9,14 @@ import (
 )
 
 func HandleIncr(user *authtypes.User, args resp.ArgList) ([]byte, error) {
-	if !user.Write() {
-		return nil, errors.PERMISSIONS(commands.INCR, authtypes.WRITE)
-	}
-
 	if len(args) < 1 {
 		return nil, errors.ARG_COUNT(commands.INCR, 1)
 	}
 
 	key := args.String(0)
+	if !user.CanWrite(key) {
+		return nil, errors.PERMS_KEY(commands.INCR, authtypes.WRITE, key)
+	}
 	newVal, ok := internal.Incr(key)
 	if !ok {
 		return nil, errors.NOT_INTEGER

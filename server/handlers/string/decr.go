@@ -9,15 +9,15 @@ import (
 )
 
 func HandleDecr(user *authtypes.User, args resp.ArgList) ([]byte, error) {
-	if !user.Write() {
-		return nil, errors.PERMISSIONS(commands.DECR, authtypes.WRITE)
-	}
-
 	if len(args) < 1 {
 		return nil, errors.ARG_COUNT(commands.DECR, 1)
 	}
 
 	key := args.String(0)
+	if !user.CanWrite(key) {
+		return nil, errors.PERMS_KEY(commands.DECR, authtypes.WRITE, key)
+	}
+
 	newVal, ok := internal.Decr(key)
 	if !ok {
 		return nil, errors.NOT_INTEGER

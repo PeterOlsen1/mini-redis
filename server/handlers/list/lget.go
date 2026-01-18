@@ -9,15 +9,15 @@ import (
 )
 
 func HandleLGet(user *authtypes.User, args resp.ArgList) ([]byte, error) {
-	if !user.Read() {
-		return nil, errors.PERMISSIONS(commands.LGET, authtypes.READ)
-	}
-
 	if len(args) < 1 {
 		return nil, errors.ARG_COUNT(commands.LGET, 1)
 	}
 
 	key := args.String(0)
+	if !user.CanRead(key) {
+		return nil, errors.PERMS_KEY(commands.LGET, authtypes.READ, key)
+	}
+
 	arr, err := internal.LGet(key)
 	if err != nil {
 		return nil, err

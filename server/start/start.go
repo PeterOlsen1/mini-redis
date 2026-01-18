@@ -42,6 +42,7 @@ func Start(configPath string) {
 		fmt.Printf("Error: %e\n", err)
 		os.Exit(1)
 	}
+	authtypes.SetAuthRequired(cfg.Server.RequireAuth)
 
 	err = auth.LoadACLUsers()
 	if err != nil {

@@ -1,8 +1,10 @@
 package authtypes
 
 import (
+	"fmt"
 	"iter"
 	"slices"
+	"strings"
 )
 
 type Rule struct {
@@ -51,6 +53,23 @@ var ADMIN_RULE = Rule{
 	Operation: ADMIN,
 }
 
+func (r *Rule) String() string {
+	mode := "ALLOW"
+	if r.Mode == DENY {
+		mode = "DENY"
+	}
+
+	operation := "READ"
+	switch r.Operation {
+	case WRITE:
+		operation = "WRITE"
+	case ADMIN:
+		return "ADMIN"
+	}
+
+	return fmt.Sprintf("%s %s on %s", mode, operation, r.Regex)
+}
+
 func (rset *Ruleset) ExtractPerms() int {
 	out := 0
 	for _, r := range *rset {
@@ -96,6 +115,15 @@ func (rset *Ruleset) Subtract(other Ruleset) {
 	for _, rule := range other {
 		rset.Remove(rule)
 	}
+}
+
+func (rset *Ruleset) String() string {
+	var out strings.Builder
+	for _, r := range *rset {
+		out.WriteString(r.String() + "\n")
+	}
+
+	return out.String()
 }
 
 // Playing with go iterators

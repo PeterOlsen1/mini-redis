@@ -10,15 +10,15 @@ import (
 )
 
 func HandleRPop(user *authtypes.User, args resp.ArgList) ([]byte, error) {
-	if !user.Write() {
-		return nil, errors.PERMISSIONS(commands.RPOP, authtypes.WRITE)
-	}
-
 	if len(args) < 1 {
 		return nil, fmt.Errorf("ERR wrong number of arguments for 'rpop' command")
 	}
 
 	key := args.String(0)
+	if !user.CanWrite(key) {
+		return nil, errors.PERMS_KEY(commands.RPOP, authtypes.WRITE, key)
+	}
+
 	if len(args) == 1 {
 		res, err := internal.RPop(key, 1)
 		if err != nil {

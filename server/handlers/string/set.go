@@ -10,15 +10,14 @@ import (
 )
 
 func HandleSet(user *authtypes.User, args resp.ArgList) ([]byte, error) {
-	if !user.Write() {
-		return nil, errors.PERMISSIONS(commands.SET, authtypes.WRITE)
-	}
-
 	if len(args) < 2 {
 		return nil, fmt.Errorf("set requires 2 arguments")
 	}
 
 	key := args.String(0)
+	if !user.CanWrite(key) {
+		return nil, errors.PERMS_KEY(commands.SET, authtypes.WRITE, key)
+	}
 	value := args.String(1)
 
 	internal.Set(key, value)

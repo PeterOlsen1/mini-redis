@@ -10,15 +10,15 @@ import (
 )
 
 func HandleLPop(user *authtypes.User, args resp.ArgList) ([]byte, error) {
-	if !user.Write() {
-		return nil, errors.PERMISSIONS(commands.LPOP, authtypes.WRITE)
-	}
-
 	if len(args) < 1 {
 		return nil, errors.ARG_COUNT(commands.LPOP, 1)
 	}
 
 	key := args.String(0)
+	if !user.CanWrite(key) {
+		return nil, errors.PERMS_KEY(commands.LPOP, authtypes.WRITE, key)
+	}
+
 	if len(args) == 1 {
 		res, err := internal.LPop(key, 1)
 

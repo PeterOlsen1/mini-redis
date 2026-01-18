@@ -2,8 +2,8 @@
   * Rule brainstorming
     * Add a dedicated goroutine for updating the ACL file?
       * Probably not necessary since these commands won't be run as often
-    * Saving of ACL users seems to be weird. Debug this
     * Handle updating of rules
+      * One user is logged in and a rule is changed. But the user can still read, if read is removed for example
     * Potential thread safety issues with user profiles. Could add a lock to each user for this, necessary? (probably)
   * Fix logger with files vs stdout
   * Fix new TTL commands (EXPIREAT, EXPIRETIME)
