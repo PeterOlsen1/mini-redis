@@ -27,5 +27,8 @@ func HandleRMRule(user *authtypes.User, args resp.ArgList) ([]byte, error) {
 		return nil, errors.GENERAL
 	}
 
+	// update ACL file in goroutine
+	go auth.UpdateACLFile()
+
 	return resp.BYTE_OK, nil
 }

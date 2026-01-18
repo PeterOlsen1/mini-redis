@@ -32,5 +32,9 @@ func HandleAddUser(user *authtypes.User, args resp.ArgList) ([]byte, error) {
 	ruleSlice := args.Slice(2, 10000)
 	newUser.Rules = auth.ParseRules(ruleSlice...)
 	newUser.Perms |= newUser.Rules.ExtractPerms()
+
+	// update the ACL file
+	go auth.UpdateACLFile()
+
 	return resp.BYTE_OK, nil
 }

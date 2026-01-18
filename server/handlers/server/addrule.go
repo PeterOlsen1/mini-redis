@@ -25,5 +25,8 @@ func HandleAddRule(user *authtypes.User, args resp.ArgList) ([]byte, error) {
 		return nil, errors.GENERAL
 	}
 
+	// async ACL file update
+	go auth.UpdateACLFile()
+
 	return resp.BYTE_OK, nil
 }

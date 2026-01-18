@@ -63,7 +63,7 @@ func AddRules(username string, rules authtypes.Ruleset) error {
 	user.Perms = user.Rules.ExtractPerms()
 	SetUser(user)
 
-	return UpdateACLFile()
+	return nil
 }
 
 func RemoveRules(username string, rules authtypes.Ruleset) error {
@@ -77,5 +77,5 @@ func RemoveRules(username string, rules authtypes.Ruleset) error {
 	user.Perms = user.Rules.ExtractPerms()
 	SetUser(user)
 
-	return UpdateACLFile()
+	return nil
 }
