@@ -18,6 +18,19 @@ func PERMS_GENERAL(cmd commands.Command) error {
 	return fmt.Errorf("you do not have permissions to run %s", cmd.String())
 }
 
+func PERMS_KEY(cmd commands.Command, perm authtypes.UserPermission, key string) error {
+	switch perm {
+	case authtypes.ADMIN:
+		return fmt.Errorf("%s requires admin privileges", cmd.String())
+	case authtypes.READ:
+		return fmt.Errorf("%s requires read privileges", cmd.String())
+	case authtypes.WRITE:
+		return fmt.Errorf("%s requires write privileges", cmd.String())
+	}
+
+	return nil
+}
+
 func PERMISSIONS(cmd commands.Command, perm authtypes.UserPermission) error {
 	switch perm {
 	case authtypes.ADMIN:

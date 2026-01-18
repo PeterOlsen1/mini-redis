@@ -31,7 +31,7 @@ type ServerConfig struct {
 	// Define a list of users to be loaded by default.
 	// Enesure that these users have long + secure passwords,
 	// since there is no limiting on the number of requests to AUTH
-	Users []authtypes.User `yaml:"users"`
+	Users []*authtypes.User `yaml:"users"`
 }
 
 // For basic operations, disabling logging will result in a ~17% performance increase
@@ -72,7 +72,7 @@ var defaultConfig = ConfigType{
 		Port:        6379,
 		TTLCheck:    2000,
 		RequireAuth: true,
-		Users: []authtypes.User{
+		Users: []*authtypes.User{
 			{
 				Username: "admin",
 				Password: "admin",

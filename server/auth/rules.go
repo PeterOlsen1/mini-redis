@@ -59,8 +59,7 @@ func AddRules(username string, rules authtypes.Ruleset) error {
 		return fmt.Errorf("user could not be found")
 	}
 
-	user.Rules.Add(rules)
-	user.Perms = user.Rules.ExtractPerms()
+	user.AddRules(rules)
 	SetUser(user)
 
 	return nil
@@ -73,8 +72,7 @@ func RemoveRules(username string, rules authtypes.Ruleset) error {
 		return fmt.Errorf("user could not be found")
 	}
 
-	user.Rules.Subtract(rules)
-	user.Perms = user.Rules.ExtractPerms()
+	user.SubtractRules(rules)
 	SetUser(user)
 
 	return nil

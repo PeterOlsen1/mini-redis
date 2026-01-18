@@ -3,6 +3,7 @@ package authtypes
 import (
 	"regexp"
 	"strings"
+	"sync"
 )
 
 type User struct {
@@ -15,7 +16,11 @@ type User struct {
 	// idx 2 = write
 	Perms int `yaml:"perms"`
 
+	// Set of rules for the user's operations
 	Rules Ruleset `yaml:"rules"`
+
+	// Mutex for locking
+	mu sync.Mutex
 }
 
 type UserPermission int
@@ -26,39 +31,87 @@ const WRITE = 0b100
 
 var authRequired = true
 
+func NewUser(username string, password string) User {
+	return User{
+		Username: username,
+		Password: password,
+		Perms:    0,
+		Rules:    make(Ruleset, 0),
+	}
+}
+
 func SetAuthRequired(new bool) {
 	authRequired = new
 }
 
-func (u User) NoAuth() bool {
+func (u *User) SetPerms(new int) {
+	u.mu.Lock()
+	defer u.mu.Unlock()
+
+	u.Perms = new
+}
+
+// rule functions
+
+func (u *User) SubtractRules(rules Ruleset) {
+	u.mu.Lock()
+	defer u.mu.Unlock()
+
+	u.Rules.Subtract(rules)
+	u.Perms = u.Rules.ExtractPerms()
+}
+
+func (u *User) AddRules(rules Ruleset) {
+	u.mu.Lock()
+	defer u.mu.Unlock()
+
+	u.Rules.Add(rules)
+	u.Perms = u.Rules.ExtractPerms()
+}
+
+// permission getters
+
+func (u *User) NoAuth() bool {
+	u.mu.Lock()
+	defer u.mu.Unlock()
+
 	return u.Password == "" && u.Username == ""
 }
 
-func (u User) Admin() bool {
+func (u *User) Admin() bool {
 	if !authRequired {
 		return true
 	}
+	u.mu.Lock()
+	defer u.mu.Unlock()
 
 	return u.Perms&ADMIN != 0
 }
 
-func (u User) Read() bool {
+func (u *User) Read() bool {
 	if !authRequired {
 		return true
 	}
+	u.mu.Lock()
+	defer u.mu.Unlock()
 
 	return u.Perms&READ != 0
 }
 
-func (u User) Write() bool {
+func (u *User) Write() bool {
 	if !authRequired {
 		return true
 	}
+	u.mu.Lock()
+	defer u.mu.Unlock()
 
 	return u.Perms&WRITE != 0
 }
 
-func (u User) PermString() string {
+func (u *User) PermString() string {
+	u.mu.Lock()
+	defer u.mu.Unlock()
+
 	perms := make([]string, 0)
 	if u.Perms&ADMIN != 0 {
 		perms = append(perms, "ADMIN")
@@ -79,10 +132,12 @@ func (u User) PermString() string {
 	return strings.Join(perms, ", ")
 }
 
-func (u User) CanRead(key string) bool {
+func (u *User) CanRead(key string) bool {
 	if u.Admin() {
 		return true
 	}
+	u.mu.Lock()
+	defer u.mu.Unlock()
 
 	// Check negatives
 	for _, rule := range u.Rules.Iter().Negatives().Read() {
@@ -93,7 +148,7 @@ func (u User) CanRead(key string) bool {
 	}
 
 	// Check general read bit
-	if u.Read() {
+	if u.Perms&READ != 0 {
 		return true
 	}
 
@@ -109,10 +164,12 @@ func (u User) CanRead(key string) bool {
 	return false
 }
 
-func (u User) CanWrite(key string) bool {
+func (u *User) CanWrite(key string) bool {
 	if u.Admin() {
 		return true
 	}
+	u.mu.Lock()
+	defer u.mu.Unlock()
 
 	// Check negatives
 	for _, rule := range u.Rules.Iter().Negatives().Write() {
@@ -123,7 +180,7 @@ func (u User) CanWrite(key string) bool {
 	}
 
 	// Check general write bit
-	if u.Write() {
+	if u.Perms&WRITE != 0 {
 		return true
 	}
 

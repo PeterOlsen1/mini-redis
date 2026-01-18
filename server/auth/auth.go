@@ -67,7 +67,7 @@ func LoadACLUsers() error {
 	defer userFile.Close()
 
 	decoder := yaml.NewDecoder(userFile)
-	users := make([]authtypes.User, 0)
+	users := make([]*authtypes.User, 0)
 	err = decoder.Decode(&users)
 	if err != nil {
 		if err == io.EOF {
@@ -77,7 +77,7 @@ func LoadACLUsers() error {
 	}
 
 	for _, user := range users {
-		SetUser(&user)
+		SetUser(user)
 	}
 
 	return nil
@@ -94,16 +94,10 @@ func AddACLUser(username string, password string) (*authtypes.User, error) {
 		return nil, err
 	}
 
-	newUser := &authtypes.User{
-		Username: username,
-		Password: string(hashedPass),
-		Perms:    0,
-		Rules:    make(authtypes.Ruleset, 0),
-	}
+	newUser := authtypes.NewUser(username, string(hashedPass))
+	SetUser(&newUser)
 
-	SetUser(newUser)
-
-	return newUser, UpdateACLFile()
+	return &newUser, UpdateACLFile()
 }
 
 func RemoveACLUser(username string) error {
