@@ -53,6 +53,7 @@ const (
 	RMSAVE
 	SELECT
 	WHICHDB
+	COMMAND
 )
 
 const NUM_COMMANDS = len(commandStrings)
@@ -115,6 +116,47 @@ var commandStrings = [...]string{
 	"RMSAVE",
 	"SELECT",
 	"WHICHDB",
+	"COMMAND",
+}
+
+var commandInfos = map[Command]string{
+	NONE:       "No operation.",
+	PING:       "Ping the server to check if it is alive.",
+	ECHO:       "Echo back the provided message.",
+	SET:        "Set a key to a value.",
+	GET:        "Get the value of a key.",
+	DEL:        "Delete one or more keys.",
+	EXISTS:     "Check if a key exists.",
+	EXPIRE:     "Set a timeout on a key.",
+	EXPIREAT:   "Set a timeout on a key, specified in Unix time.",
+	EXPIRETIME: "Get the expiration time of a key.",
+	TTL:        "Get the time-to-live of a key.",
+	INCR:       "Increment the value of a key.",
+	DECR:       "Decrement the value of a key.",
+	LPUSH:      "Push a value to the left of a list.",
+	RPUSH:      "Push a value to the right of a list.",
+	LPOP:       "Pop a value from the left of a list.",
+	RPOP:       "Pop a value from the right of a list.",
+	LRANGE:     "Get a range of elements from a list.",
+	LGET:       "Get all elements of a list.",
+	INFO:       "Get server information.",
+	KEYS:       "Get all keys matching a pattern.",
+	FLUSHALL:   "Delete all keys in all databases.",
+	AUTH:       "Authenticate a user.",
+	LOGOUT:     "Log out the current user.",
+	WHOAMI:     "Get the username of the current user.",
+	ADDUSER:    "Add a new user.",
+	RMUSER:     "Remove a user.",
+	UGET:       "Get information about a user.",
+	ADDRULE:    "Add a rule to a user.",
+	RMRULE:     "Remove a rule from a user.",
+	SAVE:       "Save the current instance state to disk.",
+	LOAD:       "Load the instance state from disk.",
+	LISTSAVES:  "List all saved instance states.",
+	RMSAVE:     "Remove a saved instance state.",
+	SELECT:     "Select a database by its number.",
+	WHICHDB:    "Get the current database number.",
+	COMMAND:    "Returns a list of all commands and a short summary.",
 }
 
 func (c Command) String() string {
@@ -141,4 +183,12 @@ func (c Command) Valid() bool {
 func (c Command) RequiresDB() bool {
 	_, exists := requireDB[c]
 	return exists
+}
+
+func (c Command) Info() string {
+	return commandInfos[c]
+}
+
+func Len() int {
+	return len(commandStrings)
 }

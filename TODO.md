@@ -1,4 +1,5 @@
 * Current
+  * Use RESP parsing in server start method
   * User permissions per database?
   * Flush per database vs all
   * Individual database info

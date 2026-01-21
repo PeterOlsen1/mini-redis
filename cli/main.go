@@ -108,7 +108,7 @@ func handleInput(c *client.RedisClient, tokens []string) (string, error) {
 	}
 
 	// need extra buffer space for info command
-	if cmd == commands.INFO {
+	if cmd == commands.INFO || cmd == commands.COMMAND {
 		req.SetBufSize(4096)
 	}
 

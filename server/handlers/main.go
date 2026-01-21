@@ -86,4 +86,5 @@ var commandHandlers = [...]func(*authtypes.User, resp.ArgList) ([]byte, error){
 	server.HandleRMSave,
 	nil, // mutate handler
 	server.HandleWhichDB,
+	server.HandleCommand,
 }
