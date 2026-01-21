@@ -6,25 +6,6 @@ import (
 	"sync"
 )
 
-type StoreItem struct {
-	Type StoreType
-	Item any
-}
-
-func (i *StoreItem) Array() []string {
-	return i.Item.([]string)
-}
-func (i *StoreItem) String() string {
-	return i.Item.(string)
-}
-
-type StoreType int
-
-const (
-	STRING StoreType = iota
-	ARRAY
-)
-
 var store = make(map[int]*Database)
 var storeMu sync.RWMutex
 
@@ -34,18 +15,18 @@ func InitStore(numDBs int) {
 	}
 }
 
+func GetDB(dbNum int) *Database {
+	storeMu.RLock()
+	defer storeMu.RUnlock()
+
+	return store[dbNum]
+}
+
 func GetStoreSize() int {
 	storeMu.RLock()
 	defer storeMu.RUnlock()
 
 	return len(store)
-}
-
-func newItem(value any, storeType StoreType) *StoreItem {
-	return &StoreItem{
-		Item: value,
-		Type: storeType,
-	}
 }
 
 func Save(file *os.File) error {

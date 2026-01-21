@@ -13,7 +13,7 @@ import (
 
 func HandleUGet(user *authtypes.User, args resp.ArgList) ([]byte, error) {
 	if len(args) == 0 && !user.Admin() {
-		return nil, errors.PERMISSIONS(commands.UGET, authtypes.ADMIN)
+		return nil, errors.PERMISSIONS(commands.UGET, "ADMIN")
 	}
 
 	// no args means list all users

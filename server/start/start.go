@@ -55,7 +55,7 @@ func Start(configPath string) {
 	internal.InitStore(cfg.Server.Databases)
 
 	logger.StartLogger(ctx)
-	internal.StartTTLScan(ctx)
+	// internal.StartTTLScan(ctx)
 	startServer(ctx)
 
 	sig := make(chan os.Signal, 1)
@@ -105,6 +105,7 @@ func startServer(ctx context.Context) error {
 				Username: "",
 				Password: "",
 				Perms:    0,
+				DB:       internal.GetDB(0),
 			},
 		}
 		go func() {

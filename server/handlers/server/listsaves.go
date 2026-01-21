@@ -11,7 +11,7 @@ import (
 
 func HandleListSaves(user *authtypes.User, args resp.ArgList) ([]byte, error) {
 	if !user.Admin() {
-		return nil, errors.PERMISSIONS(commands.LISTSAVES, authtypes.ADMIN)
+		return nil, errors.PERMISSIONS(commands.LISTSAVES, "ADMIN")
 	}
 
 	files, err := getSaveFiles()

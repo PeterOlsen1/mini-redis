@@ -3,7 +3,6 @@ package list
 import (
 	"mini-redis/resp"
 	"mini-redis/server/auth/authtypes"
-	"mini-redis/server/internal"
 	"mini-redis/types/commands"
 	"mini-redis/types/errors"
 )
@@ -16,7 +15,7 @@ func HandleLRange(user *authtypes.User, args resp.ArgList) ([]byte, error) {
 	// parse arguments
 	key := args.String(0)
 	if !user.CanRead(key) {
-		return nil, errors.PERMS_KEY(commands.LRANGE, authtypes.READ, key)
+		return nil, errors.PERMS_KEY(commands.LRANGE, "READ", key)
 	}
 
 	start, startErr := args.Int(1)
@@ -25,7 +24,7 @@ func HandleLRange(user *authtypes.User, args resp.ArgList) ([]byte, error) {
 		return nil, errors.INVALID_ARG
 	}
 
-	internalResp, err := internal.LRange(key, start, end)
+	internalResp, err := user.DB.LRange(key, start, end)
 	if err != nil {
 		return nil, err
 	}

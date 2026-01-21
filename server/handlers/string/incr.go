@@ -3,7 +3,6 @@ package string
 import (
 	"mini-redis/resp"
 	"mini-redis/server/auth/authtypes"
-	"mini-redis/server/internal"
 	"mini-redis/types/commands"
 	"mini-redis/types/errors"
 )
@@ -15,9 +14,9 @@ func HandleIncr(user *authtypes.User, args resp.ArgList) ([]byte, error) {
 
 	key := args.String(0)
 	if !user.CanWrite(key) {
-		return nil, errors.PERMS_KEY(commands.INCR, authtypes.WRITE, key)
+		return nil, errors.PERMS_KEY(commands.INCR, "WRITE", key)
 	}
-	newVal, ok := internal.Incr(key)
+	newVal, ok := user.DB.Incr(key)
 	if !ok {
 		return nil, errors.NOT_INTEGER
 	}

@@ -9,8 +9,10 @@ import (
 	"mini-redis/server/handlers/list"
 	"mini-redis/server/handlers/server"
 	str "mini-redis/server/handlers/string"
+	"mini-redis/server/internal"
 	"mini-redis/types"
 	"mini-redis/types/commands"
+	"mini-redis/types/errors"
 )
 
 func TODO(items resp.ArgList) ([]byte, error) {
@@ -24,6 +26,11 @@ func HandleCommand(conn *types.Connection, cmd commands.Command, args resp.ArgLi
 
 	if cfg.Log.Command {
 		fmt.Printf("Command: %s\nArgs: %v\n", cmd.String(), args)
+	}
+
+	if conn.User.DB == nil && cmd.RequiresDB() {
+		conn.User.DB = internal.GetDB(0)
+		return nil, errors.BAD_DB
 	}
 
 	// auth alters the conn.User ptr, so we need the special case

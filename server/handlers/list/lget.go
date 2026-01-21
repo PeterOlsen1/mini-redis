@@ -3,7 +3,6 @@ package list
 import (
 	"mini-redis/resp"
 	"mini-redis/server/auth/authtypes"
-	"mini-redis/server/internal"
 	"mini-redis/types/commands"
 	"mini-redis/types/errors"
 )
@@ -15,10 +14,10 @@ func HandleLGet(user *authtypes.User, args resp.ArgList) ([]byte, error) {
 
 	key := args.String(0)
 	if !user.CanRead(key) {
-		return nil, errors.PERMS_KEY(commands.LGET, authtypes.READ, key)
+		return nil, errors.PERMS_KEY(commands.LGET, "ADMIN", key)
 	}
 
-	arr, err := internal.LGet(key)
+	arr, err := user.DB.LGet(key)
 	if err != nil {
 		return nil, err
 	}

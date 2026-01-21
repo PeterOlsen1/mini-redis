@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"mini-redis/resp"
 	"mini-redis/server/auth/authtypes"
-	"mini-redis/server/internal"
 	"mini-redis/types/commands"
 	"mini-redis/types/errors"
 	"strconv"
@@ -17,7 +16,7 @@ func HandleExpire(user *authtypes.User, params resp.ArgList) ([]byte, error) {
 
 	key := params[0].Content
 	if !user.CanWrite(key) {
-		return nil, errors.PERMS_KEY(commands.EXPIRE, authtypes.WRITE, key)
+		return nil, errors.PERMS_KEY(commands.EXPIRE, "WRITE", key)
 	}
 
 	ttl, err := strconv.Atoi(params[1].Content)
@@ -25,10 +24,10 @@ func HandleExpire(user *authtypes.User, params resp.ArgList) ([]byte, error) {
 		return nil, fmt.Errorf("failed to parse TTL")
 	}
 
-	if internal.Get(key) == nil {
+	if user.DB.Get(key) == nil {
 		return resp.BYTE_INT(0), nil
 	}
 
-	internal.SetTTL(key, ttl)
+	user.DB.SetTTL(key, ttl)
 	return resp.BYTE_INT(1), nil
 }

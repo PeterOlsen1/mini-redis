@@ -12,7 +12,7 @@ import (
 
 func HandleLoad(user *authtypes.User, args resp.ArgList) ([]byte, error) {
 	if !user.Admin() {
-		return nil, errors.PERMISSIONS(commands.LOAD, authtypes.ADMIN)
+		return nil, errors.PERMISSIONS(commands.LOAD, "ADMIN")
 	}
 
 	if len(args) < 1 {

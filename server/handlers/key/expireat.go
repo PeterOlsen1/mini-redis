@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"mini-redis/resp"
 	"mini-redis/server/auth/authtypes"
-	"mini-redis/server/internal"
 	"mini-redis/types/commands"
 	"mini-redis/types/errors"
 )
@@ -16,7 +15,7 @@ func HandleExpireAt(user *authtypes.User, args resp.ArgList) ([]byte, error) {
 
 	key := args.String(0)
 	if !user.CanWrite(key) {
-		return nil, errors.PERMS_KEY(commands.EXPIREAT, authtypes.WRITE, key)
+		return nil, errors.PERMS_KEY(commands.EXPIREAT, "WRITE", key)
 	}
 
 	time, err := args.Int(1)
@@ -24,5 +23,5 @@ func HandleExpireAt(user *authtypes.User, args resp.ArgList) ([]byte, error) {
 		return nil, fmt.Errorf("failed to convert time to integer")
 	}
 
-	return resp.BYTE_INT(internal.HandleExpireAt(key, time)), nil
+	return resp.BYTE_INT(user.DB.HandleExpireAt(key, time)), nil
 }

@@ -2,8 +2,9 @@ package internal
 
 import (
 	"maps"
-	"mini-redis/server/info"
 	"mini-redis/types/errors"
+
+	// "mini-redis/types/errors"
 	"strconv"
 	"sync"
 )
@@ -11,6 +12,9 @@ import (
 type Database struct {
 	store map[string]*StoreItem
 	mu    sync.RWMutex
+
+	ttlStore map[string]int64
+	ttlMu    sync.RWMutex
 }
 
 func NewDb() *Database {
@@ -27,24 +31,24 @@ func (db *Database) Size() int {
 }
 
 func (db *Database) Set(key string, value any) {
-	info.SetOp()
+	// info.SetOp()
 	db.mu.Lock()
 	db.store[key] = newItem(value, STRING)
 	db.mu.Unlock()
 
-	DelTTL(key)
+	db.DelTTL(key)
 }
 
 func (db *Database) Get(key string) *StoreItem {
-	ttl := GetTTL(key)
-	info.GetOp()
+	ttl := db.GetTTL(key)
+	// info.GetOp()
 
 	db.mu.RLock()
 	defer db.mu.RUnlock()
 
 	if ttl == -2 {
 		// delete if TTL is expired
-		info.Expire()
+		// info.Expire()
 		delete(db.store, key)
 		return nil
 	}
@@ -54,12 +58,12 @@ func (db *Database) Get(key string) *StoreItem {
 
 func (db *Database) GetMany(keys []string) []any {
 	out := make([]any, len(keys))
-	info.GetOp()
+	// info.GetOp()
 	db.mu.RLock()
 	defer db.mu.RUnlock()
 
 	for i, key := range keys {
-		ttl := GetTTL(key) // TTL expired
+		ttl := db.GetTTL(key) // TTL expired
 		if ttl == -2 {
 			// unsafe delete, don't call methods becuase of locking
 			delete(db.store, key)
@@ -75,7 +79,7 @@ func (db *Database) GetMany(keys []string) []any {
 // Not necessary to delete TTL, as if a new key with the same name is added,
 // it is deleted there
 func (db *Database) Del(key string) {
-	info.Delete()
+	// info.Delete()
 	db.mu.Lock()
 	defer db.mu.Unlock()
 
@@ -190,10 +194,14 @@ func (db *Database) LPop(key string, num int) ([]string, error) {
 		return nil, nil
 	}
 	if val.Type != ARRAY {
-		return nil, errors.WRONGTYPE
+		// return nil, errors.WRONGTYPE
 	}
 
-	arr := val.Array()
+	arr, err := val.Array()
+	if err != nil {
+		return nil, err
+	}
+
 	if num <= 0 {
 		return []string{}, nil
 	}
@@ -224,7 +232,11 @@ func (db *Database) RPop(key string, num int) ([]string, error) {
 		return []string{}, nil
 	}
 
-	arr := val.Array()
+	arr, err := val.Array()
+	if err != nil {
+		return nil, err
+	}
+
 	if num >= len(arr) {
 		delete(db.store, key)
 		return arr, nil
@@ -251,12 +263,12 @@ func (db *Database) LRange(key string, start int, end int) ([]string, error) {
 	}
 
 	if val.Type != ARRAY {
-		return nil, errors.WRONGTYPE
+		// return nil, errors.WRONGTYPE
 	}
 
 	arr, ok := val.Item.([]string)
 	if !ok {
-		return nil, errors.WRONGTYPE
+		// return nil, errors.WRONGTYPE
 	}
 
 	if end < start {
@@ -292,12 +304,12 @@ func (db *Database) LGet(key string) ([]string, error) {
 	}
 
 	if val.Type != ARRAY {
-		return nil, errors.WRONGTYPE
+		// return nil, errors.WRONGTYPE
 	}
 
 	arr, ok := val.Item.([]string)
 	if !ok {
-		return nil, errors.WRONGTYPE
+		// return nil, errors.WRONGTYPE
 	}
 
 	return arr, nil
