@@ -5,6 +5,10 @@ on: [push]
 jobs:
   build:
     runs-on: ubuntu-latest
+    # strategy:
+    #   matrix:
+    #     go-version: [ '1.19', '1.20', '1.21.x' ]
+
     steps:
       - uses: actions/checkout@v5
       - name: Setup go
@@ -16,9 +20,9 @@ jobs:
       #   run: go get .
 
       - name: Test
-        run: go test ./test -v # -json > {filename} for json test results
+        run: go test ./test -v # -json > TestReults.json for json test results
 
-      # optional 
+      # optional uploading of json
       # - name: Upload Go test results
       #   uses: actions/upload-artifact@v4
       #   with:
