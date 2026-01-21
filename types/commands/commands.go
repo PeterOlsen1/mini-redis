@@ -50,6 +50,7 @@ const (
 	SAVE
 	LOAD
 	LISTSAVES
+	RMSAVE
 )
 
 const NUM_COMMANDS = len(commandStrings)
@@ -88,6 +89,7 @@ var commandStrings = [...]string{
 	"SAVE",
 	"LOAD",
 	"LISTSAVES",
+	"RMSAVE",
 }
 
 func (c Command) String() string {

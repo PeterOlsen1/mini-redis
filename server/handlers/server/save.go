@@ -31,7 +31,7 @@ func HandleSave(user *authtypes.User, args resp.ArgList) ([]byte, error) {
 		return nil, errors.GENERAL
 	}
 
-	today := time.Now().Format(time.RFC3339)[:10]
+	today := time.Now().Format(time.RFC3339)
 	saveFile, err := os.Create(filepath.Join(saveFolderPath, fmt.Sprintf("backup-%s.rdb", today)))
 	if err != nil {
 		fmt.Println("Failed to create backup file")
