@@ -1,9 +1,9 @@
 * Current
-  * Fix TTL methods so that they can have associated db with each TTL, make a struct for this or bring over multiple databases, who knows
-  * Multiple DBs
-  * use the SELECT command to switch databases
   * User permissions per database?
-  * Flush per database
+  * Flush per database vs all
+  * Individual database info
+  * Add / remove databases 
+    * maybe loop through all users to see if they are connected to the current and remove if they are
 
 * Way backlog
   * Command to get all commands, maybe a string about what they do
