@@ -10,7 +10,7 @@ import (
 
 func HandleAddUser(user *authtypes.User, args resp.ArgList) ([]byte, error) {
 	if !user.Admin() {
-		return nil, errors.PERMISSIONS(commands.ADDUSER, authtypes.ADMIN)
+		return nil, errors.PERMISSIONS(commands.ADDUSER, "ADMIN")
 	}
 
 	if len(args) < 2 {

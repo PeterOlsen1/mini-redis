@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"mini-redis/resp"
 	"mini-redis/server/auth/authtypes"
-	"mini-redis/server/internal"
 	"mini-redis/types/commands"
 	"mini-redis/types/errors"
 )
@@ -16,11 +15,11 @@ func HandleRPop(user *authtypes.User, args resp.ArgList) ([]byte, error) {
 
 	key := args.String(0)
 	if !user.CanWrite(key) {
-		return nil, errors.PERMS_KEY(commands.RPOP, authtypes.WRITE, key)
+		return nil, errors.PERMS_KEY(commands.RPOP, "WRITE", key)
 	}
 
 	if len(args) == 1 {
-		res, err := internal.RPop(key, 1)
+		res, err := user.DB.RPop(key, 1)
 		if err != nil {
 			return nil, err
 		}
@@ -36,7 +35,7 @@ func HandleRPop(user *authtypes.User, args resp.ArgList) ([]byte, error) {
 	if err != nil {
 		return nil, fmt.Errorf("invalid pop count")
 	}
-	res, err := internal.RPop(key, num)
+	res, err := user.DB.RPop(key, num)
 	if err != nil {
 		return nil, err
 	}

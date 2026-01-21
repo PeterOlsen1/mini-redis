@@ -1,133 +1,125 @@
 package internal
 
 import (
-	"context"
-	"mini-redis/server/cfg"
-	"mini-redis/server/info"
-	"sync"
 	"time"
 )
 
-// Lazily check TTL values instead of using a gorotine for overhead
-var expiration = make(map[string]int64)
-var ttlMu sync.RWMutex
+// func StartTTLScan(ctx context.Context) {
+// 	if cfg.Server.TTLCheck <= 0 {
+// 		return
+// 	}
 
-func StartTTLScan(ctx context.Context) {
-	if cfg.Server.TTLCheck <= 0 {
-		return
-	}
+// 	ticker := time.NewTicker(time.Duration(cfg.Server.TTLCheck) * time.Millisecond)
 
-	ticker := time.NewTicker(time.Duration(cfg.Server.TTLCheck) * time.Millisecond)
+// 	go func() {
+// 		for {
+// 			select {
+// 			case <-ctx.Done():
+// 				return
+// 			case <-ticker.C:
+// 				CheckTTLs()
+// 			}
+// 		}
+// 	}()
+// }
 
-	go func() {
-		for {
-			select {
-			case <-ctx.Done():
-				return
-			case <-ticker.C:
-				CheckTTLs()
-			}
-		}
-	}()
-}
+func (db *Database) CheckTTLs() {
+	db.ttlMu.Lock()
+	defer db.ttlMu.Unlock()
 
-func CheckTTLs() {
-	ttlMu.Lock()
-	defer ttlMu.Unlock()
+	for k := range db.ttlStore {
+		if db.ttlStore[k]-time.Now().UnixMilli() <= 0 {
+			delete(db.ttlStore, k)
 
-	for k := range expiration {
-		if expiration[k]-time.Now().UnixMilli() <= 0 {
-			delete(expiration, k)
-
-			storeMu.Lock()
-			delete(store, k)
-			storeMu.Unlock()
-			info.Expire()
+			db.mu.Lock()
+			delete(db.store, k)
+			db.mu.Unlock()
+			// info.Expire()
 		}
 	}
 }
 
-func SetTTL(key string, seconds int) {
-	ttlMu.Lock()
-	defer ttlMu.Unlock()
+func (db *Database) SetTTL(key string, seconds int) {
+	db.ttlMu.Lock()
+	defer db.ttlMu.Unlock()
 
 	exp := time.Now().UnixMilli() + int64(seconds*1000)
-	expiration[key] = exp
+	db.ttlStore[key] = exp
 }
 
 // Returns -1 on no TTL and -2 on expired
-func GetTTL(key string) int {
-	ttlMu.RLock()
-	exp, ok := expiration[key]
-	ttlMu.RUnlock()
+func (db *Database) GetTTL(key string) int {
+	db.ttlMu.RLock()
+	exp, ok := db.ttlStore[key]
+	db.ttlMu.RUnlock()
 	if !ok {
 		return -1
 	}
 
 	ttl := int(exp-time.Now().UnixMilli()) / 1000
 	if ttl <= 0 {
-		DelTTL(key)
+		db.DelTTL(key)
 		return -2
 	}
 	return ttl
 }
 
-func DelTTL(key string) {
-	ttlMu.Lock()
-	defer ttlMu.Unlock()
+func (db *Database) DelTTL(key string) {
+	db.ttlMu.Lock()
+	defer db.ttlMu.Unlock()
 
-	delete(expiration, key)
+	delete(db.ttlStore, key)
 }
 
-func FlushAllTTL() {
-	ttlMu.Lock()
-	defer ttlMu.Unlock()
+func (db *Database) FlushAllTTL() {
+	db.ttlMu.Lock()
+	defer db.ttlMu.Unlock()
 
-	expiration = make(map[string]int64)
+	db.ttlStore = make(map[string]int64)
 }
 
-func HandleExpireAt(key string, secs int) int {
+func (db *Database) HandleExpireAt(key string, secs int) int {
 	curSecs := int(time.Now().UnixMilli() / 1000)
 
-	storeMu.RLock()
-	_, ok := store[key]
-	storeMu.RUnlock()
+	db.mu.RLock()
+	_, ok := db.store[key]
+	db.mu.RUnlock()
 	if !ok {
 		return 0
 	}
 
 	if secs < curSecs {
-		storeMu.Lock()
-		delete(store, key)
-		storeMu.Unlock()
+		db.mu.Lock()
+		delete(db.store, key)
+		db.mu.Unlock()
 
-		ttlMu.Lock()
-		delete(expiration, key)
-		ttlMu.Unlock()
-		info.Expire()
+		db.ttlMu.Lock()
+		delete(db.ttlStore, key)
+		db.ttlMu.Unlock()
+		// info.Expire()
 		return 0
 	}
 
-	ttlMu.Lock()
-	defer ttlMu.Unlock()
+	db.ttlMu.Lock()
+	defer db.ttlMu.Unlock()
 
-	expiration[key] = int64(secs)
+	db.ttlStore[key] = int64(secs)
 	return 1
 }
 
-func HandleExpireTime(key string) int64 {
-	storeMu.RLock()
-	_, ok := store[key]
+func (db *Database) HandleExpireTime(key string) int64 {
+	db.mu.RLock()
+	_, ok := db.store[key]
 	if !ok {
-		storeMu.RUnlock() // FORGOT UNLOCK HERE AND DEADLOCKED!!!!!
+		db.mu.RUnlock() // FORGOT UNLOCK HERE AND DEADLOCKED!!!!!
 		return -2
 	}
-	storeMu.RUnlock()
+	db.mu.RUnlock()
 
-	ttlMu.RLock()
-	defer ttlMu.RUnlock()
+	db.ttlMu.RLock()
+	defer db.ttlMu.RUnlock()
 
-	time, ok := expiration[key]
+	time, ok := db.ttlStore[key]
 	if !ok {
 		return -1
 	}

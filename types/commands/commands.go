@@ -51,9 +51,32 @@ const (
 	LOAD
 	LISTSAVES
 	RMSAVE
+	SELECT
+	WHICHDB
 )
 
 const NUM_COMMANDS = len(commandStrings)
+
+var requireDB = map[Command]struct{}{
+	SET:        {},
+	GET:        {},
+	DEL:        {},
+	EXISTS:     {},
+	EXPIRE:     {},
+	EXPIREAT:   {},
+	EXPIRETIME: {},
+	TTL:        {},
+	INCR:       {},
+	DECR:       {},
+	LPUSH:      {},
+	RPUSH:      {},
+	LPOP:       {},
+	RPOP:       {},
+	LRANGE:     {},
+	LGET:       {},
+	KEYS:       {},
+	FLUSHALL:   {},
+}
 
 var commandStrings = [...]string{
 	"NONE",
@@ -90,6 +113,8 @@ var commandStrings = [...]string{
 	"LOAD",
 	"LISTSAVES",
 	"RMSAVE",
+	"SELECT",
+	"WHICHDB",
 }
 
 func (c Command) String() string {
@@ -111,4 +136,9 @@ func ParseCommand(s string) Command {
 
 func (c Command) Valid() bool {
 	return c != 0
+}
+
+func (c Command) RequiresDB() bool {
+	_, exists := requireDB[c]
+	return exists
 }

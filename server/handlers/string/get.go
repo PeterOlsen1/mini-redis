@@ -15,10 +15,10 @@ func HandleGet(user *authtypes.User, args resp.ArgList) ([]byte, error) {
 
 	key := args.String(0)
 	if !user.CanRead(key) {
-		return nil, errors.PERMS_KEY(commands.GET, authtypes.READ, key)
+		return nil, errors.PERMS_KEY(commands.GET, "READ", key)
 	}
 
-	val := internal.Get(key)
+	val := user.DB.Get(key)
 	if val == nil {
 		return resp.BYTE_NULL, nil
 	}

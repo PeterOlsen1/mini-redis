@@ -1,6 +1,7 @@
 package authtypes
 
 import (
+	"mini-redis/server/internal"
 	"regexp"
 	"strings"
 	"sync"
@@ -18,6 +19,9 @@ type User struct {
 
 	// Set of rules for the user's operations
 	Rules Ruleset `yaml:"rules"`
+
+	// The current database that the user is connected to
+	DB *internal.Database
 
 	// Mutex for locking
 	mu sync.Mutex

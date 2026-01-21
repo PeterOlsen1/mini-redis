@@ -28,6 +28,9 @@ type ServerConfig struct {
 	// Set to true if you want to require authentication
 	RequireAuth bool `yaml:"require_auth"`
 
+	// The number of initial databases for your system
+	Databases int `yaml:"databases"`
+
 	// Define a list of users to be loaded by default.
 	// Enesure that these users have long + secure passwords,
 	// since there is no limiting on the number of requests to AUTH
@@ -72,6 +75,7 @@ var defaultConfig = ConfigType{
 		Port:        6379,
 		TTLCheck:    2000,
 		RequireAuth: true,
+		Databases:   4,
 		Users: []*authtypes.User{
 			{
 				Username: "admin",
@@ -121,6 +125,10 @@ func LoadConfig(path string) error {
 	Server = config.Server
 	Info = config.Info
 	Log = config.Log
+
+	if Server.Databases <= 0 {
+		Server.Databases = 4
+	}
 
 	if Server.RequireAuth && len(Server.Users) == 0 {
 		return fmt.Errorf("must have one defined user if authentication is required")

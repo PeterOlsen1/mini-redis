@@ -14,7 +14,7 @@ import (
 
 func HandleSave(user *authtypes.User, args resp.ArgList) ([]byte, error) {
 	if !user.Admin() {
-		return nil, errors.PERMISSIONS(commands.SAVE, authtypes.ADMIN)
+		return nil, errors.PERMISSIONS(commands.SAVE, "ADMIN")
 	}
 
 	homeDir, err := os.UserHomeDir()
