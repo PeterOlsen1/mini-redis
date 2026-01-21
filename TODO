@@ -1,5 +1,4 @@
 * Current
-  * Need to initialize databases on startup, define it in config
   * Fix TTL methods so that they can have associated db with each TTL, make a struct for this or bring over multiple databases, who knows
   * Multiple DBs
   * use the SELECT command to switch databases

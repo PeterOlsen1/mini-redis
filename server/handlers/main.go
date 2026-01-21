@@ -33,12 +33,18 @@ func HandleCommand(conn *types.Connection, cmd commands.Command, args resp.ArgLi
 		return nil, errors.BAD_DB
 	}
 
-	// auth alters the conn.User ptr, so we need the special case
-	if cmd == commands.AUTH {
-		return server.HandleAuth(&conn.User, args)
+	handler, exists := mutateHandlers[cmd]
+	if exists {
+		return handler(&conn.User, args)
 	}
 
 	return commandHandlers[cmd](conn.User, args)
+}
+
+// special handlers for those which mutate the connection
+var mutateHandlers = map[commands.Command]func(**authtypes.User, resp.ArgList) ([]byte, error){
+	commands.AUTH:   server.HandleAuth,
+	commands.SELECT: server.HandleSelect,
 }
 
 // check "command" enum for order of commands
@@ -66,7 +72,7 @@ var commandHandlers = [...]func(*authtypes.User, resp.ArgList) ([]byte, error){
 	server.HandleInfo,
 	key.HandleKeys,
 	key.HandleFlushAll,
-	nil, // exception for handle auth since it requies double pointer. HandleCommand takes care of this
+	nil, // mutate handler
 	server.HandleLogout,
 	server.HandleWhoami,
 	server.HandleAddUser,
@@ -78,4 +84,6 @@ var commandHandlers = [...]func(*authtypes.User, resp.ArgList) ([]byte, error){
 	server.HandleLoad,
 	server.HandleListSaves,
 	server.HandleRMSave,
+	nil, // mutate handler
+	server.HandleWhichDB,
 }

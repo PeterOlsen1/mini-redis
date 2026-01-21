@@ -51,6 +51,8 @@ const (
 	LOAD
 	LISTSAVES
 	RMSAVE
+	SELECT
+	WHICHDB
 )
 
 const NUM_COMMANDS = len(commandStrings)
@@ -111,6 +113,8 @@ var commandStrings = [...]string{
 	"LOAD",
 	"LISTSAVES",
 	"RMSAVE",
+	"SELECT",
+	"WHICHDB",
 }
 
 func (c Command) String() string {

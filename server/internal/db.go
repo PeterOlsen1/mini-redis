@@ -3,8 +3,6 @@ package internal
 import (
 	"maps"
 	"mini-redis/types/errors"
-
-	// "mini-redis/types/errors"
 	"strconv"
 	"sync"
 )
@@ -15,11 +13,14 @@ type Database struct {
 
 	ttlStore map[string]int64
 	ttlMu    sync.RWMutex
+
+	Number int
 }
 
-func NewDb() *Database {
+func NewDb(number int) *Database {
 	return &Database{
-		store: make(map[string]*StoreItem),
+		store:  make(map[string]*StoreItem),
+		Number: number,
 	}
 }
 

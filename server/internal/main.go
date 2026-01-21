@@ -11,7 +11,7 @@ var storeMu sync.RWMutex
 
 func InitStore(numDBs int) {
 	for i := range numDBs {
-		store[i] = NewDb()
+		store[i] = NewDb(i)
 	}
 }
 
