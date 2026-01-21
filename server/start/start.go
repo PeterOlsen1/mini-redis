@@ -52,6 +52,8 @@ func Start(configPath string) {
 		os.Exit(1)
 	}
 
+	internal.InitStore(cfg.Server.Databases)
+
 	logger.StartLogger(ctx)
 	internal.StartTTLScan(ctx)
 	startServer(ctx)

@@ -1,12 +1,13 @@
-* TODO:
-  * RMSAVE method
-
-* Backlog
-  * Make save / load interface nicer
-  * Handle TCP disconnect gracefully (call disconnect info function)
+* Current
+  * Need to initialize databases on startup, define it in config
+  * Fix TTL methods so that they can have associated db with each TTL, make a struct for this or bring over multiple databases, who knows
+  * Multiple DBs
+  * use the SELECT command to switch databases
+  * User permissions per database?
+  * Flush per database
 
 * Way backlog
-  * Different database numbers
+  * Command to get all commands, maybe a string about what they do
   * Add help command
   * Improve testing environment
   * Github actions testing
