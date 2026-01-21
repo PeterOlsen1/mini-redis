@@ -1,0 +1,24 @@
+name: test
+on: [push]
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - name: Setup go
+        uses: actions/setup-go@v5
+        with:
+          go-version: 1.25.1
+
+      - name: Install dependencies
+        run: go get .
+
+      - name: Test
+        run: go test ./test -v # -json > {filename} for json test results
+
+      # optional 
+      # - name: Upload Go test results
+      #   uses: actions/upload-artifact@v4
+      #   with:
+      #     name: Go-results-${{ matrix.go-version }}
+      #     path: TestResults-${{ matrix.go-version }}.json
