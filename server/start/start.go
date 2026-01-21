@@ -13,6 +13,7 @@ import (
 	"mini-redis/server/handlers"
 	"mini-redis/server/info"
 	"mini-redis/server/internal"
+	logger "mini-redis/server/log"
 	"mini-redis/types"
 	"mini-redis/types/commands"
 	"net"
@@ -51,7 +52,7 @@ func Start(configPath string) {
 		os.Exit(1)
 	}
 
-	// logger.StartLogger(ctx)
+	logger.StartLogger(ctx)
 	internal.StartTTLScan(ctx)
 	startServer(ctx)
 

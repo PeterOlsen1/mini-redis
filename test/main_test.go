@@ -1,22 +1,21 @@
 package miniredis_test
 
+import (
+	"mini-redis/server/start"
+	"os"
+	"testing"
+)
+
 // improve upon this later. not working for now
 
-// func TestMain(m *testing.M) {
-// 	// Redirect server logs to /dev/null
-// 	nullFile, _ := os.Open(os.DevNull)
-// 	defer nullFile.Close()
+func TestMain(m *testing.M) {
+	// Start the server
+	start.Start("")
+	defer start.Stop()
 
-// 	// Replace the default logger's output
-// 	log.SetOutput(nullFile)
+	// Run the tests
+	code := m.Run()
 
-// 	// Start the server
-// 	start.Start("~/.mini-redis/test-config.yaml")
-// 	defer start.Stop()
-
-// 	// Run the tests
-// 	code := m.Run()
-
-// 	// Exit with the test result code
-// 	os.Exit(code)
-// }
+	// Exit with the test result code
+	os.Exit(code)
+}

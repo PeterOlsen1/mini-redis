@@ -7,7 +7,10 @@ import (
 )
 
 func setupAndFlush() (*client.RedisClient, error) {
-	c, err := client.NewClient(&client.ClientOptions{Addr: "localhost:6379"})
+	c, err := client.NewClient(&client.ClientOptions{
+		URL: "redis://admin:admin@localhost:6379",
+	})
+
 	if err != nil {
 		return nil, err
 	}
