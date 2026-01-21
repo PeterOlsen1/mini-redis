@@ -29,6 +29,19 @@ const ADMIN = 0b1
 const READ = 0b10
 const WRITE = 0b100
 
+func (p UserPermission) String() string {
+	switch p {
+	case ADMIN:
+		return "ADMIN"
+	case READ:
+		return "READ"
+	case WRITE:
+		return "WRITE"
+	}
+
+	return ""
+}
+
 var authRequired = true
 
 func NewUser(username string, password string) User {

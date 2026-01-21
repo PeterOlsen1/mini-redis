@@ -1,7 +1,3 @@
-* TODO
-  * Fix testing
-  * Fix new TTL commands (EXPIREAT, EXPIRETIME)
-
 * Backlog
   * Add logging to all handler errors
   * Make save / load interface nicer
