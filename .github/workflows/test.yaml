@@ -1,5 +1,7 @@
 name: test
+
 on: [push]
+
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -10,8 +12,8 @@ jobs:
         with:
           go-version: 1.25.1
 
-      - name: Install dependencies
-        run: go get .
+      # - name: Install dependencies
+      #   run: go get .
 
       - name: Test
         run: go test ./test -v # -json > {filename} for json test results
