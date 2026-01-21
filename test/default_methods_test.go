@@ -2,7 +2,6 @@ package miniredis_test
 
 import (
 	"fmt"
-	"mini-redis/client"
 	"mini-redis/types/commands"
 	"mini-redis/types/errors"
 	"testing"
@@ -10,17 +9,11 @@ import (
 )
 
 func TestInit(t *testing.T) {
-	c := setup(t)
-	teardown(c, t)
+	setup(t)
 }
 
 func TestPing(t *testing.T) {
-	c, err := client.NewClient(&client.ClientOptions{Addr: "localhost:6379"})
-	if err != nil {
-		t.Errorf("client initialization")
-	}
-
-	defer c.Close()
+	c := setupAndFlush(t)
 
 	s, err := c.Ping("")
 	checkExpect(s, err, commands.PING, "PONG", t)
@@ -30,24 +23,14 @@ func TestPing(t *testing.T) {
 }
 
 func TestEcho(t *testing.T) {
-	c, err := client.NewClient(&client.ClientOptions{Addr: "localhost:6379"})
-	if err != nil {
-		t.Errorf("client initialization")
-	}
-
-	defer c.Close()
+	c := setupAndFlush(t)
 
 	s, err := c.Echo("HELLO")
 	checkExpect(s, err, commands.ECHO, "HELLO", t)
 }
 
 func TestSet(t *testing.T) {
-	c, err := client.NewClient(&client.ClientOptions{Addr: "localhost:6379"})
-	if err != nil {
-		t.Errorf("client initialization")
-	}
-
-	defer c.Close()
+	c := setupAndFlush(t)
 
 	s, err := c.Set("test", "TEST")
 	checkExpect(s, err, commands.SET, "OK", t)
@@ -55,7 +38,6 @@ func TestSet(t *testing.T) {
 
 func TestGet(t *testing.T) {
 	c := setupAndFlush(t)
-	defer teardown(c, t)
 
 	s, err := c.Set("test", "TEST")
 	checkExpect(s, err, commands.SET, "OK", t)
@@ -66,7 +48,6 @@ func TestGet(t *testing.T) {
 
 func TestDelete(t *testing.T) {
 	c := setupAndFlush(t)
-	defer teardown(c, t)
 
 	s, err := c.Set("test", "TEST")
 	checkExpect(s, err, commands.SET, "OK", t)
@@ -82,12 +63,7 @@ func TestDelete(t *testing.T) {
 }
 
 func TestFlushAll(t *testing.T) {
-	c, err := client.NewClient(&client.ClientOptions{Addr: "localhost:6379"})
-	if err != nil {
-		t.Errorf("client initialization")
-	}
-
-	defer c.Close()
+	c := setup(t)
 
 	s, err := c.FlushAll()
 	checkExpect(s, err, commands.FLUSHALL, "OK", t)
@@ -95,7 +71,6 @@ func TestFlushAll(t *testing.T) {
 
 func TestEmptyGet(t *testing.T) {
 	c := setupAndFlush(t)
-	defer teardown(c, t)
 
 	s, err := c.Get("test")
 	checkExpect(s, err, commands.GET, "", t)
@@ -103,7 +78,6 @@ func TestEmptyGet(t *testing.T) {
 
 func TestExists(t *testing.T) {
 	c := setupAndFlush(t)
-	defer teardown(c, t)
 
 	s, err := c.Set("test", "TEST")
 	checkExpect(s, err, commands.SET, "OK", t)
@@ -120,7 +94,6 @@ func TestExists(t *testing.T) {
 
 func TestExpire(t *testing.T) {
 	c := setupAndFlush(t)
-	defer teardown(c, t)
 
 	s, err := c.Expire("awidawbnd", 10)
 	checkExpect(s, err, commands.EXPIRE, "0", t)
@@ -134,7 +107,6 @@ func TestExpire(t *testing.T) {
 
 func TestTTL(t *testing.T) {
 	c := setupAndFlush(t)
-	defer teardown(c, t)
 
 	s, err := c.TTL("test")
 	checkExpect(s, err, commands.TTL, "-2", t)
@@ -159,7 +131,6 @@ func TestTTL(t *testing.T) {
 
 func TestIncr(t *testing.T) {
 	c := setupAndFlush(t)
-	defer teardown(c, t)
 
 	i, err := c.Incr("test")
 	checkExpect(i, err, commands.INCR, 1, t)
@@ -182,7 +153,6 @@ func TestIncr(t *testing.T) {
 
 func TestDecr(t *testing.T) {
 	c := setupAndFlush(t)
-	defer teardown(c, t)
 
 	i, err := c.Decr("test")
 	checkExpect(i, err, commands.DECR, -1, t)
@@ -205,7 +175,6 @@ func TestDecr(t *testing.T) {
 
 func TestKeys(t *testing.T) {
 	c := setupAndFlush(t)
-	defer teardown(c, t)
 
 	setKeys := make([]string, 5)
 	for i := range 5 {
@@ -236,7 +205,6 @@ func TestKeys(t *testing.T) {
 
 func TestExpireAtTime(t *testing.T) {
 	c := setupAndFlush(t)
-	defer teardown(c, t)
 
 	respInt, err := c.ExpireTime("hello")
 	checkExpect(respInt, err, commands.EXPIRETIME, -2, t)
@@ -247,9 +215,9 @@ func TestExpireAtTime(t *testing.T) {
 	respInt, err = c.ExpireTime("hello")
 	checkExpect(respInt, err, commands.EXPIRETIME, -1, t)
 
-	newTime := time.Now().UnixMilli()/1000 + 10
+	newTime := time.Now().UnixMilli()/1000 + 100
 	respInt, err = c.ExpireAt("hello", int(newTime))
-	checkExpect(respInt, err, commands.EXPIREAT, int(newTime), t)
+	checkExpect(respInt, err, commands.EXPIREAT, 1, t)
 
 	respInt, err = c.ExpireTime("hello")
 	checkExpect(respInt, err, commands.EXPIRETIME, int(newTime), t)

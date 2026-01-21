@@ -9,7 +9,6 @@ import (
 
 func TestLPush(t *testing.T) {
 	c := setupAndFlush(t)
-	defer teardown(c, t)
 
 	s, err := c.Set("test", "TEST")
 	checkExpect(s, err, commands.SET, "OK", t)
@@ -28,7 +27,6 @@ func TestLPush(t *testing.T) {
 
 func TestRPush(t *testing.T) {
 	c := setupAndFlush(t)
-	defer teardown(c, t)
 
 	s, err := c.Set("test", "TEST")
 	checkExpect(s, err, commands.SET, "OK", t)
@@ -47,7 +45,6 @@ func TestRPush(t *testing.T) {
 
 func TestLPopOne(t *testing.T) {
 	c := setupAndFlush(t)
-	defer teardown(c, t)
 
 	s, err := c.Set("test", "TEST")
 	checkExpect(s, err, commands.SET, "OK", t)
@@ -67,7 +64,6 @@ func TestLPopOne(t *testing.T) {
 
 func TestLPopMany(t *testing.T) {
 	c := setupAndFlush(t)
-	defer teardown(c, t)
 
 	for i := range 5 {
 		respInt, err := c.LPush("test2", fmt.Sprintf("test-%d", i))
@@ -81,7 +77,6 @@ func TestLPopMany(t *testing.T) {
 
 func TestRPopOne(t *testing.T) {
 	c := setupAndFlush(t)
-	defer teardown(c, t)
 
 	s, err := c.Set("test", "TEST")
 	checkExpect(s, err, commands.SET, "OK", t)
@@ -101,7 +96,6 @@ func TestRPopOne(t *testing.T) {
 
 func TestRPopMany(t *testing.T) {
 	c := setupAndFlush(t)
-	defer teardown(c, t)
 
 	for i := range 5 {
 		respInt, err := c.LPush("test2", fmt.Sprintf("test-%d", i))
@@ -115,7 +109,6 @@ func TestRPopMany(t *testing.T) {
 
 func TestLRange(t *testing.T) {
 	c := setupAndFlush(t)
-	defer teardown(c, t)
 
 	for i := range 5 {
 		respInt, err := c.LPush("test", fmt.Sprintf("test-%d", i))
@@ -124,6 +117,7 @@ func TestLRange(t *testing.T) {
 
 	expect := []string{"test-4", "test-3"}
 	arr, err := c.LRange("test", 0, 1)
+	fmt.Println("resp", arr)
 	checkExpectArray(arr, err, commands.LRANGE, expect, t)
 
 	expect = []string{"test-4", "test-3", "test-2", "test-1", "test-0"}
@@ -141,7 +135,6 @@ func TestLRange(t *testing.T) {
 
 func TestLGet(t *testing.T) {
 	c := setupAndFlush(t)
-	defer teardown(c, t)
 
 	for i := range 5 {
 		respInt, err := c.LPush("test", fmt.Sprintf("test-%d", i))

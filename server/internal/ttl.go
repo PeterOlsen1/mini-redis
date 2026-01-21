@@ -119,6 +119,7 @@ func HandleExpireTime(key string) int64 {
 	storeMu.RLock()
 	_, ok := store[key]
 	if !ok {
+		storeMu.RUnlock() // FORGOT UNLOCK HERE AND DEADLOCKED!!!!!
 		return -2
 	}
 	storeMu.RUnlock()

@@ -81,8 +81,8 @@ var defaultConfig = ConfigType{
 		},
 	},
 	Info: InfoConfig{
-		CollectOps: false,
-		Command:    false,
+		CollectOps: true,
+		Command:    true,
 	},
 	Log: LogConfig{
 		File:       false,

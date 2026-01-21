@@ -20,7 +20,7 @@ func HandleLRange(user *authtypes.User, args resp.ArgList) ([]byte, error) {
 	}
 
 	start, startErr := args.Int(1)
-	end, endErr := args.Int(1)
+	end, endErr := args.Int(2)
 	if startErr != nil || endErr != nil {
 		return nil, errors.INVALID_ARG
 	}

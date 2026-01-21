@@ -10,7 +10,9 @@ var globalClient *client.RedisClient
 
 func setup(t *testing.T) *client.RedisClient {
 	if globalClient == nil {
-		c, err := client.NewClient(&client.ClientOptions{Addr: "localhost:6379"})
+		c, err := client.NewClient(&client.ClientOptions{
+			URL: "redis://admin:admin@localhost:6379",
+		})
 		if err != nil {
 			t.Errorf("client initialization")
 		}
@@ -24,7 +26,9 @@ func setup(t *testing.T) *client.RedisClient {
 
 func setupAndFlush(t *testing.T) *client.RedisClient {
 	if globalClient == nil {
-		c, err := client.NewClient(&client.ClientOptions{Addr: "localhost:6379"})
+		c, err := client.NewClient(&client.ClientOptions{
+			URL: "redis://admin:admin@localhost:6379",
+		})
 		if err != nil {
 			t.Errorf("client initialization")
 		}
@@ -46,11 +50,10 @@ func setupAndFlush(t *testing.T) *client.RedisClient {
 }
 
 // teardown method left empty for now due to use of global client
-func teardown(c *client.RedisClient, t *testing.T) {
-	// err := c.Close()
-	// if err != nil {
-	// 	t.Errorf("client close")
-	// }
+func teardown() {
+	if globalClient != nil {
+		globalClient.Close()
+	}
 }
 
 func checkExpect[T comparable](resp T, err error, cmd commands.Command, expect T, t *testing.T) {
