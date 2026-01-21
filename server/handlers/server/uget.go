@@ -21,12 +21,12 @@ func HandleUGet(user *authtypes.User, args resp.ArgList) ([]byte, error) {
 		var out strings.Builder
 		out.WriteString("Config defined users:\n")
 		for i, u := range cfg.Server.Users {
-			fmt.Fprintf(&out, "%d) %s: %s\n", i+1, u.Username, u.PermString())
+			fmt.Fprintf(&out, "%d) %s: %s\n", i, u.Username, u.PermString())
 		}
 
 		out.WriteString("\nACL users:\n")
 		for i, u := range auth.GetAllUsers() {
-			fmt.Fprintf(&out, "%d) %s: %s\n", i+1, u.Username, u.PermString())
+			fmt.Fprintf(&out, "%d) %s: %s\n", i, u.Username, u.PermString())
 
 			if len(u.Rules) > 0 {
 				fmt.Fprintf(&out, "   User rules:\n")

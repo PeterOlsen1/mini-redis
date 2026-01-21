@@ -1,14 +1,13 @@
 package server
 
 import (
-	"fmt"
+	"log"
 	"mini-redis/resp"
 	"mini-redis/server/auth/authtypes"
 	"mini-redis/server/internal"
 	"mini-redis/types/commands"
 	"mini-redis/types/errors"
 	"os"
-	"path/filepath"
 )
 
 func HandleLoad(user *authtypes.User, args resp.ArgList) ([]byte, error) {
@@ -20,23 +19,24 @@ func HandleLoad(user *authtypes.User, args resp.ArgList) ([]byte, error) {
 		return nil, errors.ARG_COUNT(commands.LOAD, 1)
 	}
 
-	homeDir, err := os.UserHomeDir()
+	fileIdx, err := args.Int(0)
 	if err != nil {
-		fmt.Println("failed to get home directory:", err)
+		return nil, err
+	}
+
+	fileName, err := getSaveFile(fileIdx)
+	if err != nil {
 		return nil, errors.GENERAL
 	}
 
-	homeFolder := filepath.Join(homeDir, ".mini-redis")
-	loadFolderPath := filepath.Join(homeFolder, "backups")
-	err = os.MkdirAll(loadFolderPath, 0755)
+	loadFilePath, err := getSaveFilePath(fileName.Name())
 	if err != nil {
-		fmt.Println("Failed to create .mini-redis/backups directory:", err)
 		return nil, errors.GENERAL
 	}
 
-	loadFile, err := os.Open(filepath.Join(loadFolderPath, fmt.Sprintf("backup-%s.rdb", args.String(0))))
+	loadFile, err := os.Open(loadFilePath)
 	if err != nil {
-		fmt.Println("Failed to open backup file")
+		log.Println("Failed to open backup file")
 		return nil, errors.GENERAL
 	}
 

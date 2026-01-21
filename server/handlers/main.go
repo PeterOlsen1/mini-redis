@@ -69,4 +69,5 @@ var commandHandlers = [...]func(*authtypes.User, resp.ArgList) ([]byte, error){
 	server.HandleRMRule,
 	server.HandleSave,
 	server.HandleLoad,
+	server.HandleListSaves,
 }

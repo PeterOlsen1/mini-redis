@@ -49,6 +49,7 @@ const (
 	RMRULE
 	SAVE
 	LOAD
+	LISTSAVES
 )
 
 const NUM_COMMANDS = len(commandStrings)
@@ -86,6 +87,7 @@ var commandStrings = [...]string{
 	"RMRULE",
 	"SAVE",
 	"LOAD",
+	"LISTSAVES",
 }
 
 func (c Command) String() string {

@@ -1,5 +1,7 @@
+* TODO:
+  * RMSAVE method
+
 * Backlog
-  * Add logging to all handler errors
   * Make save / load interface nicer
   * Handle TCP disconnect gracefully (call disconnect info function)
 
