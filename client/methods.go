@@ -101,3 +101,45 @@ func (c *RedisClient) ExpireTime(key string) (int, error) {
 		InitRequest(commands.EXPIRETIME).AddParam(key),
 	)
 }
+
+func (c *RedisClient) Save() (string, error) {
+	return c.SendAndReceive(
+		InitRequest(commands.SAVE),
+	)
+}
+
+func (c *RedisClient) Load(idx int) (string, error) {
+	return c.SendAndReceive(
+		InitRequest(commands.LOAD).AddParamInt(idx),
+	)
+}
+
+func (c *RedisClient) ListSaves() (string, error) {
+	return c.SendAndReceive(
+		InitRequest(commands.LISTSAVES),
+	)
+}
+
+func (c *RedisClient) RmSave(idx int) (string, error) {
+	return c.SendAndReceive(
+		InitRequest(commands.RMSAVE).AddParamInt(idx),
+	)
+}
+
+func (c *RedisClient) Select(idx int) (string, error) {
+	return c.SendAndReceive(
+		InitRequest(commands.SELECT).AddParamInt(idx),
+	)
+}
+
+func (c *RedisClient) WhichDB() (int, error) {
+	return c.SendAndReceiveInt(
+		InitRequest(commands.WHICHDB),
+	)
+}
+
+func (c *RedisClient) Command() (string, error) {
+	return c.SendAndReceive(
+		InitRequest(commands.COMMAND),
+	)
+}

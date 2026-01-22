@@ -13,7 +13,7 @@ type ClientOptions struct {
 	// Does not need to be filled out if URL is complete
 	Addr string
 
-	// redis://user:password@host:port
+	// redis://user:password@host:port/dbIdx (dbIdx is optional)
 	URL string
 }
 

@@ -20,7 +20,7 @@ func (c *RedisClient) Whoami() (string, error) {
 	)
 }
 
-func (c *RedisClient) Rmuser(user string) (string, error) {
+func (c *RedisClient) RmUser(user string) (string, error) {
 	return c.SendAndReceive(
 		InitRequest(commands.RMUSER).AddParam(user),
 	)
@@ -34,5 +34,17 @@ func (c *RedisClient) UserGet(users ...string) (string, error) {
 
 	return c.SendAndReceive(
 		req,
+	)
+}
+
+func (c *RedisClient) AddRule(user string, rules ...string) (string, error) {
+	return c.SendAndReceive(
+		InitRequest(commands.ADDRULE).AddParam(user).AddParamSlice(rules...),
+	)
+}
+
+func (c *RedisClient) RmRule(user string, rules ...string) (string, error) {
+	return c.SendAndReceive(
+		InitRequest(commands.RMRULE).AddParam(user).AddParamSlice(rules...),
 	)
 }

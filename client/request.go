@@ -19,6 +19,14 @@ func InitRequest(command commands.Command) *RequestBuilder {
 	}
 }
 
+func (r *RequestBuilder) AddParamSlice(params ...string) *RequestBuilder {
+	for _, p := range params {
+		r.AddParam(p)
+	}
+
+	return r
+}
+
 func (r *RequestBuilder) AddParam(param string) *RequestBuilder {
 	r.req += fmt.Sprintf("$%d\r\n%s\r\n", len(param), param)
 	r.len += 1

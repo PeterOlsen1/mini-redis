@@ -3,6 +3,7 @@ package client
 import (
 	"fmt"
 	"net"
+	"strconv"
 	"strings"
 )
 
@@ -29,10 +30,24 @@ func NewClient(opt *ClientOptions) (*RedisClient, error) {
 		username := firstParts[0]
 		pass := firstParts[1]
 
-		c.addr = parts[1]
+		// split and gather db number for later
+		parts = strings.Split(parts[1], "/")
+		c.addr = parts[0]
 
 		if err := c.establishConnection(); err != nil {
 			return nil, err
+		}
+
+		if len(parts) > 1 {
+			dbIdx, err := strconv.Atoi(parts[1])
+			if err != nil {
+				return nil, fmt.Errorf("failed to parse db number")
+			}
+
+			_, err = c.Select(dbIdx)
+			if err != nil {
+				return nil, fmt.Errorf("failed to switch to db %d", dbIdx)
+			}
 		}
 		_, err := c.Auth(username, pass)
 		if err != nil {
