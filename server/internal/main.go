@@ -15,6 +15,19 @@ func InitStore(numDBs int) {
 	}
 }
 
+func FlushAll() {
+	for k := range store {
+		store[k].mu.Lock()
+		store[k].ttlMu.Lock()
+
+		store[k].store = make(map[string]*StoreItem)
+		store[k].ttlStore = make(map[string]int64)
+
+		store[k].ttlMu.Unlock()
+		store[k].mu.Unlock()
+	}
+}
+
 func GetDB(dbNum int) *Database {
 	storeMu.RLock()
 	defer storeMu.RUnlock()

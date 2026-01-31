@@ -72,6 +72,7 @@ var commandHandlers = [...]func(*authtypes.User, resp.ArgList) ([]byte, error){
 	server.HandleInfo,
 	key.HandleKeys,
 	key.HandleFlushAll,
+	key.HandleFlushDB,
 	nil, // mutate handler
 	server.HandleLogout,
 	server.HandleWhoami,

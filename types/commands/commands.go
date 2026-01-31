@@ -39,6 +39,7 @@ const (
 	INFO
 	KEYS
 	FLUSHALL
+	FLUSHDB
 	AUTH
 	LOGOUT
 	WHOAMI
@@ -102,6 +103,7 @@ var commandStrings = [...]string{
 	"INFO",
 	"KEYS",
 	"FLUSHALL",
+	"FLUSHDB",
 	"AUTH",
 	"LOGOUT",
 	"WHOAMI",
@@ -142,6 +144,7 @@ var commandInfos = map[Command]string{
 	INFO:       "Get server information.",
 	KEYS:       "Get all keys matching a pattern.",
 	FLUSHALL:   "Delete all keys in all databases.",
+	FLUSHDB:    "Delete all keys in the current database.",
 	AUTH:       "Authenticate a user.",
 	LOGOUT:     "Log out the current user.",
 	WHOAMI:     "Get the username of the current user.",

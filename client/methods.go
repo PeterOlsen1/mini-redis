@@ -78,6 +78,12 @@ func (c *RedisClient) FlushAll() (string, error) {
 	)
 }
 
+func (c *RedisClient) FlushDB() (string, error) {
+	return c.SendAndReceive(
+		InitRequest(commands.FLUSHDB),
+	)
+}
+
 func (c *RedisClient) Info() (string, error) {
 	return c.SendAndReceive(
 		InitRequest(commands.INFO).SetBufSize(4096),

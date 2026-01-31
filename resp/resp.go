@@ -27,6 +27,11 @@ func BYTE_ERR(e error) []byte {
 	return serialized
 }
 
+func BYTE_ARR(arr []string) []byte {
+	serialized, _ := Serialize(arr, ARRAY)
+	return serialized
+}
+
 func Serialize(value any, valueType RespType) ([]byte, error) {
 	switch valueType {
 	case STRING:
