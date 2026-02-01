@@ -44,12 +44,12 @@ func NewClient(opt *ClientOptions) (*RedisClient, error) {
 				return nil, fmt.Errorf("failed to parse db number")
 			}
 
-			_, err = c.Select(dbIdx)
+			err = c.Select(dbIdx)
 			if err != nil {
 				return nil, fmt.Errorf("failed to switch to db %d", dbIdx)
 			}
 		}
-		_, err := c.Auth(username, pass)
+		err := c.Auth(username, pass)
 		if err != nil {
 			return nil, fmt.Errorf("failed to authenticate")
 		}

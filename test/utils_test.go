@@ -33,7 +33,7 @@ func setupAndFlush(t *testing.T) *client.RedisClient {
 			t.Errorf("client initialization")
 		}
 
-		_, err = c.FlushAll()
+		err = c.FlushAll()
 		if err != nil {
 			t.Errorf("initial flush")
 		}
@@ -42,7 +42,7 @@ func setupAndFlush(t *testing.T) *client.RedisClient {
 		return c
 	}
 
-	_, err := globalClient.FlushAll()
+	err := globalClient.FlushAll()
 	if err != nil {
 		t.Errorf("initial flush")
 	}

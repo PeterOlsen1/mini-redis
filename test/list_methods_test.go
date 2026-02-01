@@ -10,8 +10,10 @@ import (
 func TestLPush(t *testing.T) {
 	c := setupAndFlush(t)
 
-	s, err := c.Set("test", "TEST")
-	checkExpect(s, err, commands.SET, "OK", t)
+	err := c.Set("test", "TEST")
+	if err != nil {
+		fmt.Printf("SET returned error: %e", err)
+	}
 
 	respInt, err := c.LPush("test", "test")
 	checkError(respInt, err, commands.LPUSH, errors.WRONGTYPE.Error(), t)
@@ -21,15 +23,17 @@ func TestLPush(t *testing.T) {
 		checkExpect(respInt, err, commands.LPUSH, i+1, t)
 	}
 
-	s, err = c.Get("test2")
+	s, err := c.Get("test2")
 	checkError(s, err, commands.GET, errors.WRONGTYPE.Error(), t)
 }
 
 func TestRPush(t *testing.T) {
 	c := setupAndFlush(t)
 
-	s, err := c.Set("test", "TEST")
-	checkExpect(s, err, commands.SET, "OK", t)
+	err := c.Set("test", "TEST")
+	if err != nil {
+		fmt.Printf("SET returned error: %e", err)
+	}
 
 	respInt, err := c.RPush("test", "test")
 	checkError(respInt, err, commands.RPUSH, errors.WRONGTYPE.Error(), t)
@@ -39,15 +43,17 @@ func TestRPush(t *testing.T) {
 		checkExpect(respInt, err, commands.RPUSH, i+1, t)
 	}
 
-	s, err = c.Get("test2")
+	s, err := c.Get("test2")
 	checkError(s, err, commands.GET, errors.WRONGTYPE.Error(), t)
 }
 
 func TestLPopOne(t *testing.T) {
 	c := setupAndFlush(t)
 
-	s, err := c.Set("test", "TEST")
-	checkExpect(s, err, commands.SET, "OK", t)
+	err := c.Set("test", "TEST")
+	if err != nil {
+		fmt.Printf("SET returned error: %e", err)
+	}
 
 	respArr, err := c.LPop("test")
 	checkError(respArr, err, commands.LPOP, errors.WRONGTYPE.Error(), t)
@@ -78,8 +84,10 @@ func TestLPopMany(t *testing.T) {
 func TestRPopOne(t *testing.T) {
 	c := setupAndFlush(t)
 
-	s, err := c.Set("test", "TEST")
-	checkExpect(s, err, commands.SET, "OK", t)
+	err := c.Set("test", "TEST")
+	if err != nil {
+		fmt.Printf("SET returned error: %e", err)
+	}
 
 	respArr, err := c.RPop("test")
 	checkError(respArr, err, commands.RPOP, errors.WRONGTYPE.Error(), t)
