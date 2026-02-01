@@ -32,31 +32,39 @@ func TestEcho(t *testing.T) {
 func TestSet(t *testing.T) {
 	c := setupAndFlush(t)
 
-	s, err := c.Set("test", "TEST")
-	checkExpect(s, err, commands.SET, "OK", t)
+	err := c.Set("test", "TEST")
+	if err != nil {
+		t.Errorf("SET command returned error: %e", err)
+	}
 }
 
 func TestGet(t *testing.T) {
 	c := setupAndFlush(t)
 
-	s, err := c.Set("test", "TEST")
-	checkExpect(s, err, commands.SET, "OK", t)
+	err := c.Set("test", "TEST")
+	if err != nil {
+		t.Errorf("SET command returned error: %e", err)
+	}
 
-	s, err = c.Get("test")
+	s, err := c.Get("test")
 	checkExpect(s, err, commands.GET, "TEST", t)
 }
 
 func TestDelete(t *testing.T) {
 	c := setupAndFlush(t)
 
-	s, err := c.Set("test", "TEST")
-	checkExpect(s, err, commands.SET, "OK", t)
+	err := c.Set("test", "TEST")
+	if err != nil {
+		t.Errorf("SET command returned error: %e", err)
+	}
 
-	s, err = c.Get("test")
+	s, err := c.Get("test")
 	checkExpect(s, err, commands.GET, "TEST", t)
 
-	s, err = c.Del("test")
-	checkExpect(s, err, commands.GET, "OK", t)
+	err = c.Del("test")
+	if err != nil {
+		t.Errorf("DEL command returned an error: %e", err)
+	}
 
 	s, err = c.Get("test")
 	checkExpect(s, err, commands.GET, "", t)
@@ -65,8 +73,10 @@ func TestDelete(t *testing.T) {
 func TestFlushAll(t *testing.T) {
 	c := setup(t)
 
-	s, err := c.FlushAll()
-	checkExpect(s, err, commands.FLUSHALL, "OK", t)
+	err := c.FlushAll()
+	if err != nil {
+		t.Errorf("FLUSHALL command returned an error: %e", err)
+	}
 }
 
 func TestEmptyGet(t *testing.T) {
@@ -79,13 +89,17 @@ func TestEmptyGet(t *testing.T) {
 func TestExists(t *testing.T) {
 	c := setupAndFlush(t)
 
-	s, err := c.Set("test", "TEST")
-	checkExpect(s, err, commands.SET, "OK", t)
+	err := c.Set("test", "TEST")
+	if err != nil {
+		t.Errorf("SET command returned error: %e", err)
+	}
 
-	s, err = c.Set("test2", "TEST")
-	checkExpect(s, err, commands.SET, "OK", t)
+	err = c.Set("test2", "TEST")
+	if err != nil {
+		t.Errorf("SET command returned error: %e", err)
+	}
 
-	s, err = c.Exists("test")
+	s, err := c.Exists("test")
 	checkExpect(s, err, commands.EXISTS, "1", t)
 
 	s, err = c.Exists("test", "test2")
@@ -98,8 +112,10 @@ func TestExpire(t *testing.T) {
 	s, err := c.Expire("awidawbnd", 10)
 	checkExpect(s, err, commands.EXPIRE, "0", t)
 
-	s, err = c.Set("test", "TEST")
-	checkExpect(s, err, commands.SET, "OK", t)
+	err = c.Set("test", "TEST")
+	if err != nil {
+		t.Errorf("SET command returned error: %e", err)
+	}
 
 	s, err = c.Expire("test", 10)
 	checkExpect(s, err, commands.EXPIRE, "1", t)
@@ -111,8 +127,10 @@ func TestTTL(t *testing.T) {
 	s, err := c.TTL("test")
 	checkExpect(s, err, commands.TTL, "-2", t)
 
-	s, err = c.Set("test", "TEST")
-	checkExpect(s, err, commands.SET, "OK", t)
+	err = c.Set("test", "TEST")
+	if err != nil {
+		t.Errorf("SET command returned error: %e", err)
+	}
 
 	s, err = c.TTL("test")
 	checkExpect(s, err, commands.TTL, "-1", t)
@@ -135,19 +153,23 @@ func TestIncr(t *testing.T) {
 	i, err := c.Incr("test")
 	checkExpect(i, err, commands.INCR, 1, t)
 
-	s, err := c.Set("test", "TEST")
-	checkExpect(s, err, commands.SET, "OK", t)
+	err = c.Set("test", "TEST")
+	if err != nil {
+		t.Errorf("SET command returned error: %e", err)
+	}
 
 	i, err = c.Incr("test")
 	checkError(i, err, commands.INCR, errors.NOT_INTEGER.Error(), t)
 
-	s, err = c.Set("test", "1")
-	checkExpect(s, err, commands.SET, "OK", t)
+	err = c.Set("test", "1")
+	if err != nil {
+		t.Errorf("SET command returned error: %e", err)
+	}
 
 	i, err = c.Incr("test")
 	checkExpect(i, err, commands.INCR, 2, t)
 
-	s, err = c.Get("test")
+	s, err := c.Get("test")
 	checkExpect(s, err, commands.GET, "2", t)
 }
 
@@ -157,19 +179,23 @@ func TestDecr(t *testing.T) {
 	i, err := c.Decr("test")
 	checkExpect(i, err, commands.DECR, -1, t)
 
-	s, err := c.Set("test", "TEST")
-	checkExpect(s, err, commands.SET, "OK", t)
+	err = c.Set("test", "TEST")
+	if err != nil {
+		t.Errorf("SET command returned error: %e", err)
+	}
 
 	i, err = c.Decr("test")
 	checkError(i, err, commands.DECR, errors.NOT_INTEGER.Error(), t)
 
-	s, err = c.Set("test", "1")
-	checkExpect(s, err, commands.SET, "OK", t)
+	err = c.Set("test", "1")
+	if err != nil {
+		t.Errorf("SET command returned error: %e", err)
+	}
 
 	i, err = c.Decr("test")
 	checkExpect(i, err, commands.DECR, 0, t)
 
-	s, err = c.Get("test")
+	s, err := c.Get("test")
 	checkExpect(s, err, commands.GET, "0", t)
 }
 
@@ -180,8 +206,10 @@ func TestKeys(t *testing.T) {
 	for i := range 5 {
 		key := fmt.Sprintf("test-%d", i)
 		setKeys[i] = key
-		res, err := c.Set(key, "1")
-		checkExpect(res, err, commands.SET, "OK", t)
+		err := c.Set(key, "1")
+		if err != nil {
+			t.Errorf("SET command returned error: %e", err)
+		}
 	}
 
 	keys, err := c.Keys()
@@ -209,8 +237,10 @@ func TestExpireAtTime(t *testing.T) {
 	respInt, err := c.ExpireTime("hello")
 	checkExpect(respInt, err, commands.EXPIRETIME, -2, t)
 
-	resp, err := c.Set("hello", "hello")
-	checkExpect(resp, err, commands.SET, "OK", t)
+	err = c.Set("hello", "hello")
+	if err != nil {
+		t.Errorf("SET command returned error: %e", err)
+	}
 
 	respInt, err = c.ExpireTime("hello")
 	checkExpect(respInt, err, commands.EXPIRETIME, -1, t)

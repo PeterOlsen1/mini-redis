@@ -19,8 +19,8 @@ func (c *RedisClient) Echo(msg string) (string, error) {
 	)
 }
 
-func (c *RedisClient) Set(key string, value string) (string, error) {
-	return c.SendAndReceive(
+func (c *RedisClient) Set(key string, value string) error {
+	return c.SendAndReceiveErr(
 		InitRequest(commands.SET).AddParam(key).AddParam(value),
 	)
 }
@@ -31,8 +31,8 @@ func (c *RedisClient) Get(key string) (string, error) {
 	)
 }
 
-func (c *RedisClient) Del(key string) (string, error) {
-	return c.SendAndReceive(
+func (c *RedisClient) Del(key string) error {
+	return c.SendAndReceiveErr(
 		InitRequest(commands.DEL).AddParam(key),
 	)
 }
@@ -72,14 +72,14 @@ func (c *RedisClient) Decr(key string) (int, error) {
 	)
 }
 
-func (c *RedisClient) FlushAll() (string, error) {
-	return c.SendAndReceive(
+func (c *RedisClient) FlushAll() error {
+	return c.SendAndReceiveErr(
 		InitRequest(commands.FLUSHALL),
 	)
 }
 
-func (c *RedisClient) FlushDB() (string, error) {
-	return c.SendAndReceive(
+func (c *RedisClient) FlushDB() error {
+	return c.SendAndReceiveErr(
 		InitRequest(commands.FLUSHDB),
 	)
 }
@@ -108,14 +108,14 @@ func (c *RedisClient) ExpireTime(key string) (int, error) {
 	)
 }
 
-func (c *RedisClient) Save() (string, error) {
-	return c.SendAndReceive(
+func (c *RedisClient) Save() error {
+	return c.SendAndReceiveErr(
 		InitRequest(commands.SAVE),
 	)
 }
 
-func (c *RedisClient) Load(idx int) (string, error) {
-	return c.SendAndReceive(
+func (c *RedisClient) Load(idx int) error {
+	return c.SendAndReceiveErr(
 		InitRequest(commands.LOAD).AddParamInt(idx),
 	)
 }
@@ -126,14 +126,14 @@ func (c *RedisClient) ListSaves() (string, error) {
 	)
 }
 
-func (c *RedisClient) RmSave(idx int) (string, error) {
-	return c.SendAndReceive(
+func (c *RedisClient) RmSave(idx int) error {
+	return c.SendAndReceiveErr(
 		InitRequest(commands.RMSAVE).AddParamInt(idx),
 	)
 }
 
-func (c *RedisClient) Select(idx int) (string, error) {
-	return c.SendAndReceive(
+func (c *RedisClient) Select(idx int) error {
+	return c.SendAndReceiveErr(
 		InitRequest(commands.SELECT).AddParamInt(idx),
 	)
 }

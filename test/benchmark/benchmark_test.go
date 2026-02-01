@@ -15,7 +15,7 @@ func setupAndFlush() (*client.RedisClient, error) {
 		return nil, err
 	}
 
-	_, err = c.FlushAll()
+	err = c.FlushAll()
 	if err != nil {
 		return nil, err
 	}
@@ -38,7 +38,7 @@ func BenchmarkGetAndSet(b *testing.B) {
 
 	// simple write/read loop
 	for b.Loop() {
-		_, err = c.Set("hello", "hello")
+		err = c.Set("hello", "hello")
 		if err != nil {
 			b.Fatal("Set call failed")
 		}

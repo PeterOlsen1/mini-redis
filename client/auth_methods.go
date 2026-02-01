@@ -2,14 +2,14 @@ package client
 
 import "mini-redis/types/commands"
 
-func (c *RedisClient) Auth(user string, password string) (string, error) {
-	return c.SendAndReceive(
+func (c *RedisClient) Auth(user string, password string) error {
+	return c.SendAndReceiveErr(
 		InitRequest(commands.AUTH).AddParam(user).AddParam(password),
 	)
 }
 
-func (c *RedisClient) Logout() (string, error) {
-	return c.SendAndReceive(
+func (c *RedisClient) Logout() error {
+	return c.SendAndReceiveErr(
 		InitRequest(commands.LOGOUT),
 	)
 }
@@ -37,14 +37,14 @@ func (c *RedisClient) UserGet(users ...string) (string, error) {
 	)
 }
 
-func (c *RedisClient) AddRule(user string, rules ...string) (string, error) {
-	return c.SendAndReceive(
+func (c *RedisClient) AddRule(user string, rules ...string) error {
+	return c.SendAndReceiveErr(
 		InitRequest(commands.ADDRULE).AddParam(user).AddParamSlice(rules...),
 	)
 }
 
-func (c *RedisClient) RmRule(user string, rules ...string) (string, error) {
-	return c.SendAndReceive(
+func (c *RedisClient) RmRule(user string, rules ...string) error {
+	return c.SendAndReceiveErr(
 		InitRequest(commands.RMRULE).AddParam(user).AddParamSlice(rules...),
 	)
 }

@@ -124,6 +124,11 @@ func (c *RedisClient) SendAndReceive(req *RequestBuilder) (string, error) {
 	return "", fmt.Errorf("unknown RESP type returned")
 }
 
+func (c *RedisClient) SendAndReceiveErr(req *RequestBuilder) error {
+	_, err := c.SendAndReceive(req)
+	return err
+}
+
 func (c *RedisClient) SendAndReceiveList(req *RequestBuilder) ([]string, error) {
 	result, resType, err := c.makeRequest(req)
 
