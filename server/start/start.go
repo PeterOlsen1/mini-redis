@@ -21,7 +21,6 @@ import (
 	"os/signal"
 	"path/filepath"
 	"strconv"
-	"strings"
 	"syscall"
 )
 
@@ -159,10 +158,10 @@ func parseArray(conn *types.Connection) (resp.ArgList, error) {
 		return nil, err
 	}
 
-	header = strings.TrimSuffix(header, "\r\n")
-	header = strings.TrimPrefix(header, "*")
+	header = header[1:][:len(header)-3]
 	arrayLen, err := strconv.Atoi(header)
 	if err != nil {
+		fmt.Println(err)
 		return nil, err
 	}
 
@@ -174,9 +173,8 @@ func parseArray(conn *types.Connection) (resp.ArgList, error) {
 			return nil, err
 		}
 
-		line = strings.TrimSuffix(line, "\r\n")
-		line = strings.TrimPrefix(line, "$")
-		len, err := strconv.Atoi(line)
+		line = line[1:][:len(line)-3]
+		stringLen, err := strconv.Atoi(line)
 		if err != nil {
 			return nil, err
 		}
@@ -186,9 +184,9 @@ func parseArray(conn *types.Connection) (resp.ArgList, error) {
 			return nil, err
 		}
 
-		line = strings.TrimSuffix(line, "\r\n")
+		line = line[:stringLen]
 		array = append(array, resp.RESPItem{
-			Len:     len,
+			Len:     stringLen,
 			Content: line,
 		})
 	}
