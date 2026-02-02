@@ -21,7 +21,6 @@ import (
 	"os/signal"
 	"path/filepath"
 	"strconv"
-	"strings"
 	"syscall"
 )
 
@@ -129,8 +128,10 @@ func handleConnection(conn *types.Connection) error {
 	}
 	defer conn.Conn.Close()
 
+	reader := bufio.NewReader(conn.Conn)
+
 	for {
-		array, err := parseArray(conn)
+		array, err := parseArray(reader)
 		if err != nil {
 			if err == io.EOF {
 				return nil // connection closed
@@ -152,17 +153,20 @@ func handleConnection(conn *types.Connection) error {
 	}
 }
 
-func parseArray(conn *types.Connection) (resp.ArgList, error) {
-	reader := bufio.NewReader(conn.Conn)
+func parseArray(reader *bufio.Reader) (resp.ArgList, error) {
 	header, err := reader.ReadString('\n')
 	if err != nil {
 		return nil, err
 	}
 
-	header = strings.TrimSuffix(header, "\r\n")
-	header = strings.TrimPrefix(header, "*")
+	if len(header) < 4 {
+		return nil, fmt.Errorf("header not long enough")
+	}
+
+	header = header[1:][:len(header)-3]
 	arrayLen, err := strconv.Atoi(header)
 	if err != nil {
+		fmt.Println(err)
 		return nil, err
 	}
 
@@ -174,22 +178,26 @@ func parseArray(conn *types.Connection) (resp.ArgList, error) {
 			return nil, err
 		}
 
-		line = strings.TrimSuffix(line, "\r\n")
-		line = strings.TrimPrefix(line, "$")
-		len, err := strconv.Atoi(line)
+		if len(line) < 4 {
+			return nil, fmt.Errorf("no command length present")
+		}
+
+		line = line[1:][:len(line)-3]
+		stringLen, err := strconv.Atoi(line)
 		if err != nil {
 			return nil, err
 		}
 
-		line, err = reader.ReadString('\n')
+		// +2 for \r\n
+		buf := make([]byte, stringLen+2)
+		_, err = io.ReadFull(reader, buf)
 		if err != nil {
 			return nil, err
 		}
 
-		line = strings.TrimSuffix(line, "\r\n")
 		array = append(array, resp.RESPItem{
-			Len:     len,
-			Content: line,
+			Len:     stringLen,
+			Content: string(buf[:stringLen]),
 		})
 	}
 
@@ -207,7 +215,7 @@ func processArray(conn *types.Connection, array resp.ArgList) error {
 		}
 
 		if cmd != 0 {
-			args := make(resp.ArgList, 0)
+			args := make(resp.ArgList, 0) // variable length arguments
 
 			i += 1
 			for i < len(array) && !commands.ParseCommand(array[i].Content).Valid() {

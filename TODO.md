@@ -1,6 +1,10 @@
 * Current
-  * Handlers that receive OK just return err instead?
   * Use RESP parsing in server start method
+    * can't do that becuase of the way we read connections
+    * before server updates: 
+      BenchmarkGetAndSet-16    	    4035	    265212 ns/op	    1056 B/op	      27 allocs/op
+    * after
+      BenchmarkGetAndSet-16    	    4260	    268109 ns/op	    1056 B/op	      27 allocs/op
   * User permissions per database?
   * Individual database info
   * Add / remove databases 

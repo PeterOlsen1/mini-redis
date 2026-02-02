@@ -59,6 +59,14 @@ const (
 
 const NUM_COMMANDS = len(commandStrings)
 
+var commandLookup = func() map[string]Command {
+	m := make(map[string]Command, NUM_COMMANDS)
+	for i, cmd := range commandStrings {
+		m[cmd] = Command(i)
+	}
+	return m
+}()
+
 var requireDB = map[Command]struct{}{
 	SET:        {},
 	GET:        {},
@@ -171,10 +179,8 @@ func (c Command) String() string {
 
 func ParseCommand(s string) Command {
 	s = strings.ToUpper(s)
-	for i, cmd := range commandStrings {
-		if cmd == s {
-			return Command(i)
-		}
+	if cmd, ok := commandLookup[s]; ok {
+		return cmd
 	}
 	return Command(0)
 }
