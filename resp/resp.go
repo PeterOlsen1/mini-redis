@@ -47,11 +47,17 @@ func Serialize(value any, valueType RespType) ([]byte, error) {
 		if !ok {
 			return nil, fmt.Errorf("could not convert value to array")
 		}
-		out.WriteString(strconv.Itoa(len(valueArr)) + "\r\n")
+		out.WriteString(strconv.Itoa(len(valueArr)))
+		out.WriteString("\r\n")
 
 		for _, s := range valueArr {
-			fmt.Fprintf(&out, "$%d\r\n%s\r\n", len(s), s)
+			out.WriteString("$")
+			out.WriteString(strconv.Itoa(len(s)))
+			out.WriteString("\r\n")
+			out.WriteString(s)
+			out.WriteString("\r\n")
 		}
+
 		return []byte(out.String()), nil
 	case BULK_STRING:
 		strVal, ok := value.(string)
@@ -72,7 +78,11 @@ func Decode(data []byte) (any, RespType, error) {
 	strData := string(data)
 	switch data[0] {
 	case '+':
-		middleData := strings.TrimSuffix(strData[1:], "\r\n")
+		if len(strData) < 4 {
+			return nil, ERR, fmt.Errorf("invalid response")
+		}
+
+		middleData := strData[1:][:len(strData)-3]
 		return middleData, STRING, nil
 	case '-':
 		middleData := strings.TrimPrefix(strings.TrimSuffix(strData[1:], "\r\n"), "ERR ")
